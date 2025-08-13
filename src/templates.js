@@ -841,4 +841,4 @@ export function demoHtml({ baseUrl }) {
   </script>
 </body>
 </html>`;
-}
+}console.log('Visual effects loaded - Wed Aug 13 15:53:59 EDT 2025');
