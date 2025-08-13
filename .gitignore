@@ -1,0 +1,10 @@
+.env
+server.log
+server.pid
+uploads/
+db/*.sqlite*
+node_modules/
+
+
+
+.vercel

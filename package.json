@@ -1,0 +1,37 @@
+{
+  "name": "soulmatesketch-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "seed": "node src/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "openai": "^5.12.1",
+    "pdfkit": "^0.17.1",
+    "pino": "^9.8.0",
+    "pino-pretty": "^13.1.1",
+    "sharp": "^0.34.3",
+    "stripe": "^18.4.0",
+    "uuid": "^11.1.0",
+    "zod": "^3.25.76"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  }
+}
