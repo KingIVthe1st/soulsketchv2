@@ -141,19 +141,19 @@ export function demoHtml({ baseUrl }) {
     @keyframes floatUp {
       0% {
         opacity: 0;
-        transform: translateY(100vh) scale(0);
+        transform: translateY(-20vh) scale(0);
       }
       10% {
         opacity: 1;
-        transform: translateY(90vh) scale(1);
+        transform: translateY(-10vh) scale(1);
       }
       90% {
         opacity: 1;
-        transform: translateY(-10vh) scale(1);
+        transform: translateY(90vh) scale(1);
       }
       100% {
         opacity: 0;
-        transform: translateY(-20vh) scale(0);
+        transform: translateY(100vh) scale(0);
       }
     }
 
@@ -269,19 +269,19 @@ export function demoHtml({ baseUrl }) {
     @keyframes floatUp {
       0% {
         opacity: 0;
-        transform: translateY(100vh) scale(0);
+        transform: translateY(-20vh) scale(0);
       }
       10% {
         opacity: 1;
-        transform: translateY(90vh) scale(1);
+        transform: translateY(-10vh) scale(1);
       }
       90% {
         opacity: 1;
-        transform: translateY(-10vh) scale(1);
+        transform: translateY(90vh) scale(1);
       }
       100% {
         opacity: 0;
-        transform: translateY(-20vh) scale(0);
+        transform: translateY(100vh) scale(0);
       }
     }
 
