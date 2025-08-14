@@ -1354,23 +1354,22 @@ export function demoHtml({ baseUrl }) {
         document.body.appendChild(starfield);
       }
 
-      // Add enhanced CSS
+      // Add enhanced CSS (use concatenated string to avoid template parsing issues)
       const style = document.createElement('style');
-      style.textContent = '
-        @keyframes twinkle {
-          0%, 100% { opacity: 0.4; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.3); }
-        }
-        @keyframes shootingStar {
-          0% { opacity: 0; transform: translateX(0) translateY(0); }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { opacity: 0; transform: translateX(300px) translateY(150px); }
-        }
-        .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
-        .shooting-star { position: absolute; width: 6px; height: 6px; background: linear-gradient(45deg, #fff, #667eea); border-radius: 50%; animation: shootingStar 3s linear infinite; }
-        .shooting-star::before { content: ""; position: absolute; top: 50%; left: 50%; width: 60px; height: 2px; background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.8), transparent); transform: translate(-50%, -50%) rotate(33deg); }
-      ';
+      style.textContent =
+        '@keyframes twinkle { ' +
+          '0%, 100% { opacity: 0.4; transform: scale(1); } ' +
+          '50% { opacity: 1; transform: scale(1.3); } ' +
+        '}' +
+        '@keyframes shootingStar { ' +
+          '0% { opacity: 0; transform: translateX(0) translateY(0); } ' +
+          '10% { opacity: 1; } ' +
+          '90% { opacity: 1; } ' +
+          '100% { opacity: 0; transform: translateX(300px) translateY(150px); } ' +
+        '}' +
+        '.star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }' +
+        '.shooting-star { position: absolute; width: 6px; height: 6px; background: linear-gradient(45deg, #fff, #667eea); border-radius: 50%; animation: shootingStar 3s linear infinite; }' +
+        '.shooting-star::before { content: ""; position: absolute; top: 50%; left: 50%; width: 60px; height: 2px; background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.8), transparent); transform: translate(-50%, -50%) rotate(33deg); }';
       document.head.appendChild(style);
 
       // Create 150 larger, brighter stars
