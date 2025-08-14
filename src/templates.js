@@ -13,6 +13,7 @@ export function demoHtml({ baseUrl }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>SoulmateSketch</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23667eea'/><stop offset='50%' style='stop-color:%23f093fb'/><stop offset='100%' style='stop-color:%2310f3d4'/></linearGradient></defs><circle cx='50' cy='50' r='45' fill='url(%23g)'/><path d='M35 40 Q50 25 65 40 Q50 55 35 40' fill='white' opacity='0.9'/></svg>" type="image/svg+xml">
+  <script src="/starfield.js" defer></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -26,6 +27,262 @@ export function demoHtml({ baseUrl }) {
       -moz-osx-font-smoothing: grayscale;
       -webkit-text-size-adjust: 100%;
       -webkit-overflow-scrolling: touch;
+      overflow-x: hidden;
+    }
+
+    /* Animated Starfield */
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+
+    .star.small {
+      width: 1px;
+      height: 1px;
+      box-shadow: 0 0 6px #fff;
+    }
+
+    .star.medium {
+      width: 2px;
+      height: 2px;
+      box-shadow: 0 0 8px #fff;
+      animation-duration: 4s;
+    }
+
+    .star.large {
+      width: 3px;
+      height: 3px;
+      box-shadow: 0 0 12px #fff;
+      animation-duration: 5s;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* Shooting Stars */
+    .shooting-star {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: linear-gradient(45deg, #fff, #667eea);
+      border-radius: 50%;
+      box-shadow: 0 0 10px #667eea;
+      opacity: 0;
+      animation: shootingStar 3s linear infinite;
+    }
+
+    @keyframes shootingStar {
+      0% {
+        opacity: 0;
+        transform: translateX(0) translateY(0) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateX(300px) translateY(150px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(400px) translateY(200px) scale(0);
+      }
+    }
+
+    .shooting-star::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.8), transparent);
+      transform: translate(-50%, -50%) rotate(33deg);
+      border-radius: 1px;
+    }
+
+    /* Floating Particles */
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(102, 126, 234, 0.6);
+      border-radius: 50%;
+      animation: floatUp 8s linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(90vh) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(-10vh) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-20vh) scale(0);
+      }
+    }
+
+    /* Animated Starfield */
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+
+    .star.small {
+      width: 1px;
+      height: 1px;
+      box-shadow: 0 0 6px #fff;
+    }
+
+    .star.medium {
+      width: 2px;
+      height: 2px;
+      box-shadow: 0 0 8px #fff;
+      animation-duration: 4s;
+    }
+
+    .star.large {
+      width: 3px;
+      height: 3px;
+      box-shadow: 0 0 12px #fff;
+      animation-duration: 5s;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* Shooting Stars */
+    .shooting-star {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: linear-gradient(45deg, #fff, #667eea);
+      border-radius: 50%;
+      box-shadow: 0 0 10px #667eea;
+      opacity: 0;
+      animation: shootingStar 3s linear infinite;
+    }
+
+    @keyframes shootingStar {
+      0% {
+        opacity: 0;
+        transform: translateX(0) translateY(0) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateX(300px) translateY(150px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(400px) translateY(200px) scale(0);
+      }
+    }
+
+    /* Shooting star tail effect */
+    .shooting-star::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.8), transparent);
+      transform: translate(-50%, -50%) rotate(33deg);
+      border-radius: 1px;
+    }
+
+    /* Floating Particles */
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(102, 126, 234, 0.6);
+      border-radius: 50%;
+      animation: floatUp 8s linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(90vh) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(-10vh) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-20vh) scale(0);
+      }
     }
 
     .site-bg {
@@ -518,6 +775,92 @@ export function demoHtml({ baseUrl }) {
 
     .hidden { display: none; }
 
+    /* Enhanced Hover Effects */
+    .gradient-text {
+      background: linear-gradient(45deg, #818cf8, #f093fb, #10f3d4, #818cf8);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 4s ease-in-out infinite;
+      position: relative;
+    }
+
+    .gradient-text::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, #818cf8, #f093fb, #10f3d4, #818cf8);
+      background-size: 300% 300%;
+      animation: gradientShift 4s ease-in-out infinite;
+      filter: blur(8px);
+      opacity: 0.3;
+      z-index: -1;
+    }
+
+    .text-glow {
+      text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+    }
+
+    /* Enhanced Result Image */
+    .result-image {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 60px rgba(102, 126, 234, 0.2);
+      position: relative;
+      transition: all 0.4s ease;
+    }
+
+    .result-image::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: conic-gradient(from 0deg, #667eea, #f093fb, #10f3d4, #667eea);
+      border-radius: 14px;
+      z-index: -1;
+      animation: rotateGlow 3s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes rotateGlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Cinematic Reveal Effect */
+    .cinematic-reveal {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cinematic-reveal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: cinematicSweep 2s ease-out;
+      z-index: 1;
+    }
+
+    @keyframes cinematicSweep {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .header-content { padding: 12px; }
@@ -539,6 +882,13 @@ export function demoHtml({ baseUrl }) {
       .result-actions .btn { width: 100%; margin-bottom: 8px; }
       .result-text { max-height: 200px; font-size: 13px; }
       .loading { padding: 30px 0; }
+      
+      /* Mobile-optimized effects */
+      .star.small { box-shadow: 0 0 4px #fff; }
+      .star.medium { box-shadow: 0 0 6px #fff; }
+      .star.large { box-shadow: 0 0 8px #fff; }
+      .shooting-star::before { width: 40px; }
+      .floating-particle { width: 3px; height: 3px; }
     }
 
     @media (max-width: 480px) {
@@ -561,6 +911,8 @@ export function demoHtml({ baseUrl }) {
   </style>
 </head>
 <body>
+  <div id="starfield"></div>
+  <div id="particles"></div>
   <div class="site-bg"></div>
   
   <div class="container">
@@ -665,6 +1017,152 @@ export function demoHtml({ baseUrl }) {
 
   <script>
     let orderId = null;
+
+    // Create animated starfield
+    function createStarfield() {
+      const starfield = document.getElementById('starfield');
+      const starCount = window.innerWidth < 768 ? 100 : 150; // Mobile optimization
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // Random size
+        const sizes = ['small', 'medium', 'large'];
+        const sizeWeights = [0.7, 0.25, 0.05]; // Most stars are small
+        const randomSize = Math.random();
+        let size;
+        if (randomSize < sizeWeights[0]) size = sizes[0];
+        else if (randomSize < sizeWeights[0] + sizeWeights[1]) size = sizes[1];
+        else size = sizes[2];
+        
+        star.classList.add(size);
+        
+        // Random position
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        
+        // Random animation delay for twinkling
+        star.style.animationDelay = Math.random() * 5 + 's';
+        
+        starfield.appendChild(star);
+      }
+    }
+
+    // Create shooting stars
+    function createShootingStar() {
+      const starfield = document.getElementById('starfield');
+      const shootingStar = document.createElement('div');
+      shootingStar.className = 'shooting-star';
+      
+      // Random starting position (off-screen top-left area)
+      const startX = Math.random() * window.innerWidth * 0.3;
+      const startY = Math.random() * window.innerHeight * 0.3;
+      
+      shootingStar.style.left = startX + 'px';
+      shootingStar.style.top = startY + 'px';
+      
+      starfield.appendChild(shootingStar);
+      
+      // Remove after animation completes
+      setTimeout(() => {
+        if (shootingStar.parentNode) {
+          shootingStar.parentNode.removeChild(shootingStar);
+        }
+      }, 3000);
+    }
+
+    // Schedule random shooting stars
+    function scheduleShootingStars() {
+      const minDelay = 3000; // 3 seconds
+      const maxDelay = 8000; // 8 seconds
+      const isMobile = window.innerWidth < 768;
+      
+      // Less frequent on mobile for performance
+      const delay = Math.random() * (maxDelay - minDelay) + minDelay;
+      const adjustedDelay = isMobile ? delay * 1.5 : delay;
+      
+      setTimeout(() => {
+        createShootingStar();
+        scheduleShootingStars(); // Schedule the next one
+      }, adjustedDelay);
+    }
+
+    // Create floating particles
+    function createParticleSystem() {
+      const particles = document.getElementById('particles');
+      const particleCount = window.innerWidth < 768 ? 8 : 12; // Mobile optimization
+      
+      setInterval(() => {
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'floating-particle';
+          
+          // Random horizontal position
+          particle.style.left = Math.random() * 100 + '%';
+          
+          // Random animation delay
+          particle.style.animationDelay = Math.random() * 2 + 's';
+          
+          // Random color variation
+          const colors = [
+            'rgba(102, 126, 234, 0.6)',
+            'rgba(240, 147, 251, 0.6)',
+            'rgba(16, 243, 212, 0.6)'
+          ];
+          particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+          
+          particles.appendChild(particle);
+          
+          // Remove after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 8000);
+        }
+      }, 2000); // Create new batch every 2 seconds
+    }
+
+    // Enhanced form interactions with visual feedback
+    function enhanceFormInteractions() {
+      const inputs = document.querySelectorAll('input, select, textarea');
+      
+      inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+          // Add glow effect to focused element
+          input.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.15), 0 4px 20px rgba(102, 126, 234, 0.2), 0 0 40px rgba(102, 126, 234, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+        });
+        
+        input.addEventListener('blur', () => {
+          // Reset to normal
+          input.style.boxShadow = '';
+        });
+      });
+    }
+
+    // Cinematic image reveal
+    function showResultWithCinematicEffect() {
+      const resultsDiv = document.getElementById('results');
+      const resultImage = document.getElementById('resultImage');
+      
+      resultsDiv.classList.remove('hidden');
+      resultImage.classList.add('cinematic-reveal');
+      
+      // Add text glow to gradient text
+      const gradientText = document.querySelector('.gradient-text');
+      if (gradientText) {
+        gradientText.classList.add('text-glow');
+      }
+    }
+
+    // Initialize all effects on page load
+    window.addEventListener('load', () => {
+      createStarfield();
+      scheduleShootingStars();
+      createParticleSystem();
+      enhanceFormInteractions();
+    });
 
     // Neural network visualization
     function createNeuralNetwork() {
@@ -805,7 +1303,7 @@ export function demoHtml({ baseUrl }) {
         
         setTimeout(() => {
           document.getElementById('loading').classList.add('hidden');
-          document.getElementById('results').classList.remove('hidden');
+          showResultWithCinematicEffect();
           document.getElementById('resultImage').src = '/' + generateData.imagePath;
           document.getElementById('pdfLink').href = '/' + generateData.pdfPath;
           
@@ -838,10 +1336,76 @@ export function demoHtml({ baseUrl }) {
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('initialMessage').classList.remove('hidden');
     }
+
+    // ENHANCED VISUAL EFFECTS - DRAMATIC STARFIELD + SHOOTING STARS
+    window.addEventListener('load', function() {
+      // Create starfield container
+      let starfield = document.getElementById('starfield');
+      if (!starfield) {
+        starfield = document.createElement('div');
+        starfield.id = 'starfield';
+        starfield.style.position = 'fixed';
+        starfield.style.top = '0';
+        starfield.style.left = '0';
+        starfield.style.width = '100%';
+        starfield.style.height = '100%';
+        starfield.style.pointerEvents = 'none';
+        starfield.style.zIndex = '0';
+        document.body.appendChild(starfield);
+      }
+
+      // Add enhanced CSS
+      const style = document.createElement('style');
+      style.textContent = '
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.3); }
+        }
+        @keyframes shootingStar {
+          0% { opacity: 0; transform: translateX(0) translateY(0); }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { opacity: 0; transform: translateX(300px) translateY(150px); }
+        }
+        .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+        .shooting-star { position: absolute; width: 6px; height: 6px; background: linear-gradient(45deg, #fff, #667eea); border-radius: 50%; animation: shootingStar 3s linear infinite; }
+        .shooting-star::before { content: ""; position: absolute; top: 50%; left: 50%; width: 60px; height: 2px; background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.8), transparent); transform: translate(-50%, -50%) rotate(33deg); }
+      ';
+      document.head.appendChild(style);
+
+      // Create 150 larger, brighter stars
+      for (let i = 0; i < 150; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 4 + 2; // Larger stars (2-6px)
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 5 + 's';
+        star.style.boxShadow = '0 0 ' + (size * 2) + 'px #fff';
+        starfield.appendChild(star);
+      }
+
+      // Add shooting stars every 4 seconds
+      setInterval(() => {
+        const shootingStar = document.createElement('div');
+        shootingStar.className = 'shooting-star';
+        shootingStar.style.left = Math.random() * 30 + '%';
+        shootingStar.style.top = Math.random() * 30 + '%';
+        shootingStar.style.boxShadow = '0 0 10px #667eea';
+        starfield.appendChild(shootingStar);
+        
+        setTimeout(() => {
+          if (shootingStar.parentNode) {
+            shootingStar.parentNode.removeChild(shootingStar);
+          }
+        }, 3000);
+      }, 4000);
+
+      console.log('✨ Enhanced starfield with', starfield.children.length, 'stars loaded!');
+    });
   </script>
 </body>
 </html>`;
-}console.log('Visual effects loaded - Wed Aug 13 15:53:59 EDT 2025');
-// VISUAL EFFECTS REBUILD Wed Aug 13 16:12:22 EDT 2025
-
-// FORCE DEPLOY Thu Aug 14 00:13:59 EDT 2025
+}

@@ -43,6 +43,11 @@ app.use('/api', createRouter());
 // Demo page
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  // Disable caching for the root HTML to ensure latest UI ships
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
   res.send(demoHtml({ baseUrl: process.env.BASE_URL || `http://localhost:${process.env.PORT || 8080}` }));
 });
 
@@ -50,4 +55,3 @@ const port = Number(process.env.PORT || 8080);
 app.listen(port, () => {
   logger.info(`Soulmate Sketch backend running on http://localhost:${port}`);
 });
-// Force rebuild Wed Aug 13 15:51:22 EDT 2025
