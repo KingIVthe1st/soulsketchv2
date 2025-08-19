@@ -1160,7 +1160,7 @@ export function demoHtml({ baseUrl }) {
     window.addEventListener('load', () => {
       createStarfield();
       scheduleShootingStars();
-      createParticleSystem();
+      // createParticleSystem(); // Disabled to stop falling particles
       enhanceFormInteractions();
     });
 
