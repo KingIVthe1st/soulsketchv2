@@ -47,3 +47,5 @@ npm start
 - SQLite database
 - Vanilla JavaScript frontend
 - Modern CSS with animations
+
+

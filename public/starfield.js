@@ -50,3 +50,56 @@
     createStarfield();
   }
 })();
+
+// Starfield Effect - External JS File
+(function() {
+    function createStarfield() {
+        // Create starfield container
+        const starfield = document.createElement('div');
+        starfield.id = 'starfield';
+        starfield.style.position = 'fixed';
+        starfield.style.top = '0';
+        starfield.style.left = '0';
+        starfield.style.width = '100%';
+        starfield.style.height = '100%';
+        starfield.style.pointerEvents = 'none';
+        starfield.style.zIndex = '0';
+        document.body.appendChild(starfield);
+
+        // Add CSS for animations
+        const style = document.createElement('style');
+        style.textContent = `
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+        `;
+        document.head.appendChild(style);
+
+        // Create 120 stars
+        for (let i = 0; i < 120; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = (Math.random() * 3 + 1) + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            star.style.boxShadow = '0 0 6px #fff';
+            starfield.appendChild(star);
+        }
+    }
+
+    // Initialize when page loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', createStarfield);
+    } else {
+        createStarfield();
+    }
+})();

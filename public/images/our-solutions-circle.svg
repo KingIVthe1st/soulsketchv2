@@ -1,0 +1,10 @@
+<svg width="201" height="201" viewBox="0 0 201 201" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100.5" cy="100.5" r="98" fill="none" stroke="white" stroke-width="2"/>
+  <defs>
+    <path id="textcircle" d="M100.5,100.5 m -80,0 a 80,80 0 1,1 160,0 a 80,80 0 1,1 -160,0"/>
+  </defs>
+  <text fill="white" font-family="Manrope, Arial, sans-serif" font-size="18" letter-spacing="1.5">
+    <textPath href="#textcircle" startOffset="0%">ORDER YOUR SKETCH • ORDER YOUR SKETCH • </textPath>
+  </text>
+</svg>
+

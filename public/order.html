@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="zxx">
+  <head>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1"
+    />
+    <meta
+      name="description"
+      content="Start your sketch with our 7‑step frontend demo. Save progress locally and see a sample upon completion."
+    />
+    <meta name="keywords" content="" />
+    <meta name="author" content="RW2DESIGN PRIVATE LIMITED" />
+    <!-- Page Title -->
+    <title>Start Your Sketch — Sketch My Soulmate (Demo)</title>
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.png" />
+    <!-- Google Fonts Css-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Manrope:wght@200..800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Css -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <!-- SlickNav Css -->
+    <link href="css/slicknav.min.css" rel="stylesheet" />
+    <!-- Swiper Css -->
+    <link rel="stylesheet" href="css/swiper-bundle.min.css" />
+    <!-- Font Awesome Icon Css-->
+    <link href="css/all.min.css" rel="stylesheet" media="screen" />
+    <!-- Animated Css -->
+    <link href="css/animate.css" rel="stylesheet" />
+    <!-- Magnific Popup Core Css File -->
+    <link rel="stylesheet" href="css/magnific-popup.css" />
+    <!-- Mouse Cursor Css File -->
+    <link rel="stylesheet" href="css/mousecursor.css" />
+    <!-- Main Custom Css -->
+    <link href="css/custom.css" rel="stylesheet" media="screen" />
+  </head>
+  <body>
+    <!-- Preloader Start -->
+    <div class="preloader">
+      <div class="loading-container">
+        <div class="loading"></div>
+        <div id="loading-icon"><img src="images/loader.svg" alt="" /></div>
+      </div>
+    </div>
+    <!-- Preloader End -->
+
+    <!-- Header Start -->
+    <header class="main-header bg-section">
+      <div class="header-sticky">
+        <nav class="navbar navbar-expand-lg">
+          <div class="container-fluid">
+            <!-- Logo Start -->
+            <a class="navbar-brand" href="index.html">
+              <img
+                src="images/logo.svg"
+                alt="Sketch My Soulmate Logo"
+                style="width: 100px; height: 50px"
+              />
+            </a>
+            <!-- Logo End -->
+
+            <div>
+              <a href="order.html" class="btn-default">Home</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <!-- Header End -->
+
+    <!-- Order Wizard Start -->
+    <div class="contact-map-form" style="padding: 40px 0px">
+      <div class="container">
+        <div class="row section-row">
+          <div class="col-lg-10 offset-lg-1">
+            <div class="order-progress wow fadeInUp" data-wow-delay="0.1s">
+              <div id="stepLabel">Step 1 of 6 — About you</div>
+              <div
+                class="progress"
+                role="progressbar"
+                aria-valuemin="1"
+                aria-valuemax="6"
+                aria-valuenow="1"
+              >
+                <div
+                  id="progressBar"
+                  class="progress-bar"
+                  style="width: 16.67%"
+                ></div>
+              </div>
+            </div>
+
+            <form id="orderForm" novalidate>
+              <!-- Step 1: About You -->
+              <section
+                id="step1"
+                class="order-step"
+                aria-labelledby="step1_title"
+              >
+                <div class="section-title section-title-center">
+                  <h3 class="wow fadeInUp">Step 1</h3>
+                  <h2
+                    id="step1_title"
+                    class="wow fadeInUp"
+                    data-wow-delay="0.1s"
+                    data-cursor="-opaque"
+                    style="margin: 40px 0px"
+                  >
+                    About <span>you</span>
+                  </h2>
+                </div>
+                <div class="contact-us-form">
+                  <div class="row">
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="firstName"
+                        >First name or nickname</label
+                      >
+                      <input type="text" class="form-control" id="firstName" />
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="email"
+                        >Email <span aria-hidden="true">*</span></label
+                      >
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        required
+                      />
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="pronouns">Pronouns</label>
+                      <select id="pronouns" class="form-control">
+                        <option value="">Select</option>
+                        <option value="she/her">She/Her</option>
+                        <option value="he/him">He/Him</option>
+                        <option value="they/them">They/Them</option>
+                        <option value="self-describe">Self-Describe</option>
+                        <option value="prefer-not">Prefer Not to Say</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="country">Country</label>
+                      <input type="text" class="form-control" id="country" />
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="timezone">Timezone</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="timezone"
+                        aria-describedby="tz_help"
+                      />
+                      <small id="tz_help" class="text-muted"
+                        >Auto-detected; you can edit.</small
+                      >
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="attractedTo"
+                        >Who are you attracted to?</label
+                      >
+                      <select id="attractedTo" class="form-control">
+                        <option value="all-genders">All Genders</option>
+                        <option value="women">Women</option>
+                        <option value="men">Men</option>
+                        <option value="non-binary">Non-Binary</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="ageRange"
+                        >Your age range</label
+                      >
+                      <select id="ageRange" class="form-control">
+                        <option value="">Select</option>
+                        <option value="18-24">18–24</option>
+                        <option value="25-34">25–34</option>
+                        <option value="35-44">35–44</option>
+                        <option value="45-54">45–54</option>
+                        <option value="55+">55+</option>
+                      </select>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-2"
+                    >Why we ask: Helps tailor facial cues and presentation;
+                    email is needed for delivery.</small
+                  >
+                </div>
+                <div class="what-we-btn order-nav" style="margin: 40px 0px">
+                  <div>
+                    <button type="button" class="btn-default next">Next</button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Step 2: Birth & Spiritual Insights -->
+              <section
+                id="step2"
+                class="order-step"
+                aria-labelledby="step2_title"
+                style="display: none"
+              >
+                <div class="section-title section-title-center">
+                  <h3>Step 2</h3>
+                  <h2
+                    id="step2_title"
+                    data-cursor="-opaque"
+                    style="margin: 40px 0px"
+                  >
+                    Birth & <span>Spiritual</span> Insights
+                  </h2>
+                </div>
+                <div class="contact-us-form">
+                  <div class="row">
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="birthDate"
+                        >Date of birth</label
+                      >
+                      <input type="date" class="form-control" id="birthDate" />
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="birthTime"
+                        >Time of birth</label
+                      >
+                      <input type="time" class="form-control" id="birthTime" />
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="birthCity"
+                        >Birth city</label
+                      >
+                      <input type="text" class="form-control" id="birthCity" />
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="zodiac"
+                        >Derived zodiac</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="zodiac"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="form-group col-md-6 mb-4 d-flex align-items-center"
+                  >
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="includeReading"
+                      />
+                      <label class="form-check-label" for="includeReading"
+                        >Include spiritual reading</label
+                      >
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-2"
+                    >Why we ask: Inspires the energy palette and optional
+                    reading.</small
+                  >
+                </div>
+                <div class="what-we-btn order-nav" style="margin: 40px 0px">
+                  <button type="button" class="btn-default back">Back</button>
+                  <button type="button" class="btn-default skip">Skip</button>
+                  <button type="button" class="btn-default next">Next</button>
+                </div>
+              </section>
+
+              <!-- Step 3: Appearance Resonance -->
+              <section
+                id="step3"
+                class="order-step"
+                aria-labelledby="step3_title"
+                style="display: none"
+              >
+                <div class="section-title section-title-center">
+                  <h3>Step 3</h3>
+                  <h2
+                    id="step3_title"
+                    data-cursor="-opaque"
+                    style="margin: 40px 0px"
+                  >
+                    Appearance <span>Resonance</span>
+                  </h2>
+                </div>
+                <div class="contact-us-form">
+                  <div class="row">
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="faceShape"
+                        >Face shape</label
+                      >
+                      <select id="faceShape" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="oval">Oval</option>
+                        <option value="heart">Heart</option>
+                        <option value="round">Round</option>
+                        <option value="square">Square</option>
+                        <option value="diamond">Diamond</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="facialHair"
+                        >Facial hair</label
+                      >
+                      <select id="facialHair" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="none">None</option>
+                        <option value="light">Light</option>
+                        <option value="full">Full</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="freckles"
+                        >Freckles/beauty marks</label
+                      >
+                      <select id="freckles" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="none">None</option>
+                        <option value="light">Light</option>
+                        <option value="yes">Yes</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="hairLength"
+                        >Hair length</label
+                      >
+                      <select id="hairLength" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="short">Short</option>
+                        <option value="medium">Medium</option>
+                        <option value="long">Long</option>
+                        <option value="shaved">Shaved</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="hairTexture"
+                        >Hair texture</label
+                      >
+                      <select id="hairTexture" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="straight">Straight</option>
+                        <option value="wavy">Wavy</option>
+                        <option value="curly">Curly</option>
+                        <option value="coily">Coily</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="hairColor"
+                        >Hair color</label
+                      >
+                      <select id="hairColor" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="black">Black</option>
+                        <option value="brown">Brown</option>
+                        <option value="blonde">Blonde</option>
+                        <option value="red">Red</option>
+                        <option value="dyed">Dyed</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="eyeColor">Eye color</label>
+                      <select id="eyeColor" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="hazel">Hazel</option>
+                        <option value="brown">Brown</option>
+                        <option value="gray">Gray</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="eyeShape">Eye shape</label>
+                      <select id="eyeShape" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="almond">Almond</option>
+                        <option value="round">Round</option>
+                        <option value="monolid">Monolid</option>
+                        <option value="hooded">Hooded</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="skinTone">Skin tone</label>
+                      <select id="skinTone" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="very-fair">Very fair</option>
+                        <option value="fair">Fair</option>
+                        <option value="medium">Medium</option>
+                        <option value="tan">Tan</option>
+                        <option value="deep">Deep</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="apparentAge"
+                        >Age appearance</label
+                      >
+                      <select id="apparentAge" class="form-control">
+                        <option value="no-preference">No preference</option>
+                        <option value="20s">20s</option>
+                        <option value="30s">30s</option>
+                        <option value="40s">40s</option>
+                        <option value="50+">50+</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-8 mb-4">
+                      <label class="form-label" for="culturalResonance"
+                        >Cultural resonance (optional)</label
+                      >
+                      <input
+                        type="text"
+                        id="culturalResonance"
+                        class="form-control"
+                      />
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-2"
+                    >Why we ask: Guides features while staying respectful and
+                    non-prescriptive.</small
+                  >
+                </div>
+                <div class="what-we-btn order-nav" style="margin: 40px 0px">
+                  <button type="button" class="btn-default back">Back</button>
+                  <button type="button" class="btn-default skip">Skip</button>
+                  <button type="button" class="btn-default next">Next</button>
+                </div>
+              </section>
+
+              <!-- Step 4: Personality & Lifestyle -->
+              <section
+                id="step4"
+                class="order-step"
+                aria-labelledby="step4_title"
+                style="display: none"
+              >
+                <div class="section-title section-title-center">
+                  <h3>Step 4</h3>
+                  <h2
+                    id="step4_title"
+                    data-cursor="-opaque"
+                    style="margin: 40px 0px"
+                  >
+                    Personality & <span>Lifestyle</span>
+                  </h2>
+                </div>
+                <div class="contact-us-form">
+                  <div class="row">
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="slider_introvert"
+                        >Introverted ↔ Extroverted</label
+                      >
+                      <input
+                        id="slider_introvert"
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        class="form-range"
+                      />
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="slider_grounded"
+                        >Grounded ↔ Adventurous</label
+                      >
+                      <input
+                        id="slider_grounded"
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        class="form-range"
+                      />
+                    </div>
+                    <div class="form-group col-md-4 mb-4">
+                      <label class="form-label" for="slider_analytical"
+                        >Analytical ↔ Creative</label
+                      >
+                      <input
+                        id="slider_analytical"
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        class="form-range"
+                      />
+                    </div>
+                    <div class="form-group col-md-12 mb-4">
+                      <label class="form-label">Love languages</label>
+                      <div class="row">
+                        <div class="col-md-4">
+                          <label for="ll_words" class="form-label">Words</label
+                          ><input
+                            id="ll_words"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            class="form-range"
+                          />
+                        </div>
+                        <div class="col-md-4">
+                          <label for="ll_qualityTime" class="form-label"
+                            >Quality time</label
+                          ><input
+                            id="ll_qualityTime"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            class="form-range"
+                          />
+                        </div>
+                        <div class="col-md-4">
+                          <label for="ll_gifts" class="form-label">Gifts</label
+                          ><input
+                            id="ll_gifts"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            class="form-range"
+                          />
+                        </div>
+                        <div class="col-md-4">
+                          <label for="ll_acts" class="form-label">Acts</label
+                          ><input
+                            id="ll_acts"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            class="form-range"
+                          />
+                        </div>
+                        <div class="col-md-4">
+                          <label for="ll_touch" class="form-label">Touch</label
+                          ><input
+                            id="ll_touch"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            class="form-range"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group col-md-12 mb-4">
+                      <label class="form-label">Values (choose any)</label>
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="family"
+                              id="val_family"
+                            /><label class="form-check-label" for="val_family"
+                              >Family</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="growth"
+                              id="val_growth"
+                            /><label class="form-check-label" for="val_growth"
+                              >Growth</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="stability"
+                              id="val_stability"
+                            /><label
+                              class="form-check-label"
+                              for="val_stability"
+                              >Stability</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="kindness"
+                              id="val_kindness"
+                            /><label class="form-check-label" for="val_kindness"
+                              >Kindness</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="spirituality"
+                              id="val_spirituality"
+                            /><label
+                              class="form-check-label"
+                              for="val_spirituality"
+                              >Spirituality</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="ambition"
+                              id="val_ambition"
+                            /><label class="form-check-label" for="val_ambition"
+                              >Ambition</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="humor"
+                              id="val_humor"
+                            /><label class="form-check-label" for="val_humor"
+                              >Humor</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="health"
+                              id="val_health"
+                            /><label class="form-check-label" for="val_health"
+                              >Health</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="curiosity"
+                              id="val_curiosity"
+                            /><label
+                              class="form-check-label"
+                              for="val_curiosity"
+                              >Curiosity</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="service"
+                              id="val_service"
+                            /><label class="form-check-label" for="val_service"
+                              >Service</label
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-2"
+                    >Why we ask: Shapes expression/vibe and line style
+                    choices.</small
+                  >
+                </div>
+                <div class="what-we-btn order-nav" style="margin: 40px 0px">
+                  <button type="button" class="btn-default back">Back</button>
+                  <button type="button" class="btn-default skip">Skip</button>
+                  <button type="button" class="btn-default next">Next</button>
+                </div>
+              </section>
+
+              <!-- Step 5: Relationship Goals & Boundaries -->
+              <section
+                id="step5"
+                class="order-step"
+                aria-labelledby="step5_title"
+                style="display: none"
+              >
+                <div class="section-title section-title-center">
+                  <h3>Step 5</h3>
+                  <h2
+                    id="step5_title"
+                    data-cursor="-opaque"
+                    style="margin: 40px 0px"
+                  >
+                    Relationship <span>Goals</span> & Boundaries
+                  </h2>
+                </div>
+                <div class="contact-us-form">
+                  <div class="row">
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="lookingFor"
+                        >Looking for</label
+                      >
+                      <select id="lookingFor" class="form-control">
+                        <option value="serious">Serious relationship</option>
+                        <option value="companionship">Companionship</option>
+                        <option value="marriage-minded">Marriage‑minded</option>
+                        <option value="exploring">Still exploring</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-12 mb-4">
+                      <label class="form-label">Must‑haves</label>
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="wants-kids"
+                              id="mh_kids"
+                            /><label class="form-check-label" for="mh_kids"
+                              >Wants Kids</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="pet-friendly"
+                              id="mh_pet"
+                            /><label class="form-check-label" for="mh_pet"
+                              >Pet‑Friendly</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="non-smoker"
+                              id="mh_smoke"
+                            /><label class="form-check-label" for="mh_smoke"
+                              >Non‑Smoker</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="active-lifestyle"
+                              id="mh_active"
+                            /><label class="form-check-label" for="mh_active"
+                              >Active Lifestyle</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="spiritual-openness"
+                              id="mh_spirit"
+                            /><label class="form-check-label" for="mh_spirit"
+                              >Spiritual Openness</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="career-driven"
+                              id="mh_career"
+                            /><label class="form-check-label" for="mh_career"
+                              >Career‑Driven</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="family-oriented"
+                              id="mh_family"
+                            /><label class="form-check-label" for="mh_family"
+                              >Family‑Oriented</label
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group col-md-12 mb-4">
+                      <label class="form-label" for="dealBreakers"
+                        >Deal‑breakers (optional)</label
+                      >
+                      <textarea
+                        id="dealBreakers"
+                        rows="3"
+                        class="form-control"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-2"
+                    >Why we ask: Calibrates intent and maturity cues in
+                    depiction and reading.</small
+                  >
+                </div>
+                <div class="what-we-btn order-nav" style="margin: 40px 0px">
+                  <button type="button" class="btn-default back">Back</button>
+                  <button type="button" class="btn-default skip">Skip</button>
+                  <button type="button" class="btn-default next">Next</button>
+                </div>
+              </section>
+
+              <!-- Step 6: Sketch & Delivery Preferences -->
+              <section
+                id="step6"
+                class="order-step"
+                aria-labelledby="step6_title"
+                style="display: none"
+              >
+                <div class="section-title section-title-center">
+                  <h3>Step 6</h3>
+                  <h2
+                    id="step6_title"
+                    data-cursor="-opaque"
+                    style="margin: 40px 0px"
+                  >
+                    Sketch & <span>Delivery</span> Preferences
+                  </h2>
+                </div>
+                <div class="contact-us-form">
+                  <div class="row">
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="artStyle">Art style</label>
+                      <select id="artStyle" class="form-control">
+                        <option value="pencil-realistic">
+                          Pencil Realistic
+                        </option>
+                        <option value="semi-realistic-color">
+                          Semi‑Realistic Color
+                        </option>
+                        <option value="painterly">Painterly</option>
+                        <option value="anime-manga">Anime/Manga</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-6 mb-4">
+                      <label class="form-label" for="auraPalette"
+                        >Aura Palette</label
+                      >
+                      <select id="auraPalette" class="form-control">
+                        <option value="warm">Warm</option>
+                        <option value="cool">Cool</option>
+                        <option value="cosmic">Cosmic</option>
+                        <option value="golden">Golden</option>
+                        <option value="natural">Natural</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-12 mb-4">
+                      <label class="form-label">Add‑ons</label>
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="addon_color"
+                            /><label class="form-check-label" for="addon_color"
+                              >Color Upgrade</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="addon_reading"
+                            /><label
+                              class="form-check-label"
+                              for="addon_reading"
+                              >Aura Reading</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="addon_compat"
+                            /><label class="form-check-label" for="addon_compat"
+                              >Compatibility Snapshot</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="addon_rush"
+                            /><label class="form-check-label" for="addon_rush"
+                              >12‑Hour Rush</label
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group col-md-12 mb-4">
+                      <label class="form-label">Format</label>
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="fmt_jpg"
+                              checked
+                            /><label class="form-check-label" for="fmt_jpg"
+                              >JPEG</label
+                            >
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              id="fmt_pdf"
+                            /><label class="form-check-label" for="fmt_pdf"
+                              >PDF (Print‑Ready)</label
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <small class="text-muted d-block mt-2"
+                    >Why we ask: Ensures the output matches your preferred
+                    aesthetic and timing.</small
+                  >
+                </div>
+                <div class="what-we-btn order-nav" style="margin: 40px 0px">
+                  <button type="button" class="btn-default back">Back</button>
+                  <button id="reserveBtn" type="submit" class="btn-default">
+                    Reserve your sketch
+                  </button>
+                </div>
+              </section>
+            </form>
+
+            <div
+              id="orderComplete"
+              class="wow fadeInUp"
+              data-wow-delay="0.1s"
+              style="display: none"
+            >
+              <div class="section-title section-title-center">
+                <h3>All done</h3>
+                <h2 data-cursor="-opaque" style="margin: 40px 0px 0px">
+                  You're <span>all set!</span>
+                </h2>
+              </div>
+              <p
+                style="
+                  display: flex;
+                  justify-content: center;
+                  margin: 0px 0px 40px;
+                "
+              >
+                Your preferences are saved. Since ordering isn’t open yet, enjoy
+                a sample sketch and we’ll notify you when we launch.
+              </p>
+              <div class="what-we-btn order-complete-nav">
+                <a
+                  href="images/home/pencil-generated.jpg"
+                  class="btn-default"
+                  download
+                  >Download sample sketch</a
+                >
+                <a id="mailtoDraft" href="#" class="btn-default"
+                  >Subscribe for launch</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Order Wizard End -->
+
+    <!-- Footer Start -->
+    <footer class="main-footer bg-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Footer Header Start -->
+            <div class="footer-header">
+              <!-- Section Title Start -->
+              <div class="section-title">
+                <h2 data-cursor="-opaque">
+                  Start your <span>soulmate sketch</span> today.
+                </h2>
+              </div>
+              <!-- Section Title End -->
+
+              <!-- Our Solutions CIrcle Start -->
+              <div class="our-solutions-circle">
+                <a href="order.html">
+                  <figure>
+                    <img src="images/our-solutions-circle.svg" alt="" />
+                  </figure>
+
+                  <div class="agency-circle-arrow">
+                    <img src="images/arrow-white.svg" alt="" />
+                  </div>
+                </a>
+              </div>
+              <!-- Our Solutions CIrcle End -->
+            </div>
+            <!-- Footer Header End -->
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <!-- About Footer Start -->
+            <div class="about-footer">
+              <!-- Footer Logo Start -->
+              <div class="footer-logo">
+                <img
+                  src="images/footer-logo.svg"
+                  alt="Sketch My Soulmate Footer Logo"
+                  style="width: 183px; height: 50px"
+                />
+              </div>
+              <!-- Footer Logo End -->
+
+              <!-- About Footer Content Start -->
+              <div class="about-footer-content">
+                <p>
+                  Personalized soulmate sketches crafted with AI‑assisted
+                  artistry — delivered to your inbox within 24 hours.
+                </p>
+              </div>
+              <!-- About Footer Content End -->
+
+              <!-- Footer Social Link Start -->
+              <div class="footer-social-links">
+                <ul>
+                  <li>
+                    <a href="index.html#"
+                      ><i class="fa-brands fa-facebook-f"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="index.html#"
+                      ><i class="fa-brands fa-dribbble"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="index.html#"
+                      ><i class="fa-brands fa-instagram"></i
+                    ></a>
+                  </li>
+                  <li>
+                    <a href="index.html#"
+                      ><i class="fa-brands fa-linkedin-in"></i
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+              <!-- Footer Social Link End -->
+            </div>
+            <!-- About Footer End -->
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <!-- Footer Links Start -->
+            <div class="footer-links footer-service-links">
+              <h3>Explore</h3>
+              <ul>
+                <li><a href="how-it-works.html">How It Works</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="reviews.html">Reviews</a></li>
+              </ul>
+            </div>
+            <!-- Footer Links End -->
+          </div>
+
+          <div class="col-lg-3 col-md-5">
+            <!-- Footer Links Start -->
+            <div class="footer-links">
+              <h3>Contact</h3>
+
+              <!-- Footer Contact Item Start -->
+              <div class="footer-contact-item">
+                <p>support@soulmatesketch.com</p>
+              </div>
+              <!-- Footer Contact Item End -->
+
+              <!-- Footer Contact Item Start -->
+              <div class="footer-contact-item">
+                <p>Need any help?</p>
+                <h3><a href="faq.html">Visit FAQ</a></h3>
+              </div>
+              <!-- Footer Contact Item End -->
+            </div>
+            <!-- Footer Links End -->
+          </div>
+
+          <div class="col-lg-3 col-md-7">
+            <!-- Footer Newsletter Start -->
+            <div class="footer-links">
+              <h3>Subscribe To Newsletter</h3>
+              <p>
+                Subscribe to our newsletter for the latest updates, exclusive
+                content.
+              </p>
+
+              <!-- Footer Newsletter Form Start -->
+              <div class="footer-newsletter-form">
+                <form id="newslettersForm" action="index.html#" method="POST">
+                  <div class="form-group">
+                    <input
+                      type="email"
+                      name="mail"
+                      class="form-control"
+                      id="mail"
+                      placeholder="Email Address *"
+                      required
+                    />
+                    <button type="submit" class="btn-default">
+                      <img src="images/arrow-white.svg" alt="" />
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <!-- Footer Newsletter Form End -->
+            </div>
+            <!-- Footer Newsletter End -->
+          </div>
+
+          <div class="col-lg-12">
+            <!-- Footer Copyright Text Start -->
+            <div class="footer-copyright-text">
+              <p>Copyright © 2025 All Rights Reserved.</p>
+            </div>
+            <!-- Footer Copyright Text End -->
+          </div>
+
+          <div class="col-lg-12">
+            <div class="footer-disclaimer-text">
+              <p>Sketch My Soulmate is for entertainment and inspiration.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-12">
+            <!-- Footer Brand Text Start -->
+            <div class="footer-nextmind-text">
+              <h2>Sketch My Soulmate.</h2>
+            </div>
+            <!-- Footer Brand Text End -->
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Footer End -->
+
+    <!-- Jquery Library File -->
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap js file -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Validator js file -->
+    <script src="js/validator.min.js"></script>
+    <!-- SlickNav js file -->
+    <script src="js/jquery.slicknav.js"></script>
+    <!-- Swiper js file -->
+    <script src="js/swiper-bundle.min.js"></script>
+    <!-- Counter js file -->
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <!-- Magnific js file -->
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <!-- Parallax js -->
+    <script src="js/parallaxie.js"></script>
+    <!-- MagicCursor js file -->
+    <script src="js/gsap.min.js"></script>
+    <script src="js/magiccursor.js"></script>
+    <!-- Text Effect js file -->
+    <script src="js/SplitText.js"></script>
+    <script src="js/ScrollTrigger.min.js"></script>
+    <!-- SmoothScroll -->
+    <script src="js/SmoothScroll.js"></script>
+    <!-- YTPlayer js File -->
+    <script src="js/jquery.mb.YTPlayer.min.js"></script>
+    <!-- Wow js file -->
+    <script src="js/wow.min.js"></script>
+    <!-- Main Custom js file -->
+    <script src="js/function.js"></script>
+    <script>
+      (function () {
+        const defaultState = {
+          user: {
+            firstName: "",
+            email: "",
+            pronouns: "",
+            country: "",
+            timezone: "",
+            attractedTo: "all-genders",
+            ageRange: "",
+          },
+          birth: {
+            date: "",
+            time: "",
+            city: "",
+            zodiac: "",
+            includeSpiritualReading: false,
+          },
+          appearance: {
+            faceShape: "no-preference",
+            facialHair: "no-preference",
+            freckles: "no-preference",
+            hairLength: "no-preference",
+            hairTexture: "no-preference",
+            hairColor: "no-preference",
+            eyeColor: "no-preference",
+            eyeShape: "no-preference",
+            skinTone: "no-preference",
+            apparentAge: "no-preference",
+            culturalResonance: "",
+          },
+          personality: {
+            introvertExtrovert: 50,
+            groundedAdventurous: 50,
+            analyticalCreative: 50,
+            values: [],
+            loveLanguages: {
+              words: 20,
+              qualityTime: 20,
+              gifts: 20,
+              acts: 20,
+              touch: 20,
+            },
+          },
+          relationship: {
+            lookingFor: "serious",
+            mustHaves: [],
+            dealBreakers: "",
+          },
+          preferences: {
+            artStyle: "pencil-realistic",
+            auraPalette: "warm",
+            addons: {
+              colorUpgrade: false,
+              reading: false,
+              compatibility: false,
+              rush12h: false,
+            },
+            formats: { jpg: true, pdf: false },
+          },
+        };
+
+        let state = defaultState;
+        let currentStep = 1;
+
+        // Cache DOM
+        const stepSections = Array.from(
+          document.querySelectorAll(".order-step")
+        );
+        const progressBar = document.getElementById("progressBar");
+        const stepLabel = document.getElementById("stepLabel");
+
+        const orderForm = document.getElementById("orderForm");
+        const orderComplete = document.getElementById("orderComplete");
+        const mailtoDraft = document.getElementById("mailtoDraft");
+
+        // Init timezone if empty
+        try {
+          if (!state.user.timezone) {
+            state.user.timezone =
+              Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+          }
+        } catch (e) {}
+
+        // Hydrate inputs from state
+        syncStateToForm();
+        goToStep(currentStep);
+
+        // Input listeners (delegate simple ones)
+        orderForm.addEventListener("input", handleInputChange, true);
+        orderForm.addEventListener("change", handleInputChange, true);
+
+        // Nav buttons
+        orderForm.addEventListener("click", function (e) {
+          const t = e.target;
+          if (t.classList.contains("next")) {
+            e.preventDefault();
+            if (!validateCurrentStep()) return;
+            goToStep(Math.min(6, currentStep + 1));
+          }
+          if (t.classList.contains("back")) {
+            e.preventDefault();
+            goToStep(Math.max(1, currentStep - 1));
+          }
+          if (t.classList.contains("skip")) {
+            e.preventDefault();
+            goToStep(Math.min(6, currentStep + 1));
+          }
+        });
+
+        // Submit (reserve)
+        orderForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          if (!validateCurrentStep(true)) return;
+
+          showComplete();
+        });
+
+        function handleInputChange(e) {
+          const id = e.target.id;
+          const el = e.target;
+          // Map inputs to state
+          switch (id) {
+            // Step 1
+            case "firstName":
+              state.user.firstName = el.value || "";
+              break;
+            case "email":
+              state.user.email = el.value || "";
+              break;
+            case "pronouns":
+              state.user.pronouns = el.value || "";
+              break;
+            case "country":
+              state.user.country = el.value || "";
+              break;
+            case "timezone":
+              state.user.timezone = el.value || "";
+              break;
+            case "attractedTo":
+              state.user.attractedTo = el.value || "all-genders";
+              break;
+            case "ageRange":
+              state.user.ageRange = el.value || "";
+              break;
+            // Step 2
+            case "birthDate":
+              state.birth.date = el.value || "";
+              deriveZodiac();
+              break;
+            case "birthTime":
+              state.birth.time = el.value || "";
+              break;
+            case "birthCity":
+              state.birth.city = el.value || "";
+              break;
+            case "zodiac":
+              state.birth.zodiac = el.value || "";
+              break;
+            case "includeReading":
+              state.birth.includeSpiritualReading = !!el.checked;
+              break;
+            // Step 3
+            case "faceShape":
+              state.appearance.faceShape = el.value;
+              break;
+            case "facialHair":
+              state.appearance.facialHair = el.value;
+              break;
+            case "freckles":
+              state.appearance.freckles = el.value;
+              break;
+            case "hairLength":
+              state.appearance.hairLength = el.value;
+              break;
+            case "hairTexture":
+              state.appearance.hairTexture = el.value;
+              break;
+            case "hairColor":
+              state.appearance.hairColor = el.value;
+              break;
+            case "eyeColor":
+              state.appearance.eyeColor = el.value;
+              break;
+            case "eyeShape":
+              state.appearance.eyeShape = el.value;
+              break;
+            case "skinTone":
+              state.appearance.skinTone = el.value;
+              break;
+            case "apparentAge":
+              state.appearance.apparentAge = el.value;
+              break;
+            case "culturalResonance":
+              state.appearance.culturalResonance = el.value || "";
+              break;
+            // Step 4
+            case "slider_introvert":
+              state.personality.introvertExtrovert = parseInt(
+                el.value || "50",
+                10
+              );
+              break;
+            case "slider_grounded":
+              state.personality.groundedAdventurous = parseInt(
+                el.value || "50",
+                10
+              );
+              break;
+            case "slider_analytical":
+              state.personality.analyticalCreative = parseInt(
+                el.value || "50",
+                10
+              );
+              break;
+            case "ll_words":
+              state.personality.loveLanguages.words = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            case "ll_qualityTime":
+              state.personality.loveLanguages.qualityTime = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            case "ll_gifts":
+              state.personality.loveLanguages.gifts = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            case "ll_acts":
+              state.personality.loveLanguages.acts = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            case "ll_touch":
+              state.personality.loveLanguages.touch = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            // Step 5 handled by checkbox listeners below
+            case "lookingFor":
+              state.relationship.lookingFor = el.value;
+              break;
+            case "dealBreakers":
+              state.relationship.dealBreakers = el.value || "";
+              break;
+            // Step 6
+            case "artStyle":
+              state.preferences.artStyle = el.value;
+              break;
+            case "auraPalette":
+              state.preferences.auraPalette = el.value;
+              break;
+            case "addon_color":
+              state.preferences.addons.colorUpgrade = !!el.checked;
+              break;
+            case "addon_reading":
+              state.preferences.addons.reading = !!el.checked;
+              break;
+            case "addon_compat":
+              state.preferences.addons.compatibility = !!el.checked;
+              break;
+            case "addon_rush":
+              state.preferences.addons.rush12h = !!el.checked;
+              break;
+            case "fmt_jpg":
+              state.preferences.formats.jpg = !!el.checked;
+              break;
+            case "fmt_pdf":
+              state.preferences.formats.pdf = !!el.checked;
+              break;
+          }
+
+          // Step 4 values multi-select (checkboxes)
+          if (id && id.startsWith("val_")) {
+            const value = el.value;
+            const list = new Set(state.personality.values);
+            if (el.checked) list.add(value);
+            else list.delete(value);
+            state.personality.values = Array.from(list);
+          }
+
+          // Step 5 must-haves
+          if (
+            [
+              "mh_kids",
+              "mh_pet",
+              "mh_smoke",
+              "mh_active",
+              "mh_spirit",
+              "mh_career",
+              "mh_family",
+            ].includes(id)
+          ) {
+            const mhMap = {
+              mh_kids: "non-empty:wants-kids",
+              mh_pet: "non-empty:pet-friendly",
+              mh_smoke: "non-empty:non-smoker",
+              mh_active: "non-empty:active-lifestyle",
+              mh_spirit: "non-empty:spiritual-openness",
+              mh_career: "non-empty:career-driven",
+              mh_family: "non-empty:family-oriented",
+            };
+            const value = mhMap[id].split(":")[1];
+            const set = new Set(state.relationship.mustHaves);
+            if (el.checked) set.add(value);
+            else set.delete(value);
+            state.relationship.mustHaves = Array.from(set);
+          }
+
+          if (id === "birthDate") syncStateToForm(["zodiac"]);
+        }
+
+        function deriveZodiac() {
+          if (!state.birth.date) {
+            state.birth.zodiac = "";
+            return;
+          }
+          try {
+            const d = new Date(state.birth.date + "T12:00:00");
+            const m = d.getUTCMonth() + 1;
+            const day = d.getUTCDate();
+            // Simple western zodiac ranges (approximate)
+            const z =
+              (m == 3 && day >= 21) || (m == 4 && day <= 19)
+                ? "Aries"
+                : (m == 4 && day >= 20) || (m == 5 && day <= 20)
+                ? "Taurus"
+                : (m == 5 && day >= 21) || (m == 6 && day <= 20)
+                ? "Gemini"
+                : (m == 6 && day >= 21) || (m == 7 && day <= 22)
+                ? "Cancer"
+                : (m == 7 && day >= 23) || (m == 8 && day <= 22)
+                ? "Leo"
+                : (m == 8 && day >= 23) || (m == 9 && day <= 22)
+                ? "Virgo"
+                : (m == 9 && day >= 23) || (m == 10 && day <= 22)
+                ? "Libra"
+                : (m == 10 && day >= 23) || (m == 11 && day <= 21)
+                ? "Scorpio"
+                : (m == 11 && day >= 22) || (m == 12 && day <= 21)
+                ? "Sagittarius"
+                : (m == 12 && day >= 22) || (m == 1 && day <= 19)
+                ? "Capricorn"
+                : (m == 1 && day >= 20) || (m == 2 && day <= 18)
+                ? "Aquarius"
+                : "Pisces";
+            state.birth.zodiac = z;
+          } catch (e) {
+            state.birth.zodiac = "";
+          }
+        }
+
+        function goToStep(n) {
+          currentStep = n;
+
+          stepSections.forEach((s, i) => {
+            s.style.display = i + 1 === n ? "block" : "none";
+          });
+          const pct = Math.round((n / 6) * 100);
+          progressBar.style.width = pct + "%";
+          progressBar.parentElement.setAttribute("aria-valuenow", String(n));
+          stepLabel.textContent = `Step ${n} of 6 — ${getStepLabel(n)}`;
+        }
+
+        function getStepLabel(n) {
+          return (
+            [
+              "About you",
+              "Birth & spiritual insights",
+              "Appearance resonance",
+              "Personality & lifestyle",
+              "Relationship goals",
+              "Sketch & delivery preferences",
+            ][n - 1] || ""
+          );
+        }
+
+        function validateCurrentStep(isSubmit) {
+          if (currentStep === 1) {
+            const email = (state.user.email || "").trim();
+            const ok = /.+@.+\..+/.test(email);
+            if (!ok) {
+              alert("Please enter a valid email.");
+              return false;
+            }
+          }
+
+          return true;
+        }
+
+        function syncStateToForm(only) {
+          const ids = new Set(only || []);
+          function setVal(id, val) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.type === "checkbox") el.checked = !!val;
+            else el.value = val == null ? "" : String(val);
+          }
+          setVal("firstName", state.user.firstName);
+          setVal("email", state.user.email);
+          setVal("pronouns", state.user.pronouns);
+          setVal("country", state.user.country);
+          setVal("timezone", state.user.timezone);
+          setVal("attractedTo", state.user.attractedTo);
+          setVal("ageRange", state.user.ageRange);
+          setVal("birthDate", state.birth.date);
+          setVal("birthTime", state.birth.time);
+          setVal("birthCity", state.birth.city);
+          setVal("zodiac", state.birth.zodiac);
+          setVal("includeReading", state.birth.includeSpiritualReading);
+          setVal("faceShape", state.appearance.faceShape);
+          setVal("facialHair", state.appearance.facialHair);
+          setVal("freckles", state.appearance.freckles);
+          setVal("hairLength", state.appearance.hairLength);
+          setVal("hairTexture", state.appearance.hairTexture);
+          setVal("hairColor", state.appearance.hairColor);
+          setVal("eyeColor", state.appearance.eyeColor);
+          setVal("eyeShape", state.appearance.eyeShape);
+          setVal("skinTone", state.appearance.skinTone);
+          setVal("apparentAge", state.appearance.apparentAge);
+          setVal("culturalResonance", state.appearance.culturalResonance);
+          setVal("slider_introvert", state.personality.introvertExtrovert);
+          setVal("slider_grounded", state.personality.groundedAdventurous);
+          setVal("slider_analytical", state.personality.analyticalCreative);
+          setVal("ll_words", state.personality.loveLanguages.words);
+          setVal("ll_qualityTime", state.personality.loveLanguages.qualityTime);
+          setVal("ll_gifts", state.personality.loveLanguages.gifts);
+          setVal("ll_acts", state.personality.loveLanguages.acts);
+          setVal("ll_touch", state.personality.loveLanguages.touch);
+          // values checkboxes
+          [
+            "family",
+            "growth",
+            "stability",
+            "kindness",
+            "spirituality",
+            "ambition",
+            "humor",
+            "health",
+            "curiosity",
+            "service",
+          ].forEach((v) => {
+            const el = document.getElementById("val_" + v);
+            if (el) el.checked = (state.personality.values || []).includes(v);
+          });
+          // must‑haves
+          const mh = new Set(state.relationship.mustHaves || []);
+          const map = {
+            mh_kids: "wants-kids",
+            mh_pet: "pet-friendly",
+            mh_smoke: "non-smoker",
+            mh_active: "active-lifestyle",
+            mh_spirit: "spiritual-openness",
+            mh_career: "career-driven",
+            mh_family: "family-oriented",
+          };
+          Object.keys(map).forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.checked = mh.has(map[id]);
+          });
+          // step 6 formats/addons
+          setVal("artStyle", state.preferences.artStyle);
+          setVal("auraPalette", state.preferences.auraPalette);
+          document.getElementById("addon_color").checked =
+            !!state.preferences.addons.colorUpgrade;
+          document.getElementById("addon_reading").checked =
+            !!state.preferences.addons.reading;
+          document.getElementById("addon_compat").checked =
+            !!state.preferences.addons.compatibility;
+          document.getElementById("addon_rush").checked =
+            !!state.preferences.addons.rush12h;
+          document.getElementById("fmt_jpg").checked =
+            !!state.preferences.formats.jpg;
+          document.getElementById("fmt_pdf").checked =
+            !!state.preferences.formats.pdf;
+        }
+
+        function showComplete() {
+          // Build mailto link
+          try {
+            const subject = encodeURIComponent(
+              "Sketch My Soulmate — Subscribe for launch"
+            );
+            const body = encodeURIComponent(
+              "Draft data (JSON):\n\n" + JSON.stringify(state, null, 2)
+            );
+            mailtoDraft.href =
+              "mailto:support@soulmatesketch.com?subject=" +
+              subject +
+              "&body=" +
+              body;
+          } catch (e) {}
+          orderForm.style.display = "none";
+          orderComplete.style.display = "block";
+        }
+
+        function escapeHtml(s) {
+          return String(s).replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;",
+              }[c])
+          );
+        }
+      })();
+    </script>
+  </body>
+</html>

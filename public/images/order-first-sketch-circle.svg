@@ -1,0 +1,26 @@
+<svg width="172" height="172" viewBox="0 0 172 172" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="86" cy="86" r="78" fill="url(#paint0_linear_70_795)" stroke="#060606" stroke-width="16"/>
+<circle cx="86" cy="86" r="30" fill="white"/>
+<defs>
+  <path id="textcircle" d="M86,86 m -55,0 a 55,55 0 1,1 110,0 a 55,55 0 1,1 -110,0"/>
+  <linearGradient id="paint0_linear_70_795" x1="16.3557" y1="85.906" x2="156" y2="85.9229" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#A93E17"/>
+    <stop offset="1" stop-color="#15399A"/>
+  </linearGradient>
+  <linearGradient id="paint1_linear_70_795" x1="71.0762" y1="85.4954" x2="101" y2="85.4994" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#A93E17"/>
+    <stop offset="1" stop-color="#15399A"/>
+  </linearGradient>
+  <linearGradient id="paint2_linear_70_795" x1="78.266" y1="86.8733" x2="84.539" y2="86.8738" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#A93E17"/>
+    <stop offset="1" stop-color="#15399A"/>
+  </linearGradient>
+  <linearGradient id="paint3_linear_70_795" x1="88.1856" y1="90.964" x2="92.0208" y2="90.9643" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#A93E17"/>
+    <stop offset="1" stop-color="#15399A"/>
+  </linearGradient>
+</defs>
+<text fill="white" font-family="Manrope, Arial, sans-serif" font-size="12" letter-spacing="1.2">
+  <textPath href="#textcircle" startOffset="0%">ORDER FIRST SKETCH • ORDER FIRST SKETCH • </textPath>
+</text>
+</svg>
