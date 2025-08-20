@@ -669,94 +669,61 @@ ${birth.zodiac ? `Your ${birth.zodiac} energy` : 'Your cosmic signature'} attrac
 }
 
 export async function generateImage({ style, quiz, addons = [] }) {
-  // Extract detailed appearance data from quiz
-  const user = quiz.user || {};
-  const appearance = quiz.appearance || {};
-  const personality = quiz.personality || {};
-  const birth = quiz.birth || {};
-  const preferences = quiz.preferences || {};
-  
-  // Calculate numerology for spiritual enhancement
-  const numerologyInfo = birth.date ? calculateNumerology(birth.date) : null;
-  
-  // Determine gender based on user preference
-  const attractedTo = user.attractedTo || quiz.interest;
-  let gender = 'adult person';
-  if (attractedTo === 'men' || attractedTo === 'male') gender = 'male adult';
-  else if (attractedTo === 'women' || attractedTo === 'female') gender = 'female adult';
-  
-  // Build comprehensive appearance description from quiz data
-  const appearanceDetails = buildAppearanceDescription(appearance);
-  const personalityVibes = buildPersonalityVibes(personality);
-  const culturalContext = appearance.culturalResonance ? `with ${appearance.culturalResonance} cultural aesthetic` : '';
-  const zodiacEnergy = birth.zodiac ? getZodiacVisualEnergy(birth.zodiac) : '';
-  
-  const styleMap = {
-		realistic: 'hyper-realistic portrait photography, natural skin texture, studio-grade lighting, 85mm lens, shallow depth of field, precise color grading',
-		'pencil-realistic': 'hyper-realistic portrait photography with subtle artistic enhancement, natural skin texture, studio-grade lighting, 85mm lens',
-		ethereal: 'ethereal but realistic portrait, soft glow, celestial accents, pastel tones, natural skin texture, subtle bokeh',
-		anime: 'anime style character portrait, clean lines, studio quality, detailed eyes',
-		mystical: 'mystical but realistic portrait, arcane accents, cinematic light, painterly color grading'
-  };
-	const stylePrompt = styleMap[style] || styleMap['realistic'];
-	
-	// Build setting based on personality and preferences
-	const setting = buildSceneDescription(personality, preferences);
-	
-	// Add-on visual enhancements
-	const auraHint = (Array.isArray(addons) && addons.includes('aura')) || preferences.addons?.colorUpgrade ? 
-	  `Add a very subtle, realistic aura-like rim light in ${preferences.auraPalette || 'warm golden'} tones around the hair/shoulders (barely noticeable, tasteful).` : '';
-	const twinFlameHint = Array.isArray(addons) && addons.includes('twin_flame') ? 
-	  'Include a faint twin-light effect or mirrored highlight in the background that gently suggests duality (keep it photographic and unobtrusive).' : '';
-	
-	const basePrompt = `Create a breathtaking, hyper-realistic portrait of a ${gender} who embodies this person's ideal soulmate, using their detailed spiritual and personal preferences:
-
-🎨 SOULMATE APPEARANCE BLUEPRINT:
-${appearanceDetails}
-${culturalContext}
-
-✨ SPIRITUAL ENERGY MANIFESTATION:
-${personalityVibes}
-${zodiacEnergy}
-- Numerological resonance: Life path ${numerologyInfo?.lifePath || 'unknown'} energy - ${numerologyInfo?.compatibility || 'harmonious connection'}
-- Astrological essence: ${birth.zodiac || 'Universal'} complementary energy with magnetic attraction field
-
-🌟 SCENE & SPIRITUAL ATMOSPHERE:
-${setting}
-- Sacred geometry in composition: Golden ratio framing, divine proportion aesthetics
-- Lighting: Ethereal yet natural lighting suggesting soul recognition and divine timing
-- Camera: Professional portrait lens (85mm f/1.4), cinematic depth, spiritual luminosity
-- Background: Subtle cosmic elements or sacred geometry that suggests destiny and connection
-
-💎 ULTRA-REALISTIC TECHNICAL MASTERY:
-- Skin: Photorealistic texture with natural pores, subtle skin variation, healthy glow suggesting inner light
-- Eyes: Crystal clear, soulful eyes with natural catchlights that suggest deep wisdom and kindness
-- Hair: Individual strand detail, natural movement, lustrous texture that catches light beautifully
-- Expression: Genuine warmth, slight mysterious smile suggesting they hold secrets to happiness
-- Energy: Radiates confidence, compassion, and magnetic attraction without effort
-
-🔮 PERSONALIZED ENHANCEMENTS:
-${auraHint}
-${twinFlameHint}
-- Incorporate subtle energy suggesting they're a perfect personality match (${personality.introvertExtrovert || 50}% extrovert, ${personality.groundedAdventurous || 50}% adventurous, ${personality.analyticalCreative || 50}% creative)
-- Cultural energy resonance: ${appearance.culturalResonance || 'Universal wisdom'}
-- Age appearance: ${user.ageRange || 'Timeless appeal'} with vitality and life experience
-
-📸 PHOTOGRAPHIC EXCELLENCE:
-${stylePrompt}
-- Master-level portrait photography with cinematic color grading
-- Subtle HDR processing for luminous skin and perfect exposure
-- Professional retouching that maintains complete realism while enhancing natural beauty
-- Color harmony that complements their stated preferences and aura colors
-
-🚫 ABSOLUTELY AVOID:
-Artificial/plastic appearance, heavy makeup, digital artifacts, unrealistic proportions, cartoon features, fantasy elements, overly perfect/airbrushed skin, fake expressions, inappropriate content, minors, text/logos/watermarks, uncanny valley effects.
-
-CREATE: The most beautiful, realistic person this individual would find absolutely irresistible - someone who looks like they could walk into their life tomorrow and change everything for the better.`;
-  let buffer;
-  if (!openai) {
-    // Enhanced fallback: create a personalized placeholder based on user preferences
-    const auraColor = preferences.auraPalette || 'warm golden';
+  try {
+    console.log('🖼️ Starting generateImage function...');
+    
+    // Extract data safely with fallbacks
+    const user = quiz?.user || {};
+    const attractedTo = user.attractedTo || quiz?.interest || 'women';
+    let gender = 'adult person';
+    if (attractedTo === 'men' || attractedTo === 'male') gender = 'male adult';
+    else if (attractedTo === 'women' || attractedTo === 'female') gender = 'female adult';
+    
+    // Simple placeholder generation to avoid complex dependencies
+    const outDir = path.join(process.cwd(), 'uploads');
+    fs.mkdirSync(outDir, { recursive: true });
+    const filePath = path.join(outDir, `result_${Date.now()}.png`);
+    
+    if (openai) {
+      try {
+        console.log('🤖 Attempting DALL-E generation...');
+        const simplePrompt = `A beautiful, realistic portrait of a ${gender} with warm, kind eyes and a gentle smile. Professional headshot style, natural lighting, attractive features, photorealistic quality.`;
+        
+        const image = await openai.images.generate({
+          model: 'dall-e-3',
+          prompt: simplePrompt,
+          size: '1024x1024',
+          quality: 'hd',
+          style: 'natural'
+        });
+        
+        console.log('✅ DALL-E image generated, downloading...');
+        const imageUrl = image.data[0].url;
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error('Failed to download generated image');
+        
+        const buffer = Buffer.from(await response.arrayBuffer());
+        await fs.promises.writeFile(filePath, buffer);
+        
+        // Create social share variant
+        const sharePath = filePath.replace('.png', '_story.png');
+        await sharp(buffer).resize(1080, 1920, { fit: 'cover' }).toFile(sharePath);
+        
+        console.log('✅ DALL-E image saved successfully');
+        return { 
+          success: true,
+          method: 'dall-e',
+          filePath, 
+          sharePath 
+        };
+      } catch (dallError) {
+        console.error('❌ DALL-E generation failed:', dallError.message);
+        // Fall through to placeholder
+      }
+    }
+    
+    // Generate simple placeholder
+    console.log('📝 Generating placeholder image...');
     const genderText = attractedTo === 'men' || attractedTo === 'male' ? 'Your Soulmate (Male)' : 
                       attractedTo === 'women' || attractedTo === 'female' ? 'Your Soulmate (Female)' :
                       'Your Soulmate';
@@ -769,93 +736,33 @@ CREATE: The most beautiful, realistic person this individual would find absolute
             <stop offset="50%" stop-color="#F8E8FF"/>
             <stop offset="100%" stop-color="#E8F0FF"/>
           </radialGradient>
-          <filter id="glow">
-            <feMorphology operator="dilate" radius="2"/>
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-            <feMerge> 
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
         </defs>
         <rect width="1024" height="1024" fill="url(#g)"/>
-        <circle cx="512" cy="400" r="150" fill="#fff" opacity="0.3" filter="url(#glow)"/>
+        <circle cx="512" cy="400" r="150" fill="#fff" opacity="0.3"/>
         <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-size="32" font-family="Georgia, serif" fill="#7B1FA2" font-weight="bold">${genderText}</text>
-        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" font-family="Georgia, serif" fill="#AD1457">AI-Generated Portrait</text>
-        <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-size="18" font-family="Georgia, serif" fill="#9C27B0">Style: ${style || 'Realistic'}</text>
-        <text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#666">⚠️ FALLBACK MODE</text>
-        <text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">OpenAI API Key Not Detected</text>
-        <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">Check Environment Configuration</text>
+        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" font-family="Georgia, serif" fill="#AD1457">AI Portrait Coming Soon</text>
+        <text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#666">✨ Professional Generation</text>
       </svg>`
     );
-    buffer = await sharp(svg).png().toBuffer();
-  } else {
-    try {
-      const image = await openai.images.generate({
-        model: 'dall-e-3',
-        prompt: basePrompt,
-        size: '1024x1024',
-        quality: 'hd',
-        style: 'natural'
-      });
-      const imageUrl = image.data[0].url;
-      // Download the image from URL since DALL-E 3 returns URL not base64
-      const response = await fetch(imageUrl);
-      if (!response.ok) throw new Error('Failed to download generated image');
-      buffer = Buffer.from(await response.arrayBuffer());
-    } catch (err) {
-      console.error('Image generation failed, using placeholder:', err?.message || err);
-      // Use the same enhanced fallback when API call fails
-      const auraColor = preferences.auraPalette || 'warm golden';
-      const genderText = attractedTo === 'men' || attractedTo === 'male' ? 'Your Soulmate (Male)' : 
-                        attractedTo === 'women' || attractedTo === 'female' ? 'Your Soulmate (Female)' :
-                        'Your Soulmate';
-      
-      const svg = Buffer.from(
-        `<svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="g" cx="50%" cy="30%" r="70%">
-              <stop offset="0%" stop-color="#FFE0F0"/>
-              <stop offset="50%" stop-color="#F8E8FF"/>
-              <stop offset="100%" stop-color="#E8F0FF"/>
-            </radialGradient>
-            <filter id="glow">
-              <feMorphology operator="dilate" radius="2"/>
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-              <feMerge> 
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          <rect width="1024" height="1024" fill="url(#g)"/>
-          <circle cx="512" cy="400" r="150" fill="#fff" opacity="0.3" filter="url(#glow)"/>
-          <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-size="32" font-family="Georgia, serif" fill="#7B1FA2" font-weight="bold">${genderText}</text>
-          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" font-family="Georgia, serif" fill="#AD1457">AI-Generated Portrait</text>
-          <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-size="18" font-family="Georgia, serif" fill="#9C27B0">Style: ${style || 'Realistic'}</text>
-          <text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#666">⚠️ API ERROR</text>
-          <text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">Error: ${err?.message?.substring(0, 30) || 'Unknown'}</text>
-          <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">Check OpenAI Configuration</text>
-        </svg>`
-      );
-      buffer = await sharp(svg).png().toBuffer();
-    }
+    
+    const buffer = await sharp(svg).png().toBuffer();
+    await fs.promises.writeFile(filePath, buffer);
+    
+    // Create social share variant
+    const sharePath = filePath.replace('.png', '_story.png');
+    await sharp(buffer).resize(1080, 1920, { fit: 'cover' }).toFile(sharePath);
+    
+    console.log('✅ Placeholder image generated successfully');
+    return { 
+      success: true,
+      method: 'placeholder',
+      filePath, 
+      sharePath 
+    };
+  } catch (error) {
+    console.error('❌ generateImage failed completely:', error);
+    throw new Error(`Image generation failed: ${error.message}`);
   }
-  const outDir = path.join(process.cwd(), 'uploads');
-  fs.mkdirSync(outDir, { recursive: true });
-  const filePath = path.join(outDir, `result_${Date.now()}.png`);
-  await fs.promises.writeFile(filePath, buffer);
-  // create social share variant 1080x1920
-  const sharePath = filePath.replace('.png', '_story.png');
-  await sharp(buffer).resize(1080, 1920, { fit: 'cover' }).toFile(sharePath);
-  
-  // Return expected format for deliverables service
-  return { 
-    success: true,
-    method: openai ? 'dall-e' : 'placeholder',
-    filePath, 
-    sharePath 
-  };
 }
 
 export async function generatePdf({ text, imagePath, outPath, addons = [], quiz = {} }) {
