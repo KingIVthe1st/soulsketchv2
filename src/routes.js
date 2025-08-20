@@ -567,9 +567,15 @@ export function createRouter() {
       console.error(`❌ Error name:`, error.name);
       
       // Log environment status for debugging
+      const hasValidApiKey = Boolean(
+        process.env.OPENAI_API_KEY && 
+        process.env.OPENAI_API_KEY !== 'sk-replace-me' && 
+        process.env.OPENAI_API_KEY !== 'sk-your-openai-api-key-here' &&
+        process.env.OPENAI_API_KEY.startsWith('sk-')
+      );
       console.log(`🔧 Environment check:`);
       console.log(`  - NODE_ENV: ${process.env.NODE_ENV}`);
-      console.log(`  - OpenAI API Key configured: ${Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me')}`);
+      console.log(`  - OpenAI API Key configured: ${hasValidApiKey}`);
       console.log(`  - API Key prefix: ${process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 7) + '...' : 'not set'}`);
 
       // Update order status to failed if we have a valid order ID

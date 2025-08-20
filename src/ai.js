@@ -4,7 +4,12 @@ import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import sharp from 'sharp';
 
-const hasOpenAIKey = Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me');
+const hasOpenAIKey = Boolean(
+  process.env.OPENAI_API_KEY && 
+  process.env.OPENAI_API_KEY !== 'sk-replace-me' && 
+  process.env.OPENAI_API_KEY !== 'sk-your-openai-api-key-here' &&
+  process.env.OPENAI_API_KEY.startsWith('sk-')
+);
 const openai = hasOpenAIKey ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 
 // Helper function to calculate numerology from birth date
@@ -621,9 +626,7 @@ Currently seeking: ${relationship.lookingFor || 'a deep, meaningful connection'}
 **Advanced Numerology & Astrology**
 ${birth.zodiac ? `Your ${birth.zodiac} energy` : 'Your cosmic signature'} attracts someone with complementary ${birth.zodiac ? getZodiacCompatibility(birth.zodiac) : 'earth or water energy'} who brings balance to your life path.
 
-⚠️ **DEMO MODE**: This is enhanced demo content. For fully personalized AI-generated reports with real astrological calculations and detailed compatibility analysis, a valid OpenAI API key is required in the environment configuration.
-
-This preview demonstrates the depth and personalization possible with the full AI system activated.`;
+⚠️ **FALLBACK MODE**: OpenAI API key not detected. This is enhanced demo content showing the system's capabilities. The production environment should have a valid API key configured for full AI-generated content.`;
     
     return personalizedDemo;
   }
@@ -659,9 +662,7 @@ Currently seeking: ${relationship.lookingFor || 'a deep, meaningful connection'}
 **Advanced Numerology & Astrology**
 ${birth.zodiac ? `Your ${birth.zodiac} energy` : 'Your cosmic signature'} attracts someone with complementary ${birth.zodiac ? getZodiacCompatibility(birth.zodiac) : 'earth or water energy'} who brings balance to your life path.
 
-⚠️ **API ERROR**: AI generation encountered an error (${err?.message || 'Unknown error'}). This is enhanced demo content. For fully personalized AI-generated reports, please check the OpenAI API configuration.
-
-This preview demonstrates the depth and personalization possible with the full AI system activated.`;
+⚠️ **API ERROR**: AI generation encountered an error (${err?.message || 'Unknown error'}). Using fallback content. Please check server logs for details.`;
     
     return personalizedDemo;
   }
@@ -782,9 +783,9 @@ CREATE: The most beautiful, realistic person this individual would find absolute
         <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-size="32" font-family="Georgia, serif" fill="#7B1FA2" font-weight="bold">${genderText}</text>
         <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" font-family="Georgia, serif" fill="#AD1457">AI-Generated Portrait</text>
         <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-size="18" font-family="Georgia, serif" fill="#9C27B0">Style: ${style || 'Realistic'}</text>
-        <text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#666">⚠️ DEMO MODE</text>
-        <text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">OpenAI API Key Required</text>
-        <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">for AI Image Generation</text>
+        <text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#666">⚠️ FALLBACK MODE</text>
+        <text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">OpenAI API Key Not Detected</text>
+        <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">Check Environment Configuration</text>
       </svg>`
     );
     buffer = await sharp(svg).png().toBuffer();

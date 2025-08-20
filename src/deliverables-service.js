@@ -34,9 +34,16 @@ export class DeliverablesService {
 
     try {
       console.log(`\n🚀 Starting professional report generation for order ${orderId}`);
+      const hasValidApiKey = Boolean(
+        process.env.OPENAI_API_KEY && 
+        process.env.OPENAI_API_KEY !== 'sk-replace-me' && 
+        process.env.OPENAI_API_KEY !== 'sk-your-openai-api-key-here' &&
+        process.env.OPENAI_API_KEY.startsWith('sk-')
+      );
       console.log(`🔧 Environment check in deliverables service:`);
-      console.log(`  - OpenAI API Key available: ${Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me')}`);
+      console.log(`  - OpenAI API Key available: ${hasValidApiKey}`);
       console.log(`  - API Key prefix: ${process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 7) + '...' : 'not set'}`);
+      console.log(`  - Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📧 Delivery email: ${email}`);
       console.log(`🎯 Tier: ${tier}, Addons: ${addons.join(', ') || 'none'}`);
 
@@ -409,9 +416,16 @@ export class DeliverablesService {
 
     try {
       // Check OpenAI API availability
+      const hasValidApiKey = Boolean(
+        process.env.OPENAI_API_KEY && 
+        process.env.OPENAI_API_KEY !== 'sk-replace-me' && 
+        process.env.OPENAI_API_KEY !== 'sk-your-openai-api-key-here' &&
+        process.env.OPENAI_API_KEY.startsWith('sk-')
+      );
       health.services.openai = {
-        available: Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me'),
-        method: Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me') ? 'ai-generated' : 'fallback'
+        available: hasValidApiKey,
+        method: hasValidApiKey ? 'ai-generated' : 'fallback',
+        keyPrefix: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 7) + '...' : 'not set'
       };
 
       // Check email service
