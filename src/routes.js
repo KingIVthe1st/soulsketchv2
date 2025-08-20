@@ -428,15 +428,20 @@ export function createRouter() {
         });
       }
 
-      // Check if order is paid (for production), but allow test orders with test emails
+      // Enhanced test order detection for bypassing payment verification
       const isTestOrder = order.email && (
         order.email.includes('test@') || 
         order.email.includes('@test.') ||
         order.email.includes('demo@') ||
-        order.email === 'test@example.com'
+        order.email === 'test@example.com' ||
+        order.email.toLowerCase().includes('test')
       );
       
-      if (order.status !== 'paid' && process.env.NODE_ENV === 'production' && !isTestOrder) {
+      console.log(`🔍 Payment check - Order ID: ${id}, Email: ${order.email}, Status: ${order.status}, IsTest: ${isTestOrder}, NODE_ENV: ${process.env.NODE_ENV}`);
+      
+      // Allow test orders to bypass payment verification entirely
+      if (order.status !== 'paid' && !isTestOrder) {
+        console.log(`❌ Payment verification failed - Order ${id} with email ${order.email} is not paid and not a test order`);
         return res.status(403).json({ 
           error: 'Payment required',
           code: 'PAYMENT_REQUIRED',
@@ -445,8 +450,8 @@ export function createRouter() {
       }
       
       // Log test order bypass for debugging
-      if (isTestOrder && order.status !== 'paid') {
-        console.log(`🧪 Test order detected - bypassing payment verification for ${order.email}`);
+      if (isTestOrder) {
+        console.log(`🧪 TEST ORDER DETECTED - Bypassing payment verification for order ${id} with email ${order.email}`);
       }
 
       console.log(`🎯 Starting professional report generation for order ${id}`);

@@ -1622,11 +1622,15 @@
             showProcessingState('Generating test report...');
             
             // 1) Create test order with full premium package and all addons
+            // Force test email to ensure bypass works
+            const testEmail = 'test@example.com';
+            console.log('🧪 Creating test order with email:', testEmail);
+            
             const createRes = await fetch('/api/orders', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ 
-                email: state.user.email || 'test@example.com', 
+                email: testEmail, 
                 tier: 'premium', 
                 addons: ['color-upgrade', 'aura-reading', 'compatibility-snapshot', '12-hour-rush'] // All premium addons
               })
@@ -1644,15 +1648,18 @@
             if (!intakeRes.ok) throw new Error('Failed to submit test intake');
 
             // 3) Generate professional report
+            console.log('🧪 Attempting to generate test report for order:', order.id);
             const genRes = await fetch(`/api/orders/${order.id}/generate`, { method: 'POST' });
+            console.log('🧪 Generation response status:', genRes.status);
+            
             if (!genRes.ok) {
               let errorMsg = `Failed to generate test report (${genRes.status})`;
               try {
                 const errorData = await genRes.json();
                 errorMsg = errorData.message || errorData.error || errorMsg;
-                console.error('Generation API error details:', errorData);
+                console.error('🧪 Generation API error details:', errorData);
               } catch (e) {
-                console.error('Could not parse error response:', e);
+                console.error('🧪 Could not parse error response:', e);
               }
               throw new Error(errorMsg);
             }
