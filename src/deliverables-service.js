@@ -34,6 +34,9 @@ export class DeliverablesService {
 
     try {
       console.log(`\n🚀 Starting professional report generation for order ${orderId}`);
+      console.log(`🔧 Environment check in deliverables service:`);
+      console.log(`  - OpenAI API Key available: ${Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me')}`);
+      console.log(`  - API Key prefix: ${process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 7) + '...' : 'not set'}`);
       console.log(`📧 Delivery email: ${email}`);
       console.log(`🎯 Tier: ${tier}, Addons: ${addons.join(', ') || 'none'}`);
 
@@ -49,13 +52,22 @@ export class DeliverablesService {
       // Step 2: Generate AI text content
       deliveryLog.steps.push({ step: 'ai_text_generation', status: 'started', timestamp: new Date().toISOString() });
       
-      const aiText = await generateProfileText({ 
-        quiz: cleanedQuiz, 
-        tier, 
-        addons 
-      });
+      console.log(`🤖 Starting AI text generation...`);
+      let aiText;
+      try {
+        aiText = await generateProfileText({ 
+          quiz: cleanedQuiz, 
+          tier, 
+          addons 
+        });
+        console.log(`✅ AI text generation completed - Length: ${aiText ? aiText.length : 0} characters`);
+      } catch (textError) {
+        console.error(`❌ AI text generation failed:`, textError);
+        throw new Error(`AI text generation failed: ${textError.message}`);
+      }
       
       if (!aiText || aiText.length < 100) {
+        console.error(`❌ AI text generation produced insufficient content: ${aiText ? aiText.length : 0} characters`);
         throw new Error('AI text generation failed or produced insufficient content');
       }
       
@@ -70,11 +82,19 @@ export class DeliverablesService {
       // Step 3: Generate soulmate portrait using AI
       deliveryLog.steps.push({ step: 'image_generation', status: 'started', timestamp: new Date().toISOString() });
       
-      const imageResult = await generateImage({
-        quiz: cleanedQuiz,
-        style: cleanedQuiz.style || 'realistic',
-        addons
-      });
+      console.log(`🎨 Starting AI image generation...`);
+      let imageResult;
+      try {
+        imageResult = await generateImage({
+          quiz: cleanedQuiz,
+          style: cleanedQuiz.style || 'realistic',
+          addons
+        });
+        console.log(`✅ AI image generation completed - Success: ${imageResult?.success}, Method: ${imageResult?.method}`);
+      } catch (imageError) {
+        console.error(`❌ AI image generation failed:`, imageError);
+        throw new Error(`AI image generation failed: ${imageError.message}`);
+      }
       
       if (!imageResult.success && !fs.existsSync(imageResult.filePath)) {
         throw new Error('Image generation failed completely');
@@ -92,14 +112,21 @@ export class DeliverablesService {
       // Step 4: Generate professional PDF using AI
       deliveryLog.steps.push({ step: 'pdf_generation', status: 'started', timestamp: new Date().toISOString() });
       
+      console.log(`📄 Starting PDF generation...`);
       const pdfPath = path.join(process.cwd(), 'uploads', `${orderId}_professional_report.pdf`);
       
-      await generatePdf({
-        text: aiText,
-        imagePath: imageResult.filePath,
-        outPath: pdfPath,
-        addons
-      });
+      try {
+        await generatePdf({
+          text: aiText,
+          imagePath: imageResult.filePath,
+          outPath: pdfPath,
+          addons
+        });
+        console.log(`✅ PDF generation completed - Path: ${pdfPath}`);
+      } catch (pdfError) {
+        console.error(`❌ PDF generation failed:`, pdfError);
+        throw new Error(`PDF generation failed: ${pdfError.message}`);
+      }
       
       if (!fs.existsSync(pdfPath)) {
         throw new Error('PDF generation failed - file not created');

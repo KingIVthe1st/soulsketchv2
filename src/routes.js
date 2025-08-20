@@ -562,6 +562,15 @@ export function createRouter() {
 
     } catch (error) {
       console.error(`❌ Professional report generation failed for order ${req.params.id}:`, error);
+      console.error(`❌ Error stack:`, error.stack);
+      console.error(`❌ Error message:`, error.message);
+      console.error(`❌ Error name:`, error.name);
+      
+      // Log environment status for debugging
+      console.log(`🔧 Environment check:`);
+      console.log(`  - NODE_ENV: ${process.env.NODE_ENV}`);
+      console.log(`  - OpenAI API Key configured: ${Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me')}`);
+      console.log(`  - API Key prefix: ${process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 7) + '...' : 'not set'}`);
 
       // Update order status to failed if we have a valid order ID
       if (req.params.id && req.params.id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
