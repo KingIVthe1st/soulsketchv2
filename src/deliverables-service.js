@@ -95,12 +95,10 @@ export class DeliverablesService {
       const pdfPath = path.join(process.cwd(), 'uploads', `${orderId}_professional_report.pdf`);
       
       await generatePdf({
-        quiz: cleanedQuiz,
-        aiText,
-        tier,
-        addons,
+        text: aiText,
         imagePath: imageResult.filePath,
-        outputPath: pdfPath
+        outPath: pdfPath,
+        addons
       });
       
       if (!fs.existsSync(pdfPath)) {
