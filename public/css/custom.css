@@ -1229,9 +1229,7 @@ header.main-header .header-sticky.active{
 
 .service-cta-box{
 	position: relative;
-	background: url('../images/home/pricing-right.jpg') no-repeat;
-	background-position: center center;
-	background-size: cover;
+	background: transparent;
 	border: 1px solid var(--divider-color);
 	border-radius: 20px;
 	align-content: end;
@@ -1248,8 +1246,7 @@ header.main-header .header-sticky.active{
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--bg-color);
-	opacity: 20%;
+    background: transparent;
     height: 100%;
     width: 100%;
 }
