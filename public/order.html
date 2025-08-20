@@ -1665,7 +1665,8 @@
             }
             const result = await genRes.json();
 
-            // 4) Show professional success screen
+            // 4) Hide processing state and show professional success screen
+            hideProcessingState();
             showProfessionalSuccess(result, order.email);
             
           } catch (error) {
