@@ -589,13 +589,29 @@ export function createRouter() {
       }
 
       // Return sanitized error response
+      // Temporarily show debug info for test orders to help troubleshoot
+      const isTestOrder = req.params.id && (
+        order?.email?.includes('test') || 
+        order?.email?.includes('debug') ||
+        error.message?.includes('test')
+      );
+      
       res.status(500).json({
         success: false,
         error: 'Report generation failed',
         message: 'We apologize for the inconvenience. Please try again in a few moments, or contact support if the issue persists.',
         code: 'GENERATION_FAILED',
         orderId: req.params.id,
-        ...sanitizeError(error, process.env.NODE_ENV === 'development')
+        ...sanitizeError(error, process.env.NODE_ENV === 'development' || isTestOrder),
+        // Add debug info for test orders
+        ...(isTestOrder && {
+          debugInfo: {
+            errorMessage: error.message,
+            errorStack: error.stack?.split('\n').slice(0, 5).join('\n'),
+            nodeEnv: process.env.NODE_ENV,
+            hasApiKey: Boolean(process.env.OPENAI_API_KEY?.startsWith('sk-'))
+          }
+        })
       });
     }
   });
@@ -683,6 +699,38 @@ export function createRouter() {
       }
       
       res.status(500).json(sanitizeError(error));
+    }
+  });
+
+  // Debug API health check (public for testing)
+  router.get('/api-debug', (req, res) => {
+    try {
+      const hasValidApiKey = Boolean(
+        process.env.OPENAI_API_KEY && 
+        process.env.OPENAI_API_KEY !== 'sk-replace-me' && 
+        process.env.OPENAI_API_KEY !== 'sk-your-openai-api-key-here' &&
+        process.env.OPENAI_API_KEY.startsWith('sk-')
+      );
+      
+      res.json({
+        status: 'debug',
+        environment: process.env.NODE_ENV,
+        openai: {
+          hasValidKey: hasValidApiKey,
+          keyPrefix: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'not set',
+          keyLength: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0
+        },
+        stripe: {
+          configured: Boolean(process.env.STRIPE_SECRET_KEY)
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
     }
   });
 
