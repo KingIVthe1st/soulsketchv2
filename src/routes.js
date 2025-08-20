@@ -705,6 +705,36 @@ export function createRouter() {
     }
   });
 
+  // Test AI function call (for debugging)
+  router.post('/test-ai', async (req, res) => {
+    try {
+      const { generateProfileText } = await import('./ai.js');
+      
+      const testQuiz = {
+        user: { email: 'test@test.com', attractedTo: 'women' },
+        appearance: { faceShape: 'oval', hairColor: 'brown' }
+      };
+      
+      const result = await generateProfileText({
+        quiz: testQuiz,
+        tier: 'premium',
+        addons: []
+      });
+      
+      res.json({
+        success: true,
+        result: result?.substring(0, 200) + '...',
+        length: result?.length || 0
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        stack: error.stack?.split('\n').slice(0, 8).join('\n')
+      });
+    }
+  });
+
   // Debug API health check (public for testing)
   router.get('/api-debug', async (req, res) => {
     try {
