@@ -848,7 +848,14 @@ CREATE: The most beautiful, realistic person this individual would find absolute
   // create social share variant 1080x1920
   const sharePath = filePath.replace('.png', '_story.png');
   await sharp(buffer).resize(1080, 1920, { fit: 'cover' }).toFile(sharePath);
-  return { filePath, sharePath };
+  
+  // Return expected format for deliverables service
+  return { 
+    success: true,
+    method: openai ? 'dall-e' : 'placeholder',
+    filePath, 
+    sharePath 
+  };
 }
 
 export async function generatePdf({ text, imagePath, outPath, addons = [], quiz = {} }) {
