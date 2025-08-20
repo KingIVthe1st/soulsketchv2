@@ -735,6 +735,44 @@ export function createRouter() {
     }
   });
 
+  // Test AI image generation (for debugging)
+  router.post('/test-image', async (req, res) => {
+    try {
+      const { generateImage } = await import('./ai.js');
+      
+      const testQuiz = {
+        user: { email: 'test@test.com', attractedTo: 'women' },
+        appearance: { 
+          faceShape: 'oval', 
+          hairColor: 'brown',
+          eyeColor: 'blue',
+          skinTone: 'medium'
+        }
+      };
+      
+      console.log('🖼️ Testing image generation...');
+      const result = await generateImage({
+        quiz: testQuiz,
+        tier: 'premium',
+        addons: []
+      });
+      
+      res.json({
+        success: true,
+        result: result ? 'Image generated successfully' : 'No image generated',
+        hasBuffer: Boolean(result),
+        bufferLength: result ? result.length : 0
+      });
+    } catch (error) {
+      console.error('❌ Image generation test failed:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        stack: error.stack?.split('\n').slice(0, 8).join('\n')
+      });
+    }
+  });
+
   // Debug API health check (public for testing)
   router.get('/api-debug', async (req, res) => {
     try {
