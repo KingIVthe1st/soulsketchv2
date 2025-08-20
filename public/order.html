@@ -730,17 +730,53 @@
                     
                     <!-- Payment Options -->
                     <div style="margin: 20px 0;">
-                      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" alt="Apple Pay" style="width: 24px; height: 24px;">
-                        <span>Apple Pay supported</span>
-                          </div>
-                      <div style="display: flex; gap: 10px; align-items: center;">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" style="height: 20px;">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style="height: 20px;">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="American Express" style="height: 20px;">
-                        <span style="font-size: 12px; color: var(--primary-color); margin-left: 10px;">Secure SSL encryption</span>
+                      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                        <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
+                          <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 17 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5M13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/>
+                        </svg>
+                        <span style="color: var(--primary-color); font-weight: 500;">Apple Pay supported</span>
+                      </div>
+                      
+                      <div style="display: flex; gap: 15px; align-items: center; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                        <!-- Visa -->
+                        <div style="background: white; padding: 4px 8px; border-radius: 4px;">
+                          <svg style="height: 16px; width: 50px;" viewBox="0 0 156 50">
+                            <path fill="#1A1F71" d="M34.216 33.114l-4.552-21.42h-7.284l11.484 28.572h6.708l11.484-28.572h-7.284l-4.552 21.42h-6.004z"/>
+                            <path fill="#1A1F71" d="M66.012 11.694c-1.44-.576-3.708-.864-6.804-.864-7.5 0-12.78 3.996-12.816 9.72-.036 4.248 3.78 6.624 6.672 8.028 2.964 1.44 3.96 2.376 3.96 3.672-.036 1.98-2.376 2.88-4.572 2.88-3.06 0-4.68-.432-7.2-1.512l-.972-.468-1.08 6.624c1.8.828 5.148 1.548 8.604 1.584 7.992 0 13.176-3.924 13.212-10.008.036-3.384-2.016-5.94-6.444-8.064-2.664-1.368-4.284-2.304-4.284-3.708.036-1.26 1.404-2.556 4.428-2.556 2.52-.036 4.356.54 5.76 1.152l.684.324 1.044-6.408z"/>
+                            <path fill="#1A1F71" d="M84.708 11.694h-5.616c-1.764 0-3.06.504-3.816 2.376l-10.8 26.196h7.956c0 0 1.296-3.6 1.584-4.392h9.756c.216 1.044.9 4.392.9 4.392h7.02l-6.12-28.572h-.864zm-8.352 18.036c.612-1.656 2.988-8.028 2.988-8.028s.612-1.656.972-2.736l.504 2.484s1.404 6.732 1.692 8.28h-6.156z"/>
+                            <path fill="#1A1F71" d="M18.756 11.694l-7.2 19.476-.756-3.888c-1.296-4.392-5.364-9.18-9.9-11.556l6.516 24.54h8.028L28.404 11.694h-9.648z"/>
+                            <path fill="#F7B600" d="M7.2 11.694H.252l-.072.432c9.54 2.448 15.876 8.352 18.504 15.444L15.876 14.07c-.54-2.088-2.088-3.24-3.96-3.384L7.2 11.694z"/>
+                          </svg>
                         </div>
-                          </div>
+                        
+                        <!-- Mastercard -->
+                        <div style="background: white; padding: 4px 8px; border-radius: 4px;">
+                          <svg style="height: 16px; width: 26px;" viewBox="0 0 50 31">
+                            <circle fill="#EB001B" cx="15.5" cy="15.5" r="15.5"/>
+                            <circle fill="#F79E1B" cx="34.5" cy="15.5" r="15.5"/>
+                            <path fill="#FF5F00" d="M31 15.5c0-5.9-2.6-11.2-6.5-14.8C21.6 4.3 19 15.5 19 15.5s2.6 11.2 5.5 14.8C28.4 26.7 31 21.4 31 15.5z"/>
+                          </svg>
+                        </div>
+                        
+                        <!-- American Express -->
+                        <div style="background: white; padding: 4px 8px; border-radius: 4px;">
+                          <svg style="height: 16px; width: 26px;" viewBox="0 0 50 31">
+                            <rect fill="#006FCF" width="50" height="31" rx="2"/>
+                            <path fill="white" d="M8.5 10.5h3.2l.7 1.7.7-1.7h3.2v8.8h-2.1v-5.4l-.8 2h-1.1l-.8-2v5.4H8.5v-8.8zm15.8 0h-4.5v8.8h4.5v-1.8h-2.4v-1.4h2.3v-1.8h-2.3v-1.9h2.4v-1.9zm2.7 0h2.1l1.2 3.4 1.2-3.4h2.1l-2.3 8.8h-1.9l-2.4-8.8zm10.2 0h2.1v7h2.4v1.8h-4.5v-8.8z"/>
+                          </svg>
+                        </div>
+                        
+                        <div style="margin-left: auto;">
+                          <span style="font-size: 12px; color: var(--primary-color); display: flex; align-items: center; gap: 5px;">
+                            <svg style="width: 16px; height: 16px; fill: #10B981;" viewBox="0 0 24 24">
+                              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                              <path fill="white" d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                            </svg>
+                            Secure SSL encryption
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
                     <div id="payment-messages" role="alert" style="margin: 15px 0; min-height: 20px;"></div>
                   </form>
@@ -1079,10 +1115,6 @@
         const progressBar = document.getElementById("progressBar");
         const stepLabel = document.getElementById("stepLabel");
 
-        console.log('🔧 DEBUG: stepSections found:', stepSections.length, stepSections.map(s => s.id));
-        console.log('🔧 DEBUG: progressBar:', progressBar);
-        console.log('🔧 DEBUG: stepLabel:', stepLabel);
-
         const orderForm = document.getElementById("orderForm");
         const orderComplete = document.getElementById("orderComplete");
         const mailtoDraft = document.getElementById("mailtoDraft");
@@ -1105,13 +1137,10 @@
 
         // Nav buttons
         orderForm.addEventListener("click", function (e) {
-          console.log('🔧 DEBUG: Click event triggered on:', e.target, 'Classes:', e.target.classList.toString());
           const t = e.target;
           if (t.classList.contains("next")) {
             console.log('🔵 Next button clicked on step:', currentStep);
-            console.log('🔧 DEBUG: Current state.user.email:', state.user.email);
             e.preventDefault();
-            console.log('🔵 Validating step...', currentStep);
             if (!validateCurrentStep()) {
               console.log('❌ Validation failed for step:', currentStep);
               return;
@@ -1394,7 +1423,6 @@
         function handleInputChange(e) {
           const id = e.target.id;
           const el = e.target;
-          console.log('🔧 DEBUG: Input changed:', id, 'Value:', el.value);
           
           // Map inputs to state
           switch (id) {
@@ -1404,7 +1432,6 @@
               break;
             case "email":
               state.user.email = el.value || "";
-              console.log('🔧 DEBUG: Email updated to:', state.user.email);
               break;
             case "pronouns":
               state.user.pronouns = el.value || "";
@@ -1668,18 +1695,29 @@
 
         function validateCurrentStep(isSubmit) {
           console.log('🔍 Validating step:', currentStep, 'State:', state);
-          console.log('🔧 DEBUG: Always returning true for testing');
-          return true; // Skip all validation for debugging
+          
+          if (currentStep === 1) {
+            const email = (state.user.email || "").trim();
+            console.log('🔍 Email validation - current email:', email);
+            const ok = /.+@.+\..+/.test(email);
+            console.log('🔍 Email validation result:', ok);
+            if (!ok) {
+              console.log('❌ Email validation failed');
+              alert("Please enter a valid email address to continue.");
+              return false;
+            }
+            console.log('✅ Email validation passed');
+          }
+
+          console.log('✅ Step validation completed successfully');
+          return true;
         }
 
         function syncStateToForm(only) {
           const ids = new Set(only || []);
           function setVal(id, val) {
             const el = document.getElementById(id);
-            if (!el) {
-              console.log('🔧 DEBUG: Element not found:', id);
-              return;
-            }
+            if (!el) return;
             if (el.type === "checkbox") el.checked = !!val;
             else el.value = val == null ? "" : String(val);
           }
