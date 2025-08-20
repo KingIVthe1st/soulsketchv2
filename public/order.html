@@ -1676,7 +1676,10 @@
           const ids = new Set(only || []);
           function setVal(id, val) {
             const el = document.getElementById(id);
-            if (!el) return;
+            if (!el) {
+              console.log('🔧 DEBUG: Element not found:', id);
+              return;
+            }
             if (el.type === "checkbox") el.checked = !!val;
             else el.value = val == null ? "" : String(val);
           }
@@ -1711,6 +1714,7 @@
           setVal("ll_gifts", state.personality.loveLanguages.gifts);
           setVal("ll_acts", state.personality.loveLanguages.acts);
           setVal("ll_touch", state.personality.loveLanguages.touch);
+          
           // values checkboxes
           [
             "family",
@@ -1727,6 +1731,7 @@
             const el = document.getElementById("val_" + v);
             if (el) el.checked = (state.personality.values || []).includes(v);
           });
+          
           // must‑haves
           const mh = new Set(state.relationship.mustHaves || []);
           const map = {
@@ -1742,21 +1747,28 @@
             const el = document.getElementById(id);
             if (el) el.checked = mh.has(map[id]);
           });
-          // step 6 formats/addons
+          
+          // step 6 formats/addons - only set if elements exist
           setVal("artStyle", state.preferences.artStyle);
           setVal("auraPalette", state.preferences.auraPalette);
-          document.getElementById("addon_color").checked =
-            !!state.preferences.addons.colorUpgrade;
-          document.getElementById("addon_reading").checked =
-            !!state.preferences.addons.reading;
-          document.getElementById("addon_compat").checked =
-            !!state.preferences.addons.compatibility;
-          document.getElementById("addon_rush").checked =
-            !!state.preferences.addons.rush12h;
-          document.getElementById("fmt_jpg").checked =
-            !!state.preferences.formats.jpg;
-          document.getElementById("fmt_pdf").checked =
-            !!state.preferences.formats.pdf;
+          
+          const addonColor = document.getElementById("addon_color");
+          if (addonColor) addonColor.checked = !!state.preferences.addons.colorUpgrade;
+          
+          const addonReading = document.getElementById("addon_reading");
+          if (addonReading) addonReading.checked = !!state.preferences.addons.reading;
+          
+          const addonCompat = document.getElementById("addon_compat");
+          if (addonCompat) addonCompat.checked = !!state.preferences.addons.compatibility;
+          
+          const addonRush = document.getElementById("addon_rush");
+          if (addonRush) addonRush.checked = !!state.preferences.addons.rush12h;
+          
+          const fmtJpg = document.getElementById("fmt_jpg");
+          if (fmtJpg) fmtJpg.checked = !!state.preferences.formats.jpg;
+          
+          const fmtPdf = document.getElementById("fmt_pdf");
+          if (fmtPdf) fmtPdf.checked = !!state.preferences.formats.pdf;
         }
 
         function showComplete() {
