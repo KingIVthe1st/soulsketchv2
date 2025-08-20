@@ -699,7 +699,7 @@
                     Secure <span>Checkout</span>
                   </h2>
                   <p style="margin-bottom: 30px; color: var(--primary-color);">
-                    Complete your order to receive your personalized soulmate sketch and reading within 24 hours.
+                    Complete your order to receive your personalized soulmate sketch and reading instantly.
                   </p>
                 </div>
 
@@ -717,7 +717,7 @@
                     </div>
                   <div style="margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
                     <small style="color: var(--primary-color);">
-                      ✨ Includes: High-resolution soulmate sketch, detailed PDF reading, and 24-hour delivery
+                      ✨ Includes: AI-generated soulmate sketch, detailed compatibility reading, and instant delivery
                     </small>
                           </div>
                         </div>
@@ -784,10 +784,15 @@
 
                 <div class="what-we-btn order-nav" style="margin: 40px 0px">
                   <button type="button" class="btn-default back">Back</button>
-                  <button id="submit-payment" type="button" class="btn-default" disabled>
-                    <span id="payment-button-text">Complete Order - $17.99</span>
-                    <div id="payment-spinner" class="spinner" style="display: none;"></div>
-                  </button>
+                  <div style="display: flex; gap: 15px; align-items: center;">
+                    <button id="test-deliverables" type="button" class="btn-default" style="background: #10B981; border-color: #10B981;">
+                      TEST Deliverables
+                    </button>
+                    <button id="submit-payment" type="button" class="btn-default" disabled>
+                      <span id="payment-button-text">Complete Order - $17.99</span>
+                      <div id="payment-spinner" class="spinner" style="display: none;"></div>
+                    </button>
+                  </div>
                 </div>
               </section>
 
@@ -883,7 +888,7 @@
               <div class="about-footer-content">
                 <p>
                   Personalized soulmate sketches crafted with AI‑assisted
-                  artistry — delivered to your inbox within 24 hours.
+                  artistry — delivered to your inbox instantly.
                 </p>
               </div>
               <!-- About Footer Content End -->
@@ -1347,6 +1352,67 @@
             alert('Payment succeeded but order processing failed. Please contact support with payment ID: ' + paymentIntentId);
           }
         }
+
+        // TEST Button Handler - Generate deliverables without payment
+        document.getElementById('test-deliverables').addEventListener('click', async function(e) {
+          e.preventDefault();
+          
+          const testButton = e.target;
+          const originalText = testButton.textContent;
+          
+          // Show loading state
+          testButton.disabled = true;
+          testButton.textContent = 'Generating...';
+          
+          // Build quiz payload from current form state
+          const quiz = {
+            user: state.user,
+            preferences: state.preferences,
+            reading: state.reading,
+            timeOfBirth: state.user?.timeOfBirth || null,
+            birthLocation: state.user?.birthLocation || null,
+            name: state.user?.name || 'Test User',
+            email: state.user?.email || 'test@example.com',
+            gender: state.user?.gender || 'prefer not to say',
+            attractedTo: state.user?.attractedTo || 'surprise',
+            interest: state.user?.attractedTo === 'women' ? 'female' : state.user?.attractedTo === 'men' ? 'male' : 'surprise',
+            style: state.preferences?.artStyle || 'pencil-realistic'
+          };
+
+          try {
+            // 1) Create test order
+            const createRes = await fetch('/api/orders', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: quiz.email, tier: 'basic', addons: [] })
+            });
+            if (!createRes.ok) throw new Error('Failed to create test order');
+            const order = await createRes.json();
+
+            // 2) Submit intake
+            const intakeRes = await fetch(`/api/orders/${order.id}/intake`, {
+              method: 'POST',
+              body: (() => { const f = new FormData(); f.append('quiz', JSON.stringify(quiz)); return f; })()
+            });
+            if (!intakeRes.ok) throw new Error('Failed to submit test intake');
+
+            // 3) Generate deliverables
+            const genRes = await fetch(`/api/orders/${order.id}/generate`, { method: 'POST' });
+            if (!genRes.ok) throw new Error('Failed to generate test deliverables');
+            const result = await genRes.json();
+
+            // 4) Show results immediately
+            showOrderComplete(result.deliverables);
+            
+          } catch (error) {
+            console.error('Test generation error:', error);
+            alert('Test generation failed: ' + error.message);
+          } finally {
+            // Reset button state
+            testButton.disabled = false;
+            testButton.textContent = originalText;
+          }
+        });
 
         // Override goToStep to initialize Stripe when entering payment step
         const originalGoToStep = goToStep;
@@ -1841,6 +1907,42 @@
               }[c])
           );
         }
+
+        // Show order completion with deliverables
+        function showOrderComplete(deliverables) {
+          console.log('Showing order complete with deliverables:', deliverables);
+          
+          // Hide all steps
+          document.querySelectorAll('.order-step').forEach(step => {
+            step.style.display = 'none';
+          });
+          
+          // Show completion section
+          const completeSection = document.getElementById('orderComplete');
+          completeSection.style.display = 'block';
+          
+          // Update download links if deliverables are provided
+          if (deliverables) {
+            if (deliverables.sketch) {
+              const sketchLink = completeSection.querySelector('a[href*="pencil-generated"]');
+              if (sketchLink) {
+                sketchLink.href = deliverables.sketch;
+                sketchLink.download = 'soulmate-sketch.jpg';
+              }
+            }
+            
+            if (deliverables.reading) {
+              const readingLink = completeSection.querySelector('a[href*="reading"]');
+              if (readingLink) {
+                readingLink.href = deliverables.reading;
+                readingLink.download = 'soulmate-reading.pdf';
+              }
+            }
+          }
+          
+          // Scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       })();
     </script>
   </body>
@@ -2233,6 +2335,42 @@ attractedTo = el.value || "all-genders";
                 "'": "&#039;",
               }[c])
           );
+        }
+
+        // Show order completion with deliverables
+        function showOrderComplete(deliverables) {
+          console.log('Showing order complete with deliverables:', deliverables);
+          
+          // Hide all steps
+          document.querySelectorAll('.order-step').forEach(step => {
+            step.style.display = 'none';
+          });
+          
+          // Show completion section
+          const completeSection = document.getElementById('orderComplete');
+          completeSection.style.display = 'block';
+          
+          // Update download links if deliverables are provided
+          if (deliverables) {
+            if (deliverables.sketch) {
+              const sketchLink = completeSection.querySelector('a[href*="pencil-generated"]');
+              if (sketchLink) {
+                sketchLink.href = deliverables.sketch;
+                sketchLink.download = 'soulmate-sketch.jpg';
+              }
+            }
+            
+            if (deliverables.reading) {
+              const readingLink = completeSection.querySelector('a[href*="reading"]');
+              if (readingLink) {
+                readingLink.href = deliverables.reading;
+                readingLink.download = 'soulmate-reading.pdf';
+              }
+            }
+          }
+          
+          // Scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       })();
     </script>

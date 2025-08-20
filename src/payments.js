@@ -3,10 +3,10 @@ const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey ? new Stripe(stripeKey, { apiVersion: '2024-06-20' }) : null;
 
 const TIER_PRICES = {
-  basic: 1900,
-  premium: 3900,
-  deluxe: 6900,
-  demo: 0,  // Demo is free
+  basic: 1799,     // $17.99 - Basic soulmate sketch + reading
+  plus: 4900,      // $49.00 - Plus: includes location insights
+  premium: 7900,   // $79.00 - Premium: includes full spiritual assessment
+  demo: 0,         // Demo is free
 };
 
 export function getPriceCentsForTier(tier) {
