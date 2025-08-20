@@ -708,6 +708,11 @@ export async function generateImage({ style, quiz, addons = [] }) {
         const imageUrl = image.data[0].url;
         console.log(`📥 Image URL received: ${imageUrl.substring(0, 50)}...`);
         
+        // Check if fetch is available
+        if (typeof fetch === 'undefined') {
+          throw new Error('fetch is not available in this environment');
+        }
+        
         const response = await fetch(imageUrl);
         if (!response.ok) throw new Error(`Failed to download generated image: ${response.status}`);
         
