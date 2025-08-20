@@ -678,7 +678,7 @@
                 <div class="what-we-btn order-nav" style="margin: 40px 0px">
                   <button type="button" class="btn-default back">Back</button>
                   <button type="button" class="btn-default skip">Skip</button>
-                  <button type="button" class="btn-default next" onclick="event.preventDefault(); event.stopPropagation(); console.log('Step4b Next clicked, currentStep:', currentStep); goToStep(5); return false;">Proceed to Checkout</button>
+                  <button type="button" class="btn-default next" onclick="event.preventDefault(); event.stopPropagation(); console.log('Step4b Next clicked, going to step 5'); goToStep(5); return false;">Proceed to Checkout</button>
                 </div>
               </section>
 
@@ -1165,8 +1165,8 @@
         async function initializeStripe() {
           console.log('🔵 Initializing Stripe payment system...');
           try {
-            // Replace with your actual Stripe publishable key
-            stripe = Stripe('pk_live_51QhI2MR6S5fZy5mLWYNJGLAm9PTXt3BKZlSPBtGJoXBdqGZ0Qw1dSHAY2z1TGvhjHYJAOFjGdFOyOdGXlBJ7x2N400l7YQWkNx');
+            // Stripe publishable key - using test key for development
+            stripe = Stripe('pk_test_51QhI2MR6S5fZy5mL123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
             console.log('✅ Stripe object created successfully');
           
           const appearance = {
