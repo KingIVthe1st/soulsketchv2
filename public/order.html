@@ -41,6 +41,8 @@
     <link rel="stylesheet" href="css/mousecursor.css" />
     <!-- Main Custom Css -->
     <link href="css/custom.css" rel="stylesheet" media="screen" />
+    <!-- Stripe JS -->
+    <script src="https://js.stripe.com/v3/"></script>
   </head>
   <body>
     <!-- Preloader Start -->
@@ -82,12 +84,12 @@
         <div class="row section-row">
           <div class="col-lg-10 offset-lg-1">
             <div class="order-progress wow fadeInUp" data-wow-delay="0.1s">
-              <div id="stepLabel">Step 1 of 4 — About you</div>
+              <div id="stepLabel">Step 1 of 5 — About you</div>
               <div
                 class="progress"
                 role="progressbar"
                 aria-valuemin="1"
-                aria-valuemax="4"
+                aria-valuemax="5"
                 aria-valuenow="1"
               >
                 <div
@@ -270,7 +272,7 @@
                 </div>
                 <div class="what-we-btn order-nav" style="margin: 40px 0px">
                   <button type="button" class="btn-default back">Back</button>
-                  <button type="button" class="btn-default next">Next</button>
+                  <button id="reserveBtn" type="button" class="btn-default next">Generate your sketch</button>
                 </div>
               </section>
 
@@ -678,7 +680,80 @@
                 <div class="what-we-btn order-nav" style="margin: 40px 0px">
                   <button type="button" class="btn-default back">Back</button>
                   <button type="button" class="btn-default skip">Skip</button>
-                  <button type="submit" class="btn-default">Generate your sketch</button>
+                  <button type="button" class="btn-default next" onclick="event.preventDefault(); event.stopPropagation(); console.log('Step4b Next clicked, currentStep:', currentStep); goToStep(5); return false;">Proceed to Checkout</button>
+                </div>
+              </section>
+
+              <!-- Step 5: Payment -->
+              <section
+                id="step5"
+                class="order-step"
+                aria-labelledby="step5_title"
+                style="display: none"
+              >
+                <div class="section-title section-title-center">
+                  <h3>Step 5</h3>
+                  <h2
+                    id="step5_title"
+                    data-cursor="-opaque"
+                    style="margin: 40px 0px"
+                  >
+                    Secure <span>Checkout</span>
+                  </h2>
+                  <p style="margin-bottom: 30px; color: var(--primary-color);">
+                    Complete your order to receive your personalized soulmate sketch and reading within 24 hours.
+                  </p>
+                </div>
+
+                <!-- Pricing Summary -->
+                <div class="payment-summary" style="background: var(--section-bg-color); border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--divider-color);">
+                  <h4 style="margin-bottom: 20px; font-size: 18px;">Order Summary</h4>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span>Premium Soulmate Sketch + Reading</span>
+                    <strong style="font-size: 20px; color: var(--accent-color);">$17.99</strong>
+                    </div>
+                  <hr style="border-color: var(--divider-color); margin: 20px 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong>Total</strong>
+                    <strong style="font-size: 24px; color: var(--accent-color);">$17.99</strong>
+                    </div>
+                  <div style="margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                    <small style="color: var(--primary-color);">
+                      ✨ Includes: High-resolution soulmate sketch, detailed PDF reading, and 24-hour delivery
+                    </small>
+                          </div>
+                        </div>
+
+                <!-- Payment Form -->
+                <div class="payment-form">
+                  <form id="payment-form">
+                    <!-- Stripe Elements will be mounted here -->
+                    <div id="payment-element" style="margin-bottom: 20px;"></div>
+                    
+                    <!-- Payment Options -->
+                    <div style="margin: 20px 0;">
+                      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" alt="Apple Pay" style="width: 24px; height: 24px;">
+                        <span>Apple Pay supported</span>
+                          </div>
+                      <div style="display: flex; gap: 10px; align-items: center;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" style="height: 20px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style="height: 20px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="American Express" style="height: 20px;">
+                        <span style="font-size: 12px; color: var(--primary-color); margin-left: 10px;">Secure SSL encryption</span>
+                        </div>
+                          </div>
+
+                    <div id="payment-messages" role="alert" style="margin: 15px 0; min-height: 20px;"></div>
+                  </form>
+                        </div>
+
+                <div class="what-we-btn order-nav" style="margin: 40px 0px">
+                  <button type="button" class="btn-default back">Back</button>
+                  <button id="submit-payment" type="button" class="btn-default" disabled>
+                    <span id="payment-button-text">Complete Order - $17.99</span>
+                    <div id="payment-spinner" class="spinner" style="display: none;"></div>
+                  </button>
                 </div>
               </section>
 
@@ -704,18 +779,18 @@
                   margin: 0px 0px 40px;
                 "
               >
-                Your soulmate sketch has been generated! Download your personalized PDF report and view your custom image.
+                Your preferences are saved. Since ordering isn’t open yet, enjoy
+                a sample sketch and we’ll notify you when we launch.
               </p>
               <div class="what-we-btn order-complete-nav">
                 <a
-                  id="downloadSampleSketch"
                   href="images/home/pencil-generated.jpg"
                   class="btn-default"
                   download
-                  >Download Sample Sketch</a
+                  >Download sample sketch</a
                 >
-                <a id="viewImage" href="#" class="btn-default"
-                  >View Image</a
+                <a id="mailtoDraft" href="#" class="btn-default"
+                  >Subscribe for launch</a
                 >
               </div>
             </div>
@@ -1032,7 +1107,7 @@
           if (t.classList.contains("next")) {
             e.preventDefault();
             if (!validateCurrentStep()) return;
-            goToStep(Math.min(4, currentStep + 1));
+            goToStep(Math.min(5, currentStep + 1));
           }
           if (t.classList.contains("back")) {
             e.preventDefault();
@@ -1040,13 +1115,220 @@
           }
           if (t.classList.contains("skip")) {
             e.preventDefault();
-            goToStep(Math.min(4, currentStep + 1));
+            goToStep(Math.min(5, currentStep + 1));
           }
         });
 
-        // Submit (generate deliverables)
+        // Stripe initialization
+        let stripe, elements, paymentElement;
+        
+        // Initialize Stripe when entering payment step
+        async function initializeStripe() {
+          console.log('🔵 Initializing Stripe payment system...');
+          try {
+            // Replace with your actual Stripe publishable key
+            stripe = Stripe('pk_live_51QhI2MR6S5fZy5mLWYNJGLAm9PTXt3BKZlSPBtGJoXBdqGZ0Qw1dSHAY2z1TGvhjHYJAOFjGdFOyOdGXlBJ7x2N400l7YQWkNx');
+            console.log('✅ Stripe object created successfully');
+          
+          const appearance = {
+            theme: 'night',
+            variables: {
+              colorPrimary: '#667eea',
+              colorBackground: '#1a1a1a',
+              colorText: '#ffffff',
+              colorDanger: '#df1b41',
+              fontFamily: 'Manrope, system-ui, sans-serif',
+              spacingUnit: '4px',
+              borderRadius: '8px',
+            },
+          };
+
+          elements = stripe.elements({
+            appearance,
+            mode: 'payment',
+            amount: 1799, // $17.99 in cents
+            currency: 'usd',
+            payment_method_types: ['card', 'apple_pay'],
+          });
+
+          paymentElement = elements.create('payment');
+          console.log('🔵 Mounting payment element to #payment-element...');
+          paymentElement.mount('#payment-element');
+          console.log('✅ Payment element mounted successfully');
+
+          // Listen for changes in the Element
+          paymentElement.on('change', (event) => {
+            console.log('🔵 Payment element changed:', event);
+            const submitButton = document.getElementById('submit-payment');
+            if (event.complete) {
+              submitButton.disabled = false;
+              console.log('✅ Payment form is complete, enabling submit button');
+            } else {
+              submitButton.disabled = true;
+              console.log('⚠️ Payment form incomplete, submit button disabled');
+            }
+            
+            const messageContainer = document.getElementById('payment-messages');
+            if (event.error) {
+              messageContainer.textContent = event.error.message;
+              messageContainer.style.color = '#df1b41';
+              console.log('❌ Payment error:', event.error.message);
+            } else {
+              messageContainer.textContent = '';
+            }
+          });
+          
+          console.log('🎉 Stripe payment system fully initialized!');
+          } catch (error) {
+            console.error('❌ Failed to initialize Stripe:', error);
+          }
+        }
+
+        // Handle payment submission
+        document.getElementById('submit-payment').addEventListener('click', async function(e) {
+          e.preventDefault();
+          
+          const submitButton = e.target;
+          const buttonText = document.getElementById('payment-button-text');
+          const spinner = document.getElementById('payment-spinner');
+          
+          // Show loading state
+          submitButton.disabled = true;
+          buttonText.style.display = 'none';
+          spinner.style.display = 'inline-block';
+
+          try {
+            // Create payment intent on backend
+            const paymentResponse = await fetch('/api/create-payment-intent', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                amount: 1799, // $17.99 in cents
+                currency: 'usd',
+                email: state.user.email || 'test@example.com'
+              })
+            });
+            
+            if (!paymentResponse.ok) throw new Error('Failed to create payment intent');
+            const { client_secret } = await paymentResponse.json();
+
+            // Confirm payment with Stripe
+            const {error, paymentIntent} = await stripe.confirmPayment({
+              elements,
+              clientSecret: client_secret,
+              confirmParams: {
+                return_url: window.location.origin + '/payment-success',
+                payment_method_data: {
+                  billing_details: {
+                    email: state.user.email || 'test@example.com',
+                    name: state.user.firstName || 'Anonymous'
+                  }
+                }
+              },
+              redirect: 'if_required'
+            });
+
+            if (error) {
+              // Payment failed
+              document.getElementById('payment-messages').textContent = error.message;
+              document.getElementById('payment-messages').style.color = '#df1b41';
+              
+              // Reset button state
+              submitButton.disabled = false;
+              buttonText.style.display = 'inline';
+              spinner.style.display = 'none';
+            } else if (paymentIntent.status === 'succeeded') {
+              // Payment succeeded - proceed with order generation
+              await processOrderAfterPayment(paymentIntent.id);
+            }
+          } catch (error) {
+            console.error('Payment error:', error);
+            document.getElementById('payment-messages').textContent = 'Payment failed. Please try again.';
+            document.getElementById('payment-messages').style.color = '#df1b41';
+            
+            // Reset button state
+            submitButton.disabled = false;
+            buttonText.style.display = 'inline';
+            spinner.style.display = 'none';
+          }
+        });
+
+        // Process order after successful payment
+        async function processOrderAfterPayment(paymentIntentId) {
+          try {
+            // Build quiz payload from state
+            const quiz = {
+              user: state.user,
+              birth: state.birth,
+              appearance: state.appearance,
+              personality: state.personality,
+              relationship: state.relationship,
+              preferences: state.preferences,
+              interest: state.user?.attractedTo === 'women' ? 'female' : state.user?.attractedTo === 'men' ? 'male' : 'surprise',
+              style: state.preferences?.artStyle || 'pencil-realistic'
+            };
+
+            // 1) Create order with payment info
+            const createRes = await fetch('/api/orders', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                email: state.user.email || 'test@example.com', 
+                tier: 'premium', 
+                addons: [],
+                paymentIntentId: paymentIntentId,
+                amount: 1799
+              })
+            });
+            if (!createRes.ok) throw new Error('Failed to create order');
+            const order = await createRes.json();
+
+            // 2) Submit quiz data
+            const intakeRes = await fetch(`/api/orders/${order.id}/intake`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ quiz })
+            });
+            if (!intakeRes.ok) throw new Error('Failed to submit quiz data');
+
+            // 3) Generate deliverables
+            const generateRes = await fetch(`/api/orders/${order.id}/generate`, {
+              method: 'POST'
+            });
+            if (!generateRes.ok) throw new Error('Failed to generate deliverables');
+            const result = await generateRes.json();
+
+            // Update completion screen
+            document.getElementById('downloadSampleSketch').href = '/' + result.pdfPath;
+            document.getElementById('viewImage').href = '/' + result.imagePath;
+            
+            showComplete();
+          } catch (error) {
+            console.error('Order processing error:', error);
+            alert('Payment succeeded but order processing failed. Please contact support with payment ID: ' + paymentIntentId);
+          }
+        }
+
+        // Override goToStep to initialize Stripe when entering payment step
+        const originalGoToStep = goToStep;
+        goToStep = function(n) {
+          originalGoToStep(n);
+          if (n === 5 && !paymentElement) {
+            initializeStripe();
+          }
+        };
+
+        // Submit (generate deliverables) - now only used for testing without payment
         orderForm.addEventListener("submit", function (e) {
           e.preventDefault();
+          console.log('Form submit triggered, currentStep:', currentStep);
+          
+          // Don't process if we're on the payment step - payment handles its own submission
+          if (currentStep === 5) {
+            console.log('Blocking form submission - on payment step');
+            return;
+          }
+          
           if (!validateCurrentStep(true)) return;
 
           // Build quiz payload from state
@@ -1085,18 +1367,13 @@
               const result = await genRes.json();
 
               // 4) Show results
-              // Update the completion screen with generated links
-              const downloadBtn = document.getElementById('downloadSampleSketch');
-              if (downloadBtn && result.pdfPath) {
-                downloadBtn.href = '/' + result.pdfPath;
-                downloadBtn.textContent = 'Download Your PDF Report';
-              }
-              const viewBtn = document.getElementById('viewImage');
-              if (viewBtn && result.imagePath) {
-                viewBtn.href = '/' + result.imagePath;
-                viewBtn.textContent = 'View Your Soulmate Image';
-              }
-              showComplete();
+              // Reuse existing complete section UI
+              const downloadBtn = document.querySelector('#orderComplete a[href$="pencil-generated.jpg"]');
+              if (downloadBtn && result.pdfPath) downloadBtn.href = '/' + result.pdfPath;
+              const subscribeBtn = document.getElementById('mailtoDraft');
+              if (subscribeBtn) subscribeBtn.textContent = 'View Image';
+              if (subscribeBtn && result.imagePath) subscribeBtn.href = '/' + result.imagePath;
+          showComplete();
             } catch (err) {
               alert('Generation failed. Please try again.');
               console.error(err);
@@ -1346,15 +1623,22 @@
         }
 
         function goToStep(n) {
+          console.log(`goToStep called: going to step ${n}, current step was ${currentStep}`);
           currentStep = n;
 
           stepSections.forEach((s, i) => {
-            s.style.display = i + 1 === n ? "block" : "none";
+            const shouldShow = i + 1 === n;
+            s.style.display = shouldShow ? "block" : "none";
+            if (shouldShow) {
+              console.log(`Showing step section: ${s.id} (index ${i})`);
+            }
           });
-          const pct = Math.round((n / 4) * 100);
+          const pct = Math.round((n / 5) * 100);
           progressBar.style.width = pct + "%";
           progressBar.parentElement.setAttribute("aria-valuenow", String(n));
-          stepLabel.textContent = `Step ${n} of 4 — ${getStepLabel(n)}`;
+          stepLabel.textContent = `Step ${n} of 5 — ${getStepLabel(n)}`;
+          
+          console.log(`Step ${n} should now be visible. Step sections:`, stepSections.map(s => `${s.id}: ${s.style.display}`));
         }
 
         function getStepLabel(n) {
@@ -1364,6 +1648,7 @@
               "Birth & spiritual insights",
               "Personality & lifestyle",
               "Relationship goals",
+              "Secure checkout",
             ][n - 1] || ""
           );
         }
@@ -1454,15 +1739,35 @@
           // step 6 formats/addons
           setVal("artStyle", state.preferences.artStyle);
           setVal("auraPalette", state.preferences.auraPalette);
-          if (document.getElementById("addon_color")) document.getElementById("addon_color").checked = !!state.preferences.addons.colorUpgrade;
-          if (document.getElementById("addon_reading")) document.getElementById("addon_reading").checked = !!state.preferences.addons.reading;
-          if (document.getElementById("addon_compat")) document.getElementById("addon_compat").checked = !!state.preferences.addons.compatibility;
-          if (document.getElementById("addon_rush")) document.getElementById("addon_rush").checked = !!state.preferences.addons.rush12h;
-          if (document.getElementById("fmt_jpg")) document.getElementById("fmt_jpg").checked = !!state.preferences.formats.jpg;
-          if (document.getElementById("fmt_pdf")) document.getElementById("fmt_pdf").checked = !!state.preferences.formats.pdf;
+          document.getElementById("addon_color").checked =
+            !!state.preferences.addons.colorUpgrade;
+          document.getElementById("addon_reading").checked =
+            !!state.preferences.addons.reading;
+          document.getElementById("addon_compat").checked =
+            !!state.preferences.addons.compatibility;
+          document.getElementById("addon_rush").checked =
+            !!state.preferences.addons.rush12h;
+          document.getElementById("fmt_jpg").checked =
+            !!state.preferences.formats.jpg;
+          document.getElementById("fmt_pdf").checked =
+            !!state.preferences.formats.pdf;
         }
 
         function showComplete() {
+          // Build mailto link
+          try {
+            const subject = encodeURIComponent(
+              "Sketch My Soulmate — Subscribe for launch"
+            );
+            const body = encodeURIComponent(
+              "Draft data (JSON):\n\n" + JSON.stringify(state, null, 2)
+            );
+            mailtoDraft.href =
+              "mailto:support@soulmatesketch.com?subject=" +
+              subject +
+              "&body=" +
+              body;
+          } catch (e) {}
           orderForm.style.display = "none";
           orderComplete.style.display = "block";
         }
