@@ -1576,11 +1576,12 @@
             if (!createRes.ok) throw new Error('Failed to create order');
             const order = await createRes.json();
 
-            // 2) Submit quiz data
+            // 2) Submit quiz data (using FormData to match backend expectations)
+            const formData = new FormData();
+            formData.append('quiz', JSON.stringify(quiz));
             const intakeRes = await fetch(`/api/orders/${order.id}/intake`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ quiz })
+              body: formData
             });
             if (!intakeRes.ok) throw new Error('Failed to submit quiz data');
 
@@ -1648,11 +1649,26 @@
             // 2) Submit intake as form data
             const formData = new FormData();
             formData.append('quiz', JSON.stringify(quiz));
-            const intakeRes = await fetch(`/api/orders/${order.id}/intake`, {
+            const intakeUrl = `/api/orders/${order.id}/intake`;
+            console.log('🧪 Submitting intake to:', intakeUrl);
+            
+            const intakeRes = await fetch(intakeUrl, {
               method: 'POST',
               body: formData
             });
-            if (!intakeRes.ok) throw new Error('Failed to submit test intake');
+            
+            console.log('🧪 Intake response status:', intakeRes.status);
+            if (!intakeRes.ok) {
+              let errorMsg = `Failed to submit test intake (${intakeRes.status})`;
+              try {
+                const errorData = await intakeRes.text();
+                console.error('🧪 Intake error response:', errorData);
+                errorMsg += ': ' + errorData;
+              } catch (e) {
+                console.error('🧪 Could not parse intake error response:', e);
+              }
+              throw new Error(errorMsg);
+            }
 
             // 3) Generate professional report
             console.log('🧪 Attempting to generate test report for order:', order.id);
