@@ -12,15 +12,17 @@ import { demoHtml } from './templates.js';
 const app = express();
 const logger = pino({ transport: { target: 'pino-pretty' } });
 
-// Relax CSP for demo to allow inline scripts/styles in the demo page
+// Configure CSP to allow Stripe scripts and other required external resources
 app.use(
   helmet({
     contentSecurityPolicy: {
       useDefaults: true,
       directives: {
-        "script-src": ["'self'", "'unsafe-inline'"],
+        "script-src": ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
         "style-src": ["'self'", 'https:', "'unsafe-inline'"],
-        "img-src": ["'self'", 'data:'],
+        "img-src": ["'self'", 'data:', 'https:'],
+        "connect-src": ["'self'", "https://api.stripe.com"],
+        "frame-src": ["'self'", "https://js.stripe.com"],
         "object-src": ["'none'"],
         "base-uri": ["'self'"],
         "frame-ancestors": ["'self'"],
