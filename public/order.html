@@ -1614,24 +1614,49 @@
           testButton.textContent = 'Generating...';
           
           // Build quiz payload from current form state
+          // Ensure we have basic user data for test
+          if (!state.user) {
+            state.user = {};
+          }
+          if (!state.user.email) {
+            state.user.email = 'testuser@test.com';
+          }
+          if (!state.user.attractedTo) {
+            state.user.attractedTo = 'women';
+          }
+          
           const quiz = {
-            user: state.user,
-            birth: state.birth,
-            appearance: state.appearance,
-            personality: state.personality,
-            relationship: state.relationship,
-            preferences: state.preferences,
+            user: {
+              ...state.user,
+              email: state.user.email,
+              name: state.user.name || 'Test User',
+              attractedTo: state.user.attractedTo || 'women'
+            },
+            birth: state.birth || { zodiac: 'leo' },
+            appearance: state.appearance || { faceShape: 'oval', hairColor: 'brown', eyeColor: 'brown' },
+            personality: state.personality || { introvertExtrovert: 50, groundedAdventurous: 50, analyticalCreative: 50 },
+            relationship: state.relationship || { lookingFor: 'long-term' },
+            preferences: state.preferences || { auraPalette: 'warm' },
             interest: state.user?.attractedTo === 'women' ? 'female' : state.user?.attractedTo === 'men' ? 'male' : 'surprise',
             style: state.preferences?.artStyle || 'pencil-realistic'
           };
+          
+          console.log('🧪 Quiz data for test:', quiz);
 
           try {
             showProcessingState('Generating test report...');
             
             // 1) Create test order with full premium package and all addons
             // Use actual user email but with test suffix to ensure bypass works
-            const userEmail = state.user.email || 'partner@test.com';
-            const testEmail = userEmail.includes('test') ? userEmail : `${userEmail.split('@')[0]}+test@${userEmail.split('@')[1]}`;
+            const userEmail = state.user?.email || 'partner@test.com';
+            let testEmail;
+            if (userEmail.includes('test')) {
+              testEmail = userEmail;
+            } else if (userEmail.includes('@')) {
+              testEmail = `${userEmail.split('@')[0]}+test@${userEmail.split('@')[1]}`;
+            } else {
+              testEmail = 'testuser@test.com';
+            }
             console.log('🧪 Creating test order with email:', testEmail);
             
             const createRes = await fetch('/api/orders', {
@@ -1643,8 +1668,13 @@
                 addons: ['color-upgrade', 'aura-reading', 'compatibility-snapshot', '12-hour-rush'] // All premium addons
               })
             });
-            if (!createRes.ok) throw new Error('Failed to create test order');
+            if (!createRes.ok) {
+              const errorText = await createRes.text();
+              console.error('🧪 Order creation failed:', createRes.status, errorText);
+              throw new Error(`Failed to create test order (${createRes.status}): ${errorText}`);
+            }
             const order = await createRes.json();
+            console.log('🧪 Test order created successfully:', order.id);
 
             // 2) Submit intake as form data
             const formData = new FormData();
@@ -1663,12 +1693,21 @@
               try {
                 const errorData = await intakeRes.text();
                 console.error('🧪 Intake error response:', errorData);
-                errorMsg += ': ' + errorData;
+                // Try to parse as JSON to get structured error
+                try {
+                  const errorJson = JSON.parse(errorData);
+                  errorMsg = errorJson.error || errorJson.message || errorMsg;
+                  console.error('🧪 Parsed error details:', errorJson);
+                } catch (jsonError) {
+                  errorMsg += ': ' + errorData;
+                }
               } catch (e) {
                 console.error('🧪 Could not parse intake error response:', e);
               }
               throw new Error(errorMsg);
             }
+            const intakeResult = await intakeRes.json();
+            console.log('🧪 Intake submitted successfully:', intakeResult);
 
             // 3) Generate professional report
             console.log('🧪 Attempting to generate test report for order:', order.id);
