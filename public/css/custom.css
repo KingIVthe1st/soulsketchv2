@@ -6592,4 +6592,16 @@ header.main-header .header-sticky.active{
     width: 50px;
     height: 50px;
   }
+  
+  /* Hide desktop-only images on mobile */
+  .desktop-only-image {
+    display: none !important;
+  }
+}
+
+/* Show desktop-only images on desktop */
+@media (min-width: 768px) {
+  .desktop-only-image {
+    display: block !important;
+  }
 }

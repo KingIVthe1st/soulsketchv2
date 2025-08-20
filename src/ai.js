@@ -271,6 +271,27 @@ function getZodiacVisualEnergy(zodiac) {
   return visualEnergy[zodiac.toLowerCase()] || '';
 }
 
+function getZodiacCompatibility(zodiac) {
+  if (!zodiac) return 'earth or water energy';
+  
+  const compatibility = {
+    'aries': 'Leo or Sagittarius fire energy, or balancing Libra air energy',
+    'taurus': 'Virgo or Capricorn earth energy, or passionate Scorpio intensity',
+    'gemini': 'Libra or Aquarius air energy, or adventurous Sagittarius spirit',
+    'cancer': 'Scorpio or Pisces water energy, or grounding Taurus stability',
+    'leo': 'Aries or Sagittarius fire energy, or harmonizing Gemini intellect',
+    'virgo': 'Taurus or Capricorn earth energy, or intuitive Cancer warmth',
+    'libra': 'Gemini or Aquarius air energy, or confident Leo radiance',
+    'scorpio': 'Cancer or Pisces water energy, or stable Taurus grounding',
+    'sagittarius': 'Aries or Leo fire energy, or communicative Gemini wit',
+    'capricorn': 'Taurus or Virgo earth energy, or nurturing Cancer care',
+    'aquarius': 'Gemini or Libra air energy, or bold Leo creativity',
+    'pisces': 'Cancer or Scorpio water energy, or practical Virgo support'
+  };
+  
+  return compatibility[zodiac.toLowerCase()] || 'complementary earth or water energy';
+}
+
 // Personalized add-on content generators
 function generatePersonalizedAuraReading(quiz) {
   const user = quiz.user || {};
@@ -581,7 +602,30 @@ ${JSON.stringify(quiz, null, 2)}
 Service Level: ${tier}
 Enhancement Add-ons: ${JSON.stringify(addons)}`;
   if (!openai) {
-    return `Name: Aiden (or similar)\n\nEssence: Warm, grounded, quietly confident. Likely to notice little details about you and make you feel safe to be fully yourself.\n\nAttachment & Love: Secure leaning. Gives reassurance without being overbearing. Primary love languages: Quality Time and Words of Affirmation.\n\nHow you meet: A calm setting where conversation flows—think a cozy cafe on a rainy day, a local bookstore aisle, or a friend’s intimate gathering. You’ll feel a sense of instant familiarity.\n\nRight now: Looking for a relationship that feels like a deep exhale—steady, playful, and honest. Values consistency, humor, and shared little rituals.\n\nAstro vibes (light): Complimentary energy balance with you (yin/yang). Numerology suggests a 2 or 6 life-path resonance—cooperation, care, and home-building.\n\nDisclaimer: This is an inspirational guide for reflection, not a prediction.`;
+    // Enhanced demo content based on the user's actual quiz data
+    const personalizedDemo = `**Overview**
+Your soulmate carries an energy that perfectly complements your unique personality profile. Based on your responses, they embody the balance between ${personality.introvertExtrovert < 50 ? 'quiet depth and social warmth' : 'vibrant energy and thoughtful moments'}.
+
+**Personality & Vibe**  
+They naturally ${personality.groundedAdventurous < 50 ? 'bring stability and security while encouraging your adventurous spirit' : 'match your love for exploration while providing a grounding presence'}. Their ${personality.analyticalCreative < 50 ? 'creative soul will inspire your artistic side' : 'logical mind will appreciate your analytical nature'}, creating perfect intellectual harmony.
+
+**Attachment Style & Love Languages**
+Primary love languages: ${loveLangPriorities}. They express love through consistent actions and ${personality.introvertExtrovert < 50 ? 'intimate conversations that make you feel truly understood' : 'enthusiastic support for your goals and dreams'}.
+
+**First Meeting Scenario**
+You'll likely meet in ${personality.introvertExtrovert < 50 ? 'an intimate setting - perhaps a quiet bookstore, cozy cafe, or through mutual friends at a small gathering' : 'a social environment where your energies naturally align - maybe at a community event, networking function, or group activity'}. The connection will feel immediate and comfortable.
+
+**What They're Looking For Now**
+Currently seeking: ${relationship.lookingFor || 'a deep, meaningful connection'}. They value ${(personality.values || ['authenticity', 'growth', 'connection']).slice(0, 2).join(' and ')}, making them perfectly aligned with your relationship vision.
+
+**Advanced Numerology & Astrology**
+${birth.zodiac ? `Your ${birth.zodiac} energy` : 'Your cosmic signature'} attracts someone with complementary ${birth.zodiac ? getZodiacCompatibility(birth.zodiac) : 'earth or water energy'} who brings balance to your life path.
+
+⚠️ **DEMO MODE**: This is enhanced demo content. For fully personalized AI-generated reports with real astrological calculations and detailed compatibility analysis, a valid OpenAI API key is required in the environment configuration.
+
+This preview demonstrates the depth and personalization possible with the full AI system activated.`;
+    
+    return personalizedDemo;
   }
   try {
     const resp = await openai.chat.completions.create({
@@ -596,7 +640,30 @@ Enhancement Add-ons: ${JSON.stringify(addons)}`;
     return resp.choices[0].message.content;
   } catch (err) {
     console.error('Text generation failed, using fallback:', err?.message || err);
-    return `Name: Aiden (or similar)\n\nEssence: Warm, grounded, quietly confident. Likely to notice little details about you and make you feel safe to be fully yourself.\n\nAttachment & Love: Secure leaning. Gives reassurance without being overbearing. Primary love languages: Quality Time and Words of Affirmation.\n\nHow you meet: A calm setting where conversation flows—think a cozy cafe on a rainy day, a local bookstore aisle, or a friend’s intimate gathering. You’ll feel a sense of instant familiarity.\n\nRight now: Looking for a relationship that feels like a deep exhale—steady, playful, and honest. Values consistency, humor, and shared little rituals.\n\nAstro vibes (light): Complimentary energy balance with you (yin/yang). Numerology suggests a 2 or 6 life-path resonance—cooperation, care, and home-building.\n\nDisclaimer: This is an inspirational guide for reflection, not a prediction.`;
+    // Return the same enhanced demo content if API call fails
+    const personalizedDemo = `**Overview**
+Your soulmate carries an energy that perfectly complements your unique personality profile. Based on your responses, they embody the balance between ${personality.introvertExtrovert < 50 ? 'quiet depth and social warmth' : 'vibrant energy and thoughtful moments'}.
+
+**Personality & Vibe**  
+They naturally ${personality.groundedAdventurous < 50 ? 'bring stability and security while encouraging your adventurous spirit' : 'match your love for exploration while providing a grounding presence'}. Their ${personality.analyticalCreative < 50 ? 'creative soul will inspire your artistic side' : 'logical mind will appreciate your analytical nature'}, creating perfect intellectual harmony.
+
+**Attachment Style & Love Languages**
+Primary love languages: ${loveLangPriorities}. They express love through consistent actions and ${personality.introvertExtrovert < 50 ? 'intimate conversations that make you feel truly understood' : 'enthusiastic support for your goals and dreams'}.
+
+**First Meeting Scenario**
+You'll likely meet in ${personality.introvertExtrovert < 50 ? 'an intimate setting - perhaps a quiet bookstore, cozy cafe, or through mutual friends at a small gathering' : 'a social environment where your energies naturally align - maybe at a community event, networking function, or group activity'}. The connection will feel immediate and comfortable.
+
+**What They're Looking For Now**
+Currently seeking: ${relationship.lookingFor || 'a deep, meaningful connection'}. They value ${(personality.values || ['authenticity', 'growth', 'connection']).slice(0, 2).join(' and ')}, making them perfectly aligned with your relationship vision.
+
+**Advanced Numerology & Astrology**
+${birth.zodiac ? `Your ${birth.zodiac} energy` : 'Your cosmic signature'} attracts someone with complementary ${birth.zodiac ? getZodiacCompatibility(birth.zodiac) : 'earth or water energy'} who brings balance to your life path.
+
+⚠️ **API ERROR**: AI generation encountered an error (${err?.message || 'Unknown error'}). This is enhanced demo content. For fully personalized AI-generated reports, please check the OpenAI API configuration.
+
+This preview demonstrates the depth and personalization possible with the full AI system activated.`;
+    
+    return personalizedDemo;
   }
 }
 
@@ -687,18 +754,37 @@ Artificial/plastic appearance, heavy makeup, digital artifacts, unrealistic prop
 CREATE: The most beautiful, realistic person this individual would find absolutely irresistible - someone who looks like they could walk into their life tomorrow and change everything for the better.`;
   let buffer;
   if (!openai) {
-    // Fallback: generate a soft gradient placeholder with text
+    // Enhanced fallback: create a personalized placeholder based on user preferences
+    const auraColor = preferences.auraPalette || 'warm golden';
+    const genderText = attractedTo === 'men' || attractedTo === 'male' ? 'Your Soulmate (Male)' : 
+                      attractedTo === 'women' || attractedTo === 'female' ? 'Your Soulmate (Female)' :
+                      'Your Soulmate';
+    
     const svg = Buffer.from(
       `<svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stop-color="#FCE4EC"/>
-            <stop offset="100%" stop-color="#E1BEE7"/>
-          </linearGradient>
+          <radialGradient id="g" cx="50%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#FFE0F0"/>
+            <stop offset="50%" stop-color="#F8E8FF"/>
+            <stop offset="100%" stop-color="#E8F0FF"/>
+          </radialGradient>
+          <filter id="glow">
+            <feMorphology operator="dilate" radius="2"/>
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge> 
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
         <rect width="1024" height="1024" fill="url(#g)"/>
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="48" font-family="Georgia, serif" fill="#7B1FA2">Soulmate Sketch</text>
-        <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-size="28" font-family="Georgia, serif" fill="#AD1457">Preview Image</text>
+        <circle cx="512" cy="400" r="150" fill="#fff" opacity="0.3" filter="url(#glow)"/>
+        <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-size="32" font-family="Georgia, serif" fill="#7B1FA2" font-weight="bold">${genderText}</text>
+        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" font-family="Georgia, serif" fill="#AD1457">AI-Generated Portrait</text>
+        <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-size="18" font-family="Georgia, serif" fill="#9C27B0">Style: ${style || 'Realistic'}</text>
+        <text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#666">⚠️ DEMO MODE</text>
+        <text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">OpenAI API Key Required</text>
+        <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">for AI Image Generation</text>
       </svg>`
     );
     buffer = await sharp(svg).png().toBuffer();
@@ -718,17 +804,37 @@ CREATE: The most beautiful, realistic person this individual would find absolute
       buffer = Buffer.from(await response.arrayBuffer());
     } catch (err) {
       console.error('Image generation failed, using placeholder:', err?.message || err);
+      // Use the same enhanced fallback when API call fails
+      const auraColor = preferences.auraPalette || 'warm golden';
+      const genderText = attractedTo === 'men' || attractedTo === 'male' ? 'Your Soulmate (Male)' : 
+                        attractedTo === 'women' || attractedTo === 'female' ? 'Your Soulmate (Female)' :
+                        'Your Soulmate';
+      
       const svg = Buffer.from(
         `<svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0%" stop-color="#FCE4EC"/>
-              <stop offset="100%" stop-color="#E1BEE7"/>
-            </linearGradient>
+            <radialGradient id="g" cx="50%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="#FFE0F0"/>
+              <stop offset="50%" stop-color="#F8E8FF"/>
+              <stop offset="100%" stop-color="#E8F0FF"/>
+            </radialGradient>
+            <filter id="glow">
+              <feMorphology operator="dilate" radius="2"/>
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge> 
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
           </defs>
           <rect width="1024" height="1024" fill="url(#g)"/>
-          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="48" font-family="Georgia, serif" fill="#7B1FA2">Soulmate Sketch</text>
-          <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-size="28" font-family="Georgia, serif" fill="#AD1457">Preview Image</text>
+          <circle cx="512" cy="400" r="150" fill="#fff" opacity="0.3" filter="url(#glow)"/>
+          <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-size="32" font-family="Georgia, serif" fill="#7B1FA2" font-weight="bold">${genderText}</text>
+          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" font-family="Georgia, serif" fill="#AD1457">AI-Generated Portrait</text>
+          <text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-size="18" font-family="Georgia, serif" fill="#9C27B0">Style: ${style || 'Realistic'}</text>
+          <text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#666">⚠️ API ERROR</text>
+          <text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">Error: ${err?.message?.substring(0, 30) || 'Unknown'}</text>
+          <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-size="14" font-family="Arial, sans-serif" fill="#666">Check OpenAI Configuration</text>
         </svg>`
       );
       buffer = await sharp(svg).png().toBuffer();
@@ -744,7 +850,7 @@ CREATE: The most beautiful, realistic person this individual would find absolute
   return { filePath, sharePath };
 }
 
-export async function generatePdf({ text, imagePath, outPath, addons = [] }) {
+export async function generatePdf({ text, imagePath, outPath, addons = [], quiz = {} }) {
 	const doc = new PDFDocument({ autoFirstPage: false });
   const stream = fs.createWriteStream(outPath);
   doc.pipe(stream);

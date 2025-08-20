@@ -120,7 +120,8 @@ export class DeliverablesService {
           text: aiText,
           imagePath: imageResult.filePath,
           outPath: pdfPath,
-          addons
+          addons,
+          quiz: cleanedQuiz
         });
         console.log(`✅ PDF generation completed - Path: ${pdfPath}`);
       } catch (pdfError) {
