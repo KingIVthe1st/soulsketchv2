@@ -6,6 +6,7 @@ const TIER_PRICES = {
   basic: 1900,
   premium: 3900,
   deluxe: 6900,
+  demo: 0,  // Demo is free
 };
 
 export function getPriceCentsForTier(tier) {
