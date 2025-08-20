@@ -1,7 +1,5 @@
-import { ProfessionalPDFGenerator, ReportDataProcessor } from './pdf-generator.js';
-import { EnhancedImageGenerator } from './image-generator.js';
 import { EmailService } from './email-service.js';
-import { generateProfileText } from './ai.js';
+import { generateProfileText, generateImage, generatePdf } from './ai.js';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -12,8 +10,6 @@ import path from 'node:path';
  */
 export class DeliverablesService {
   constructor() {
-    this.pdfGenerator = new ProfessionalPDFGenerator();
-    this.imageGenerator = new EnhancedImageGenerator();
     this.emailService = new EmailService();
   }
 
@@ -71,10 +67,10 @@ export class DeliverablesService {
       });
       console.log('✅ AI text content generated');
 
-      // Step 3: Generate soulmate portrait
+      // Step 3: Generate soulmate portrait using AI
       deliveryLog.steps.push({ step: 'image_generation', status: 'started', timestamp: new Date().toISOString() });
       
-      const imageResult = await this.imageGenerator.generateSoulmateImage({
+      const imageResult = await generateImage({
         quiz: cleanedQuiz,
         style: cleanedQuiz.style || 'realistic',
         addons
@@ -93,25 +89,19 @@ export class DeliverablesService {
       });
       console.log(`✅ Soulmate portrait generated (${imageResult.method})`);
 
-      // Step 4: Process report data (remove debug info)
-      deliveryLog.steps.push({ step: 'data_processing', status: 'started', timestamp: new Date().toISOString() });
-      
-      const reportData = ReportDataProcessor.processReportData(cleanedQuiz, aiText, tier, addons);
-      
-      deliveryLog.steps.push({ 
-        step: 'data_processing', 
-        status: 'completed', 
-        timestamp: new Date().toISOString(),
-        sectionsCount: Object.keys(reportData.analysis).length
-      });
-      console.log('✅ Report data processed and cleaned');
-
-      // Step 5: Generate professional PDF
+      // Step 4: Generate professional PDF using AI
       deliveryLog.steps.push({ step: 'pdf_generation', status: 'started', timestamp: new Date().toISOString() });
       
       const pdfPath = path.join(process.cwd(), 'uploads', `${orderId}_professional_report.pdf`);
       
-      await this.pdfGenerator.generateReport(reportData, imageResult.filePath, pdfPath);
+      await generatePdf({
+        quiz: cleanedQuiz,
+        aiText,
+        tier,
+        addons,
+        imagePath: imageResult.filePath,
+        outputPath: pdfPath
+      });
       
       if (!fs.existsSync(pdfPath)) {
         throw new Error('PDF generation failed - file not created');
@@ -125,7 +115,7 @@ export class DeliverablesService {
         pdfPath,
         fileSize: pdfStats.size
       });
-      console.log('✅ Professional PDF report generated');
+      console.log('✅ AI-generated PDF report created');
 
       // Step 6: Deliver via email
       deliveryLog.steps.push({ step: 'email_delivery', status: 'started', timestamp: new Date().toISOString() });
@@ -134,7 +124,8 @@ export class DeliverablesService {
         to: email,
         pdfPath,
         imagePath: imageResult.filePath,
-        reportData
+        tier,
+        addons
       });
       
       deliveryLog.steps.push({ 
@@ -173,7 +164,6 @@ export class DeliverablesService {
         },
         reportData: {
           tier,
-          sections: Object.keys(reportData.analysis).length,
           hasAddons: addons.length > 0,
           imageMethod: imageResult.method
         }
@@ -392,10 +382,10 @@ export class DeliverablesService {
     };
 
     try {
-      // Check image generation
-      health.services.imageGeneration = {
-        available: this.imageGenerator.hasOpenAIKey,
-        method: this.imageGenerator.hasOpenAIKey ? 'dall-e' : 'placeholder'
+      // Check OpenAI API availability
+      health.services.openai = {
+        available: Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me'),
+        method: Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-replace-me') ? 'ai-generated' : 'fallback'
       };
 
       // Check email service
