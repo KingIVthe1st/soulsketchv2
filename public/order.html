@@ -1634,17 +1634,28 @@
             if (!createRes.ok) throw new Error('Failed to create test order');
             const order = await createRes.json();
 
-            // 2) Submit intake
+            // 2) Submit intake as form data
+            const formData = new FormData();
+            formData.append('quiz', JSON.stringify(quiz));
             const intakeRes = await fetch(`/api/orders/${order.id}/intake`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ quiz })
+              body: formData
             });
             if (!intakeRes.ok) throw new Error('Failed to submit test intake');
 
             // 3) Generate professional report
             const genRes = await fetch(`/api/orders/${order.id}/generate`, { method: 'POST' });
-            if (!genRes.ok) throw new Error('Failed to generate test report');
+            if (!genRes.ok) {
+              let errorMsg = `Failed to generate test report (${genRes.status})`;
+              try {
+                const errorData = await genRes.json();
+                errorMsg = errorData.message || errorData.error || errorMsg;
+                console.error('Generation API error details:', errorData);
+              } catch (e) {
+                console.error('Could not parse error response:', e);
+              }
+              throw new Error(errorMsg);
+            }
             const result = await genRes.json();
 
             // 4) Show professional success screen
@@ -1986,6 +1997,9 @@
           
           console.log(`Step ${n} should now be visible. Step sections:`, stepSections.map(s => `${s.id}: ${s.style.display}`));
         }
+
+        // Make goToStep globally accessible for inline onclick handlers
+        window.goToStep = goToStep;
 
         function getStepLabel(n) {
           return (
