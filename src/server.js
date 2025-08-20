@@ -18,7 +18,8 @@ app.use(
     contentSecurityPolicy: {
       useDefaults: true,
       directives: {
-        "script-src": ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
+        "script-src": ["'self'", "'unsafe-inline'", "'unsafe-hashes'", "https://js.stripe.com"],
+        "script-src-attr": ["'unsafe-inline'", "'unsafe-hashes'"],
         "style-src": ["'self'", 'https:', "'unsafe-inline'"],
         "img-src": ["'self'", 'data:', 'https:'],
         "connect-src": ["'self'", "https://api.stripe.com"],
