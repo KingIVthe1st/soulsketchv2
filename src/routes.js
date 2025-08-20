@@ -925,7 +925,7 @@ export function createRouter() {
         result: {
           method: result.method,
           filePath: result.filePath ? result.filePath.split('/').pop() : null,
-          hasFile: result.filePath ? require('fs').existsSync(result.filePath) : false
+          hasFile: result.filePath ? fs.existsSync(result.filePath) : false
         }
       });
     } catch (error) {
