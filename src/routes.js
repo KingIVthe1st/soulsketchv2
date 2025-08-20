@@ -275,11 +275,25 @@ export function createRouter() {
       const price = amount || getPriceCentsForTier(tier);
       const status = paymentIntentId ? 'paid' : 'created';
       
-      // Insert order with payment information
-      db.prepare(`INSERT INTO orders (id, email, tier, addons, status, created_at, updated_at, price_cents, currency, stripe_payment_intent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?)`)
-        .run(id, email, tier, JSON.stringify(addons), status, now, now, price, paymentIntentId || null);
+      console.log(`🎯 Creating order with ID: ${id}, email: ${email}, tier: ${tier}`);
+      
+      try {
+        // Insert order with payment information
+        db.prepare(`INSERT INTO orders (id, email, tier, addons, status, created_at, updated_at, price_cents, currency, stripe_payment_intent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?)`)
+          .run(id, email, tier, JSON.stringify(addons), status, now, now, price, paymentIntentId || null);
 
-      console.log(`📝 New order created: ${id} (${tier}) for ${email}`);
+        // Verify insertion
+        const verifyOrder = db.prepare('SELECT id FROM orders WHERE id = ?').get(id);
+        if (!verifyOrder) {
+          console.error(`❌ Order ${id} failed to insert into database`);
+          throw new Error('Database insertion failed');
+        }
+        
+        console.log(`✅ Order created and verified: ${id} (${tier}) for ${email}`);
+      } catch (dbError) {
+        console.error(`❌ Database error creating order ${id}:`, dbError);
+        throw dbError;
+      }
 
       // Send order confirmation email if paid
       if (status === 'paid') {
@@ -412,21 +426,37 @@ export function createRouter() {
     try {
       const { id } = req.params;
       
+      // Enhanced logging for debugging
+      console.log(`📋 Generate request received for order ID: ${id}`);
+      
       // Validate UUID format
       if (!id || !id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        console.error(`❌ Invalid order ID format: ${id}`);
         return res.status(400).json({
           error: 'Invalid order ID format',
-          code: 'INVALID_ORDER_ID'
+          code: 'INVALID_ORDER_ID',
+          receivedId: id
         });
       }
 
+      // Log database query attempt
+      console.log(`🔍 Searching for order ${id} in database...`);
       const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+      
       if (!order) {
+        // Log all orders for debugging (be careful in production)
+        const recentOrders = db.prepare('SELECT id, email, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5').all();
+        console.error(`❌ Order ${id} not found in database`);
+        console.log('📝 Recent orders:', recentOrders.map(o => ({ id: o.id, email: o.email, status: o.status })));
+        
         return res.status(404).json({ 
           error: 'Order not found',
-          code: 'ORDER_NOT_FOUND'
+          code: 'ORDER_NOT_FOUND',
+          requestedId: id
         });
       }
+      
+      console.log(`✅ Order found: ${order.id}, email: ${order.email}, status: ${order.status}`)
 
       // Enhanced test order detection for bypassing payment verification
       const isTestOrder = order.email && (
@@ -641,6 +671,35 @@ export function createRouter() {
     }
   });
 
+  // Database health check endpoint (public for testing)
+  router.get('/db-health', (req, res) => {
+    try {
+      // Test database connection
+      const testQuery = db.prepare('SELECT COUNT(*) as count FROM orders').get();
+      const recentOrders = db.prepare('SELECT id, email, status, created_at FROM orders ORDER BY created_at DESC LIMIT 3').all();
+      
+      res.json({
+        status: 'healthy',
+        orderCount: testQuery.count,
+        recentOrders: recentOrders.map(o => ({
+          id: o.id.substring(0, 8) + '...',
+          email: o.email.replace(/(.{3}).*(@.*)/, '$1***$2'),
+          status: o.status,
+          created: o.created_at
+        })),
+        dbPath: process.env.NODE_ENV === 'production' ? 'production' : 'local',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Database health check failed:', error);
+      res.status(500).json({
+        status: 'unhealthy',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   // Validate specific PDF (for debugging - secured)
   router.get('/validate/pdf/:orderId', requireAuth, (req, res) => {
     try {
@@ -674,6 +733,47 @@ export function createRouter() {
     } catch (error) {
       console.error('PDF validation failed:', error);
       res.status(500).json(sanitizeError(error));
+    }
+  });
+
+  // Temporary test endpoint for production debugging
+  router.post('/test-db-write', (req, res) => {
+    try {
+      const testId = randomUUID();
+      const now = new Date().toISOString();
+      
+      // Try to insert a test record
+      db.prepare(`INSERT INTO orders (id, email, tier, addons, status, created_at, updated_at, price_cents, currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+        testId,
+        'db-test@example.com',
+        'premium',
+        '[]',
+        'test',
+        now,
+        now,
+        100,
+        'usd'
+      );
+      
+      // Try to read it back
+      const testOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(testId);
+      
+      // Clean up
+      db.prepare('DELETE FROM orders WHERE id = ?').run(testId);
+      
+      res.json({
+        success: true,
+        message: 'Database write/read test successful',
+        testId: testId,
+        foundOrder: !!testOrder,
+        timestamp: now
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        stack: error.stack
+      });
     }
   });
 
