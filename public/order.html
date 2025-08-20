@@ -1621,14 +1621,14 @@
           try {
             showProcessingState('Generating test report...');
             
-            // 1) Create test order
+            // 1) Create test order with full premium package and all addons
             const createRes = await fetch('/api/orders', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ 
                 email: state.user.email || 'test@example.com', 
                 tier: 'premium', 
-                addons: [] 
+                addons: ['color-upgrade', 'aura-reading', 'compatibility-snapshot', '12-hour-rush'] // All premium addons
               })
             });
             if (!createRes.ok) throw new Error('Failed to create test order');
