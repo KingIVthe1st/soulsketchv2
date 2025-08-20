@@ -1845,3 +1845,396 @@
     </script>
   </body>
 </html>
+attractedTo = el.value || "all-genders";
+              break;
+            case "ageRange":
+              state.user.ageRange = el.value || "";
+              break;
+            // Step 2
+            case "birthDate":
+              state.birth.date = el.value || "";
+              deriveZodiac();
+              break;
+            case "birthTime":
+              state.birth.time = el.value || "";
+              break;
+            case "birthCity":
+              state.birth.city = el.value || "";
+              break;
+            case "zodiac":
+              state.birth.zodiac = el.value || "";
+              break;
+            case "includeReading":
+              state.birth.includeSpiritualReading = !!el.checked;
+              break;
+            // Step 3
+            case "faceShape":
+              state.appearance.faceShape = el.value;
+              break;
+            case "facialHair":
+              state.appearance.facialHair = el.value;
+              break;
+            case "freckles":
+              state.appearance.freckles = el.value;
+              break;
+            case "hairLength":
+              state.appearance.hairLength = el.value;
+              break;
+            case "hairTexture":
+              state.appearance.hairTexture = el.value;
+              break;
+            case "hairColor":
+              state.appearance.hairColor = el.value;
+              break;
+            case "eyeColor":
+              state.appearance.eyeColor = el.value;
+              break;
+            case "eyeShape":
+              state.appearance.eyeShape = el.value;
+              break;
+            case "skinTone":
+              state.appearance.skinTone = el.value;
+              break;
+            case "apparentAge":
+              state.appearance.apparentAge = el.value;
+              break;
+            case "culturalResonance":
+              state.appearance.culturalResonance = el.value || "";
+              break;
+            // Step 4
+            case "slider_introvert":
+              state.personality.introvertExtrovert = parseInt(
+                el.value || "50",
+                10
+              );
+              break;
+            case "slider_grounded":
+              state.personality.groundedAdventurous = parseInt(
+                el.value || "50",
+                10
+              );
+              break;
+            case "slider_analytical":
+              state.personality.analyticalCreative = parseInt(
+                el.value || "50",
+                10
+              );
+              break;
+            case "ll_words":
+              state.personality.loveLanguages.words = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            case "ll_qualityTime":
+              state.personality.loveLanguages.qualityTime = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            case "ll_gifts":
+              state.personality.loveLanguages.gifts = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            case "ll_acts":
+              state.personality.loveLanguages.acts = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            case "ll_touch":
+              state.personality.loveLanguages.touch = parseInt(
+                el.value || "20",
+                10
+              );
+              break;
+            // Step 5 handled by checkbox listeners below
+            case "lookingFor":
+              state.relationship.lookingFor = el.value;
+              break;
+            case "dealBreakers":
+              state.relationship.dealBreakers = el.value || "";
+              break;
+            // Step 6
+            case "artStyle":
+              state.preferences.artStyle = el.value;
+              break;
+            case "auraPalette":
+              state.preferences.auraPalette = el.value;
+              break;
+            case "addon_color":
+              state.preferences.addons.colorUpgrade = !!el.checked;
+              break;
+            case "addon_reading":
+              state.preferences.addons.reading = !!el.checked;
+              break;
+            case "addon_compat":
+              state.preferences.addons.compatibility = !!el.checked;
+              break;
+            case "addon_rush":
+              state.preferences.addons.rush12h = !!el.checked;
+              break;
+            case "fmt_jpg":
+              state.preferences.formats.jpg = !!el.checked;
+              break;
+            case "fmt_pdf":
+              state.preferences.formats.pdf = !!el.checked;
+              break;
+          }
+
+          // Step 4 values multi-select (checkboxes)
+          if (id && id.startsWith("val_")) {
+            const value = el.value;
+            const list = new Set(state.personality.values);
+            if (el.checked) list.add(value);
+            else list.delete(value);
+            state.personality.values = Array.from(list);
+          }
+
+          // Step 5 must-haves
+          if (
+            [
+              "mh_kids",
+              "mh_pet",
+              "mh_smoke",
+              "mh_active",
+              "mh_spirit",
+              "mh_career",
+              "mh_family",
+            ].includes(id)
+          ) {
+            const mhMap = {
+              mh_kids: "non-empty:wants-kids",
+              mh_pet: "non-empty:pet-friendly",
+              mh_smoke: "non-empty:non-smoker",
+              mh_active: "non-empty:active-lifestyle",
+              mh_spirit: "non-empty:spiritual-openness",
+              mh_career: "non-empty:career-driven",
+              mh_family: "non-empty:family-oriented",
+            };
+            const value = mhMap[id].split(":")[1];
+            const set = new Set(state.relationship.mustHaves);
+            if (el.checked) set.add(value);
+            else set.delete(value);
+            state.relationship.mustHaves = Array.from(set);
+          }
+
+          if (id === "birthDate") syncStateToForm(["zodiac"]);
+        }
+
+        function deriveZodiac() {
+          if (!state.birth.date) {
+            state.birth.zodiac = "";
+            return;
+          }
+          try {
+            const d = new Date(state.birth.date + "T12:00:00");
+            const m = d.getUTCMonth() + 1;
+            const day = d.getUTCDate();
+            // Simple western zodiac ranges (approximate)
+            const z =
+              (m == 3 && day >= 21) || (m == 4 && day <= 19)
+                ? "Aries"
+                : (m == 4 && day >= 20) || (m == 5 && day <= 20)
+                ? "Taurus"
+                : (m == 5 && day >= 21) || (m == 6 && day <= 20)
+                ? "Gemini"
+                : (m == 6 && day >= 21) || (m == 7 && day <= 22)
+                ? "Cancer"
+                : (m == 7 && day >= 23) || (m == 8 && day <= 22)
+                ? "Leo"
+                : (m == 8 && day >= 23) || (m == 9 && day <= 22)
+                ? "Virgo"
+                : (m == 9 && day >= 23) || (m == 10 && day <= 22)
+                ? "Libra"
+                : (m == 10 && day >= 23) || (m == 11 && day <= 21)
+                ? "Scorpio"
+                : (m == 11 && day >= 22) || (m == 12 && day <= 21)
+                ? "Sagittarius"
+                : (m == 12 && day >= 22) || (m == 1 && day <= 19)
+                ? "Capricorn"
+                : (m == 1 && day >= 20) || (m == 2 && day <= 18)
+                ? "Aquarius"
+                : "Pisces";
+            state.birth.zodiac = z;
+          } catch (e) {
+            state.birth.zodiac = "";
+          }
+        }
+
+        function goToStep(n) {
+          console.log(`goToStep called: going to step ${n}, current step was ${currentStep}`);
+          currentStep = n;
+
+          stepSections.forEach((s, i) => {
+            const shouldShow = i + 1 === n;
+            s.style.display = shouldShow ? "block" : "none";
+            if (shouldShow) {
+              console.log(`Showing step section: ${s.id} (index ${i})`);
+            }
+          });
+          const pct = Math.round((n / 5) * 100);
+          progressBar.style.width = pct + "%";
+          progressBar.parentElement.setAttribute("aria-valuenow", String(n));
+          stepLabel.textContent = `Step ${n} of 5 — ${getStepLabel(n)}`;
+          
+          console.log(`Step ${n} should now be visible. Step sections:`, stepSections.map(s => `${s.id}: ${s.style.display}`));
+          
+          // Initialize Stripe when entering payment step
+          if (n === 5 && !stripeInitialized) {
+            initializeStripe();
+          }
+        }
+
+        function getStepLabel(n) {
+          return (
+            [
+              "About you",
+              "Birth & spiritual insights",
+              "Personality & lifestyle",
+              "Relationship goals",
+              "Secure checkout",
+            ][n - 1] || ""
+          );
+        }
+
+        function validateCurrentStep(isSubmit) {
+          console.log('🔍 Validating step:', currentStep, 'State:', state);
+          
+          if (currentStep === 1) {
+            const email = (state.user.email || "").trim();
+            console.log('🔍 Email validation - current email:', email);
+            const ok = /.+@.+\..+/.test(email);
+            console.log('🔍 Email validation result:', ok);
+            if (!ok) {
+              console.log('❌ Email validation failed');
+              alert("Please enter a valid email address to continue.");
+              return false;
+            }
+            console.log('✅ Email validation passed');
+          }
+
+          console.log('✅ Step validation completed successfully');
+          return true;
+        }
+
+        function syncStateToForm(only) {
+          const ids = new Set(only || []);
+          function setVal(id, val) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.type === "checkbox") el.checked = !!val;
+            else el.value = val == null ? "" : String(val);
+          }
+          setVal("firstName", state.user.firstName);
+          setVal("email", state.user.email);
+          setVal("pronouns", state.user.pronouns);
+          setVal("country", state.user.country);
+          setVal("timezone", state.user.timezone);
+          setVal("attractedTo", state.user.attractedTo);
+          setVal("ageRange", state.user.ageRange);
+          setVal("birthDate", state.birth.date);
+          setVal("birthTime", state.birth.time);
+          setVal("birthCity", state.birth.city);
+          setVal("zodiac", state.birth.zodiac);
+          setVal("includeReading", state.birth.includeSpiritualReading);
+          setVal("faceShape", state.appearance.faceShape);
+          setVal("facialHair", state.appearance.facialHair);
+          setVal("freckles", state.appearance.freckles);
+          setVal("hairLength", state.appearance.hairLength);
+          setVal("hairTexture", state.appearance.hairTexture);
+          setVal("hairColor", state.appearance.hairColor);
+          setVal("eyeColor", state.appearance.eyeColor);
+          setVal("eyeShape", state.appearance.eyeShape);
+          setVal("skinTone", state.appearance.skinTone);
+          setVal("apparentAge", state.appearance.apparentAge);
+          setVal("culturalResonance", state.appearance.culturalResonance);
+          setVal("slider_introvert", state.personality.introvertExtrovert);
+          setVal("slider_grounded", state.personality.groundedAdventurous);
+          setVal("slider_analytical", state.personality.analyticalCreative);
+          setVal("ll_words", state.personality.loveLanguages.words);
+          setVal("ll_qualityTime", state.personality.loveLanguages.qualityTime);
+          setVal("ll_gifts", state.personality.loveLanguages.gifts);
+          setVal("ll_acts", state.personality.loveLanguages.acts);
+          setVal("ll_touch", state.personality.loveLanguages.touch);
+          
+          // values checkboxes
+          [
+            "family",
+            "growth",
+            "stability",
+            "kindness",
+            "spirituality",
+            "ambition",
+            "humor",
+            "health",
+            "curiosity",
+            "service",
+          ].forEach((v) => {
+            const el = document.getElementById("val_" + v);
+            if (el) el.checked = (state.personality.values || []).includes(v);
+          });
+          
+          // must‑haves
+          const mh = new Set(state.relationship.mustHaves || []);
+          const map = {
+            mh_kids: "wants-kids",
+            mh_pet: "pet-friendly",
+            mh_smoke: "non-smoker",
+            mh_active: "active-lifestyle",
+            mh_spirit: "spiritual-openness",
+            mh_career: "career-driven",
+            mh_family: "family-oriented",
+          };
+          Object.keys(map).forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.checked = mh.has(map[id]);
+          });
+          
+          // step 6 formats/addons - only set if elements exist
+          setVal("artStyle", state.preferences.artStyle);
+          setVal("auraPalette", state.preferences.auraPalette);
+          
+          const addonColor = document.getElementById("addon_color");
+          if (addonColor) addonColor.checked = !!state.preferences.addons.colorUpgrade;
+          
+          const addonReading = document.getElementById("addon_reading");
+          if (addonReading) addonReading.checked = !!state.preferences.addons.reading;
+          
+          const addonCompat = document.getElementById("addon_compat");
+          if (addonCompat) addonCompat.checked = !!state.preferences.addons.compatibility;
+          
+          const addonRush = document.getElementById("addon_rush");
+          if (addonRush) addonRush.checked = !!state.preferences.addons.rush12h;
+          
+          const fmtJpg = document.getElementById("fmt_jpg");
+          if (fmtJpg) fmtJpg.checked = !!state.preferences.formats.jpg;
+          
+          const fmtPdf = document.getElementById("fmt_pdf");
+          if (fmtPdf) fmtPdf.checked = !!state.preferences.formats.pdf;
+        }
+
+        function showComplete() {
+          orderForm.style.display = "none";
+          orderComplete.style.display = "block";
+        }
+
+        function escapeHtml(s) {
+          return String(s).replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;",
+              }[c])
+          );
+        }
+      })();
+    </script>
+  </body>
+</html>
