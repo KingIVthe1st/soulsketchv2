@@ -589,12 +589,13 @@ export function createRouter() {
       }
 
       // Return sanitized error response
-      // Temporarily show debug info for test orders to help troubleshoot
+      // Show debug info for test orders or when debug parameter is present
       const isTestOrder = req.params.id && (
         order?.email?.includes('test') || 
         order?.email?.includes('debug') ||
         error.message?.includes('test')
       );
+      const showDebug = req.query.debug === 'true' || isTestOrder || process.env.NODE_ENV === 'development';
       
       res.status(500).json({
         success: false,
@@ -602,14 +603,16 @@ export function createRouter() {
         message: 'We apologize for the inconvenience. Please try again in a few moments, or contact support if the issue persists.',
         code: 'GENERATION_FAILED',
         orderId: req.params.id,
-        ...sanitizeError(error, process.env.NODE_ENV === 'development' || isTestOrder),
-        // Add debug info for test orders
-        ...(isTestOrder && {
+        ...sanitizeError(error, showDebug),
+        // Add comprehensive debug info when needed
+        ...(showDebug && {
           debugInfo: {
             errorMessage: error.message,
-            errorStack: error.stack?.split('\n').slice(0, 5).join('\n'),
+            errorStack: error.stack?.split('\n').slice(0, 8).join('\n'),
             nodeEnv: process.env.NODE_ENV,
-            hasApiKey: Boolean(process.env.OPENAI_API_KEY?.startsWith('sk-'))
+            hasApiKey: Boolean(process.env.OPENAI_API_KEY?.startsWith('sk-')),
+            apiKeyLength: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0,
+            apiKeyPrefix: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'not set'
           }
         })
       });
