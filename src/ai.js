@@ -684,10 +684,17 @@ export async function generateImage({ style, quiz, addons = [] }) {
     fs.mkdirSync(outDir, { recursive: true });
     const filePath = path.join(outDir, `result_${Date.now()}.png`);
     
+    // Debug OpenAI availability
+    console.log('🔍 OpenAI Debug Info:');
+    console.log(`  - hasOpenAIKey: ${hasOpenAIKey}`);
+    console.log(`  - openai instance: ${openai ? 'initialized' : 'null'}`);
+    console.log(`  - API Key prefix: ${process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'not set'}`);
+    
     if (openai) {
       try {
         console.log('🤖 Attempting DALL-E generation...');
         const simplePrompt = `A beautiful, realistic portrait of a ${gender} with warm, kind eyes and a gentle smile. Professional headshot style, natural lighting, attractive features, photorealistic quality.`;
+        console.log(`🎨 Prompt: ${simplePrompt}`);
         
         const image = await openai.images.generate({
           model: 'dall-e-3',
@@ -697,19 +704,23 @@ export async function generateImage({ style, quiz, addons = [] }) {
           style: 'natural'
         });
         
-        console.log('✅ DALL-E image generated, downloading...');
+        console.log('✅ DALL-E API call successful, downloading image...');
         const imageUrl = image.data[0].url;
+        console.log(`📥 Image URL received: ${imageUrl.substring(0, 50)}...`);
+        
         const response = await fetch(imageUrl);
-        if (!response.ok) throw new Error('Failed to download generated image');
+        if (!response.ok) throw new Error(`Failed to download generated image: ${response.status}`);
         
         const buffer = Buffer.from(await response.arrayBuffer());
         await fs.promises.writeFile(filePath, buffer);
+        console.log(`💾 Image saved to: ${filePath}`);
         
         // Create social share variant
         const sharePath = filePath.replace('.png', '_story.png');
         await sharp(buffer).resize(1080, 1920, { fit: 'cover' }).toFile(sharePath);
+        console.log(`📱 Social share variant created: ${sharePath}`);
         
-        console.log('✅ DALL-E image saved successfully');
+        console.log('✅ DALL-E image generation completed successfully');
         return { 
           success: true,
           method: 'dall-e',
@@ -718,8 +729,11 @@ export async function generateImage({ style, quiz, addons = [] }) {
         };
       } catch (dallError) {
         console.error('❌ DALL-E generation failed:', dallError.message);
+        console.error('❌ Full error:', dallError);
         // Fall through to placeholder
       }
+    } else {
+      console.log('⚠️ OpenAI not available, using placeholder generation');
     }
     
     // Generate simple placeholder

@@ -904,6 +904,40 @@ export function createRouter() {
     }
   });
 
+  // Test DALL-E generation endpoint
+  router.post('/test-dalle', async (req, res) => {
+    try {
+      console.log('🧪 Testing DALL-E image generation...');
+      
+      const { generateImage } = await import('./ai.js');
+      const testQuiz = {
+        user: { attractedTo: 'women' }
+      };
+      
+      const result = await generateImage({
+        quiz: testQuiz,
+        style: 'realistic',
+        addons: []
+      });
+      
+      res.json({
+        success: true,
+        result: {
+          method: result.method,
+          filePath: result.filePath ? result.filePath.split('/').pop() : null,
+          hasFile: result.filePath ? require('fs').existsSync(result.filePath) : false
+        }
+      });
+    } catch (error) {
+      console.error('❌ DALL-E test failed:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        stack: error.stack?.split('\n').slice(0, 10).join('\n')
+      });
+    }
+  });
+
   // File serving endpoints for downloads
   router.get('/uploads/:filename', (req, res) => {
     try {
