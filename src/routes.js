@@ -706,7 +706,7 @@ export function createRouter() {
   });
 
   // Debug API health check (public for testing)
-  router.get('/api-debug', (req, res) => {
+  router.get('/api-debug', async (req, res) => {
     try {
       const hasValidApiKey = Boolean(
         process.env.OPENAI_API_KEY && 
@@ -715,13 +715,25 @@ export function createRouter() {
         process.env.OPENAI_API_KEY.startsWith('sk-')
       );
       
+      let openaiTest = null;
+      if (hasValidApiKey) {
+        try {
+          // Try to import and test OpenAI
+          const { generateProfileText } = await import('./ai.js');
+          openaiTest = 'import_success';
+        } catch (importError) {
+          openaiTest = `import_error: ${importError.message}`;
+        }
+      }
+      
       res.json({
         status: 'debug',
         environment: process.env.NODE_ENV,
         openai: {
           hasValidKey: hasValidApiKey,
           keyPrefix: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'not set',
-          keyLength: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0
+          keyLength: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0,
+          testResult: openaiTest
         },
         stripe: {
           configured: Boolean(process.env.STRIPE_SECRET_KEY)
@@ -732,6 +744,7 @@ export function createRouter() {
       res.status(500).json({
         status: 'error',
         error: error.message,
+        stack: error.stack?.split('\n').slice(0, 5).join('\n'),
         timestamp: new Date().toISOString()
       });
     }
