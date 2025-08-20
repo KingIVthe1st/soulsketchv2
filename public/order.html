@@ -195,10 +195,8 @@
                     email is needed for delivery.</small
                   >
                 </div>
-                <div class="what-we-btn order-nav" style="margin: 40px 0px">
-                  <div>
-                    <button type="button" class="btn-default next">Next</button>
-                  </div>
+                <div class="what-we-btn order-nav" style="margin: 40px 0px; text-align: right;">
+                  <button type="button" class="btn-default next">Next</button>
                 </div>
               </section>
 
@@ -1106,7 +1104,13 @@
           const t = e.target;
           if (t.classList.contains("next")) {
             e.preventDefault();
-            if (!validateCurrentStep()) return;
+            console.log('🔵 Next button clicked on step:', currentStep);
+            console.log('🔵 Validating step...', currentStep);
+            if (!validateCurrentStep()) {
+              console.log('❌ Validation failed for step:', currentStep);
+              return;
+            }
+            console.log('✅ Validation passed, going to next step');
             goToStep(Math.min(5, currentStep + 1));
           }
           if (t.classList.contains("back")) {
@@ -1654,15 +1658,22 @@
         }
 
         function validateCurrentStep(isSubmit) {
+          console.log('🔍 Validating step:', currentStep, 'State:', state);
+          
           if (currentStep === 1) {
             const email = (state.user.email || "").trim();
+            console.log('🔍 Email validation - current email:', email);
             const ok = /.+@.+\..+/.test(email);
+            console.log('🔍 Email validation result:', ok);
             if (!ok) {
+              console.log('❌ Email validation failed');
               alert("Please enter a valid email.");
               return false;
             }
+            console.log('✅ Email validation passed');
           }
 
+          console.log('✅ Step validation completed successfully');
           return true;
         }
 
