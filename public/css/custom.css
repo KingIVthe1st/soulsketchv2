@@ -1202,8 +1202,9 @@ header.main-header .header-sticky.active{
 
 .service-box-image img{
 	width: 100%;
-	aspect-ratio: 1 / 0.65;
-	object-fit: cover;
+	height: auto;
+	object-fit: contain;
+	max-height: none;
 }
 
 .service-box-list .service-box{
@@ -6287,4 +6288,34 @@ header.main-header .header-sticky.active{
 	.contact-form-content h3{
 		font-size: 18px;
 	}
+}
+
+/* Payment Styles */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.payment-summary {
+  border: 1px solid var(--divider-color) !important;
+}
+
+/* Stripe Elements styling */
+#payment-element {
+  margin: 20px 0;
+}
+
+.payment-form .form-control {
+  margin-bottom: 15px;
 }
