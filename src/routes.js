@@ -735,40 +735,59 @@ export function createRouter() {
     }
   });
 
-  // Test AI image generation (for debugging)
-  router.post('/test-image', async (req, res) => {
+  // Test deliverables service directly (for debugging)
+  router.post('/test-deliverables', async (req, res) => {
     try {
-      const { generateImage } = await import('./ai.js');
+      console.log('🧪 Testing deliverables service directly...');
       
       const testQuiz = {
-        user: { email: 'test@test.com', attractedTo: 'women' },
+        user: { 
+          email: 'testuser@test.com', 
+          attractedTo: 'women',
+          name: 'Test User'
+        },
         appearance: { 
           faceShape: 'oval', 
           hairColor: 'brown',
           eyeColor: 'blue',
           skinTone: 'medium'
+        },
+        personality: {
+          introvertExtrovert: 60,
+          groundedAdventurous: 40,
+          analyticalCreative: 70
+        },
+        birth: {
+          date: '1990-06-15',
+          zodiac: 'gemini'
         }
       };
       
-      console.log('🖼️ Testing image generation...');
-      const result = await generateImage({
+      const deliverables = new DeliverablesService();
+      
+      const result = await deliverables.generateAndDeliverReport({
+        orderId: 'test-' + Date.now(),
         quiz: testQuiz,
         tier: 'premium',
-        addons: []
+        addons: [],
+        email: 'testuser@test.com'
       });
       
       res.json({
         success: true,
-        result: result ? 'Image generated successfully' : 'No image generated',
-        hasBuffer: Boolean(result),
-        bufferLength: result ? result.length : 0
+        result: 'Deliverables generation completed',
+        deliveryMethod: result.deliveryMethod,
+        files: {
+          pdf: result.files?.pdf ? 'generated' : 'none',
+          image: result.files?.image ? 'generated' : 'none'
+        }
       });
     } catch (error) {
-      console.error('❌ Image generation test failed:', error);
+      console.error('❌ Deliverables test failed:', error);
       res.status(500).json({
         success: false,
         error: error.message,
-        stack: error.stack?.split('\n').slice(0, 8).join('\n')
+        stack: error.stack?.split('\n').slice(0, 10).join('\n')
       });
     }
   });
