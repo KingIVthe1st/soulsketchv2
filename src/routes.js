@@ -522,12 +522,12 @@ export function createRouter() {
           hasAddons: result.reportData.hasAddons,
           imageQuality: result.reportData.imageMethod === 'dall-e' ? 'AI Generated' : 'Professional Placeholder'
         },
-        // Provide file access paths (for development/testing only)
-        files: process.env.NODE_ENV === 'development' ? {
-          pdf: `uploads/${path.basename(result.files.pdf)}`,
-          image: `uploads/${path.basename(result.files.image)}`,
-          share: result.files.share ? `uploads/${path.basename(result.files.share)}` : null
-        } : null
+        // Provide file access paths for download links
+        files: {
+          pdf: path.basename(result.files.pdf),
+          image: path.basename(result.files.image),
+          share: result.files.share ? path.basename(result.files.share) : null
+        }
       });
 
     } catch (error) {

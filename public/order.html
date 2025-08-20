@@ -933,24 +933,30 @@
                   flex-wrap: wrap;
                   margin-top: 20px;
                 ">
-                  <div style="
+                  <a id="pdf-download-link" href="#" style="
                     display: flex;
                     align-items: center;
                     color: #059669;
                     font-weight: 500;
-                  ">
+                    text-decoration: none;
+                    cursor: pointer;
+                    transition: opacity 0.2s;
+                  " onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
                     <i class="fa-solid fa-file-pdf" style="margin-right: 8px;"></i>
                     Professional PDF Report
-                  </div>
-                  <div style="
+                  </a>
+                  <a id="image-download-link" href="#" style="
                     display: flex;
                     align-items: center;
                     color: #7C3AED;
                     font-weight: 500;
-                  ">
+                    text-decoration: none;
+                    cursor: pointer;
+                    transition: opacity 0.2s;
+                  " onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
                     <i class="fa-solid fa-image" style="margin-right: 8px;"></i>
                     AI-Generated Portrait
-                  </div>
+                  </a>
                 </div>
               </div>
 
@@ -1622,8 +1628,9 @@
             showProcessingState('Generating test report...');
             
             // 1) Create test order with full premium package and all addons
-            // Force test email to ensure bypass works
-            const testEmail = 'test@example.com';
+            // Use actual user email but with test suffix to ensure bypass works
+            const userEmail = state.user.email || 'partner@test.com';
+            const testEmail = userEmail.includes('test') ? userEmail : `${userEmail.split('@')[0]}+test@${userEmail.split('@')[1]}`;
             console.log('🧪 Creating test order with email:', testEmail);
             
             const createRes = await fetch('/api/orders', {
@@ -1667,7 +1674,7 @@
 
             // 4) Hide processing state and show professional success screen
             hideProcessingState();
-            showProfessionalSuccess(result, order.email);
+            showProfessionalSuccess(result, testEmail);
             
           } catch (error) {
             console.error('Test generation error:', error);
@@ -2145,7 +2152,7 @@
 
         // Professional success screen with clean API integration
         function showProfessionalSuccess(result, email) {
-          console.log('✅ Showing professional success screen');
+          console.log('✅ Showing professional success screen', result);
           
           // Hide all form steps
           document.querySelectorAll('.order-step').forEach(step => {
@@ -2167,6 +2174,28 @@
             const emailBtn = document.getElementById('check-email-btn');
             if (emailBtn && email) {
               emailBtn.href = `mailto:${email}`;
+            }
+            
+            // Set up download links if files are available
+            if (result.files) {
+              const pdfLink = document.getElementById('pdf-download-link');
+              const imageLink = document.getElementById('image-download-link');
+              
+              if (pdfLink && result.files.pdf) {
+                pdfLink.href = `/uploads/${result.files.pdf.split('/').pop()}`;
+                pdfLink.target = '_blank';
+                pdfLink.download = `soulmate-report-${result.orderId || 'download'}.pdf`;
+                console.log('✅ PDF download link set:', pdfLink.href);
+              }
+              
+              if (imageLink && result.files.image) {
+                imageLink.href = `/uploads/${result.files.image.split('/').pop()}`;
+                imageLink.target = '_blank';
+                imageLink.download = `soulmate-portrait-${result.orderId || 'download'}.png`;
+                console.log('✅ Image download link set:', imageLink.href);
+              }
+            } else {
+              console.warn('⚠️ No files data in result:', result);
             }
             
             // Scroll to top for better UX
