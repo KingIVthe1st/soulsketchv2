@@ -715,7 +715,7 @@ export function createRouter() {
         process.env.OPENAI_API_KEY.startsWith('sk-')
       );
       
-      let openaiTest = null;
+      let openaiTest = 'not_tested';
       if (hasValidApiKey) {
         try {
           // Try to import and test OpenAI
@@ -724,6 +724,8 @@ export function createRouter() {
         } catch (importError) {
           openaiTest = `import_error: ${importError.message}`;
         }
+      } else {
+        openaiTest = 'no_valid_key';
       }
       
       res.json({
