@@ -1,12 +1,15 @@
 import express from 'express';
 import multer from 'multer';
+import rateLimit from 'express-rate-limit';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import fs from 'node:fs';
 import Stripe from 'stripe';
+import { z } from 'zod';
 import { getDb } from './db.js';
 import { getPriceCentsForTier } from './payments.js';
-import { generateProfileText, generateImage, generatePdf } from './ai.js';
+import { DeliverablesService, DeliverablesUtils } from './deliverables-service.js';
+import { EmailService } from './email-service.js';
 
 // Initialize Stripe only if API key is available
 let stripe;
@@ -16,24 +19,179 @@ if (process.env.STRIPE_SECRET_KEY) {
   console.log('⚠️  Stripe not initialized - STRIPE_SECRET_KEY not set');
 }
 
-const upload = multer({ dest: path.join(process.cwd(), 'uploads') });
+// Validation schemas
+const OrderCreateSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  tier: z.enum(['premium', 'standard']).default('premium'),
+  addons: z.array(z.string()).default([]),
+  paymentIntentId: z.string().optional(),
+  amount: z.number().min(50, 'Amount must be at least 50 cents').optional()
+});
+
+const PaymentIntentSchema = z.object({
+  amount: z.number().min(50, 'Amount must be at least 50 cents'),
+  currency: z.string().default('usd'),
+  email: z.string().email('Invalid email format').optional()
+});
+
+const CleanupSchema = z.object({
+  olderThanDays: z.number().min(1).max(365).default(7)
+});
+
+// Secure file upload configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(process.cwd(), 'uploads');
+    fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const orderId = req.params.id;
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${orderId}_photo${ext}`);
+  }
+});
+
+// File filter for security
+const fileFilter = (req, file, cb) => {
+  // Only allow image files
+  const allowedMimeTypes = [
+    'image/jpeg',
+    'image/jpg', 
+    'image/png',
+    'image/gif',
+    'image/webp'
+  ];
+  
+  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+  const fileExtension = path.extname(file.originalname).toLowerCase();
+  
+  if (allowedMimeTypes.includes(file.mimetype) && allowedExtensions.includes(fileExtension)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.'));
+  }
+};
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+    files: 1 // Only one file per upload
+  },
+  fileFilter: fileFilter
+});
+
+// Rate limiting configurations
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per windowMs
+  message: {
+    error: 'Too many requests',
+    code: 'RATE_LIMIT_EXCEEDED',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const strictLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // 10 requests per windowMs for sensitive endpoints
+  message: {
+    error: 'Too many requests to sensitive endpoint',
+    code: 'STRICT_RATE_LIMIT_EXCEEDED',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // 20 payment attempts per windowMs
+  message: {
+    error: 'Too many payment attempts',
+    code: 'PAYMENT_RATE_LIMIT_EXCEEDED',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Admin authentication middleware
+const requireAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const adminKey = process.env.ADMIN_API_KEY;
+  
+  if (!adminKey) {
+    return res.status(503).json({ 
+      error: 'Admin endpoints not configured',
+      code: 'ADMIN_NOT_CONFIGURED'
+    });
+  }
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ 
+      error: 'Authentication required',
+      code: 'AUTH_REQUIRED'
+    });
+  }
+  
+  const token = authHeader.substring(7);
+  if (token !== adminKey) {
+    return res.status(403).json({ 
+      error: 'Invalid authentication',
+      code: 'AUTH_INVALID'
+    });
+  }
+  
+  next();
+};
+
+// Error sanitization helper
+const sanitizeError = (error, includeDetails = false) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  if (isProduction && !includeDetails) {
+    return {
+      error: 'An error occurred',
+      code: 'INTERNAL_ERROR',
+      message: 'Please try again later or contact support if the issue persists.'
+    };
+  }
+  
+  return {
+    error: error.message || 'An error occurred',
+    code: error.code || 'INTERNAL_ERROR',
+    ...(includeDetails && { details: error.stack })
+  };
+};
 
 export function createRouter() {
   const router = express.Router();
   const db = getDb();
+  
+  // Initialize services
+  const deliverables = new DeliverablesService();
+  const emailService = new EmailService();
+
+  // Apply general rate limiting to all routes
+  router.use(generalLimiter);
 
   // Create payment intent endpoint
-  router.post('/create-payment-intent', async (req, res) => {
+  router.post('/create-payment-intent', paymentLimiter, async (req, res) => {
     if (!stripe) {
-      return res.status(503).json({ error: 'Payment system not available - Stripe not configured' });
+      return res.status(503).json({ 
+        error: 'Payment system not available',
+        code: 'STRIPE_NOT_CONFIGURED'
+      });
     }
     
     try {
-      const { amount, currency = 'usd', email } = req.body;
-      
-      if (!amount || amount < 50) { // Minimum 50 cents
-        return res.status(400).json({ error: 'Invalid amount' });
-      }
+      // Validate input with Zod
+      const validatedData = PaymentIntentSchema.parse(req.body);
+      const { amount, currency, email } = validatedData;
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount), // Ensure it's an integer
@@ -53,7 +211,16 @@ export function createRouter() {
       });
     } catch (error) {
       console.error('Stripe payment intent creation failed:', error);
-      res.status(500).json({ error: 'Failed to create payment intent' });
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          error: 'Invalid input data',
+          code: 'VALIDATION_ERROR',
+          details: error.errors
+        });
+      }
+      
+      res.status(500).json(sanitizeError(error));
     }
   });
 
@@ -97,76 +264,400 @@ export function createRouter() {
     res.status(200).send('OK');
   });
 
-  router.post('/orders', (req, res) => {
-    const { email, tier = 'premium', addons = [], paymentIntentId, amount } = req.body || {};
-    if (!email) return res.status(400).json({ error: 'email required' });
-    const id = randomUUID();
-    const now = new Date().toISOString();
-    const price = amount || getPriceCentsForTier(tier);
-    const status = paymentIntentId ? 'paid' : 'created';
-    
-    // Insert order with payment information
-    db.prepare(`INSERT INTO orders (id, email, tier, addons, status, created_at, updated_at, price_cents, currency, stripe_payment_intent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?)`)
-      .run(id, email, tier, JSON.stringify(addons), status, now, now, price, paymentIntentId || null);
-    res.json({ id, price_cents: price, currency: 'usd', status });
-  });
-
-  router.post('/orders/:id/intake', upload.single('photo'), (req, res) => {
-    const { id } = req.params;
-    const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
-    if (!order) return res.status(404).json({ error: 'not found' });
-
-    let photoPath = order.photo_path;
-    if (req.file) {
-      photoPath = path.join('uploads', `${id}_photo${path.extname(req.file.originalname) || ''}`);
-      fs.renameSync(req.file.path, path.join(process.cwd(), photoPath));
-    }
-
-    const quiz = JSON.parse(req.body.quiz || '{}');
-    db.prepare('UPDATE orders SET photo_path = ?, quiz_answers = ?, updated_at = ? WHERE id = ?')
-      .run(photoPath, JSON.stringify(quiz), new Date().toISOString(), id);
-
-    res.json({ ok: true });
-  });
-
-  router.post('/orders/:id/generate', async (req, res) => {
-    const { id } = req.params;
-    const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
-    if (!order) return res.status(404).json({ error: 'not found' });
-
+  router.post('/orders', strictLimiter, async (req, res) => {
     try {
-      const quiz = JSON.parse(order.quiz_answers || '{}');
-      const addons = JSON.parse(order.addons || '[]');
+      // Validate input with Zod
+      const validatedData = OrderCreateSchema.parse(req.body || {});
+      const { email, tier, addons, paymentIntentId, amount } = validatedData;
 
-      const [text] = await Promise.all([
-        generateProfileText({ quiz, tier: order.tier, addons })
-      ]);
+      const id = randomUUID();
+      const now = new Date().toISOString();
+      const price = amount || getPriceCentsForTier(tier);
+      const status = paymentIntentId ? 'paid' : 'created';
+      
+      // Insert order with payment information
+      db.prepare(`INSERT INTO orders (id, email, tier, addons, status, created_at, updated_at, price_cents, currency, stripe_payment_intent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?)`)
+        .run(id, email, tier, JSON.stringify(addons), status, now, now, price, paymentIntentId || null);
 
-      const { filePath, sharePath } = await generateImage({ style: quiz.style || 'ethereal', quiz, addons });
+      console.log(`📝 New order created: ${id} (${tier}) for ${email}`);
 
-      const pdfPath = path.join(process.cwd(), 'uploads', `${id}_report.pdf`);
-      await generatePdf({ text, imagePath: filePath, outPath: pdfPath, addons });
-
-      db.prepare('UPDATE orders SET result_image_path = ?, result_pdf_path = ?, status = ?, updated_at = ? WHERE id = ?')
-        .run(filePath, pdfPath, 'delivered', new Date().toISOString(), id);
+      // Send order confirmation email if paid
+      if (status === 'paid') {
+        try {
+          await emailService.sendOrderConfirmation({
+            to: email,
+            orderId: id,
+            tier: tier,
+            estimatedDelivery: tier === 'premium' ? '5-10 minutes' : '3-7 minutes'
+          });
+          console.log(`📧 Order confirmation sent to ${email}`);
+        } catch (emailError) {
+          console.warn('Order confirmation email failed:', emailError.message);
+          // Don't fail the order creation if email fails
+        }
+      }
 
       res.json({ 
-        imagePath: `uploads/${path.basename(filePath)}`, 
-        sharePath: sharePath ? `uploads/${path.basename(sharePath)}` : null, 
-        pdfPath: `uploads/${path.basename(pdfPath)}`,
-        profileText: text
+        id, 
+        price_cents: price, 
+        currency: 'usd', 
+        status,
+        tier,
+        email,
+        created_at: now,
+        estimated_delivery: tier === 'premium' ? '5-10 minutes' : '3-7 minutes'
       });
-    } catch (e) {
-      console.error(e);
-      res.status(500).json({ error: 'generation_failed' });
+
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          error: 'Invalid input data',
+          code: 'VALIDATION_ERROR',
+          details: error.errors.map(e => ({
+            field: e.path.join('.'),
+            message: e.message
+          }))
+        });
+      }
+      
+      res.status(500).json(sanitizeError(error));
+    }
+  });
+
+  router.post('/orders/:id/intake', strictLimiter, (req, res) => {
+    // Handle file upload with proper error handling
+    upload.single('photo')(req, res, (err) => {
+      if (err) {
+        console.error('File upload error:', err.message);
+        
+        if (err instanceof multer.MulterError) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+              error: 'File too large',
+              code: 'FILE_SIZE_EXCEEDED',
+              message: 'File size must be under 5MB'
+            });
+          }
+          if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+            return res.status(400).json({
+              error: 'Unexpected file',
+              code: 'UNEXPECTED_FILE',
+              message: 'Only one file allowed per upload'
+            });
+          }
+        }
+        
+        return res.status(400).json({
+          error: 'File upload failed',
+          code: 'UPLOAD_ERROR',
+          message: err.message
+        });
+      }
+
+      try {
+        const { id } = req.params;
+        
+        // Validate UUID format
+        if (!id || !id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+          return res.status(400).json({
+            error: 'Invalid order ID format',
+            code: 'INVALID_ORDER_ID'
+          });
+        }
+
+        const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+        if (!order) {
+          return res.status(404).json({ 
+            error: 'Order not found',
+            code: 'ORDER_NOT_FOUND'
+          });
+        }
+
+        let photoPath = order.photo_path;
+        if (req.file) {
+          // File has already been processed by multer with security checks
+          photoPath = req.file.path;
+        }
+
+        // Parse and validate quiz data
+        let quiz = {};
+        try {
+          quiz = JSON.parse(req.body.quiz || '{}');
+        } catch (parseError) {
+          return res.status(400).json({
+            error: 'Invalid quiz data format',
+            code: 'INVALID_QUIZ_DATA'
+          });
+        }
+
+        db.prepare('UPDATE orders SET photo_path = ?, quiz_answers = ?, updated_at = ? WHERE id = ?')
+          .run(photoPath, JSON.stringify(quiz), new Date().toISOString(), id);
+
+        res.json({ 
+          success: true,
+          message: 'Intake data saved successfully',
+          hasPhoto: Boolean(req.file)
+        });
+
+      } catch (error) {
+        console.error('Intake processing error:', error);
+        res.status(500).json(sanitizeError(error));
+      }
+    });
+  });
+
+  router.post('/orders/:id/generate', strictLimiter, async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Validate UUID format
+      if (!id || !id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        return res.status(400).json({
+          error: 'Invalid order ID format',
+          code: 'INVALID_ORDER_ID'
+        });
+      }
+
+      const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+      if (!order) {
+        return res.status(404).json({ 
+          error: 'Order not found',
+          code: 'ORDER_NOT_FOUND'
+        });
+      }
+
+      // Check if order is paid (for production)
+      if (order.status !== 'paid' && process.env.NODE_ENV === 'production') {
+        return res.status(403).json({ 
+          error: 'Payment required',
+          code: 'PAYMENT_REQUIRED',
+          message: 'Order must be paid before generation'
+        });
+      }
+
+      console.log(`🎯 Starting professional report generation for order ${id}`);
+      
+      // Parse order data with error handling
+      let quiz, addons;
+      try {
+        quiz = JSON.parse(order.quiz_answers || '{}');
+        addons = JSON.parse(order.addons || '[]');
+      } catch (parseError) {
+        return res.status(400).json({
+          error: 'Invalid order data format',
+          code: 'INVALID_ORDER_DATA'
+        });
+      }
+      
+      // Validate email for delivery
+      if (!order.email) {
+        return res.status(400).json({
+          error: 'Order email required for delivery',
+          code: 'EMAIL_REQUIRED'
+        });
+      }
+
+      // Update order status to processing
+      db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
+        .run('processing', new Date().toISOString(), id);
+
+      // Generate and deliver complete professional report
+      const result = await deliverables.generateAndDeliverReport({
+        orderId: id,
+        quiz,
+        tier: order.tier,
+        addons,
+        email: order.email
+      });
+
+      // Update order with results
+      const updateQuery = `
+        UPDATE orders SET 
+          result_image_path = ?, 
+          result_pdf_path = ?, 
+          status = ?, 
+          updated_at = ?
+        WHERE id = ?
+      `;
+      
+      db.prepare(updateQuery).run(
+        result.files.image,
+        result.files.pdf,
+        'delivered',
+        new Date().toISOString(),
+        id
+      );
+
+      console.log(`✅ Professional report delivered successfully for order ${id}`);
+
+      // Return clean response (no debug data)
+      res.json({ 
+        success: true,
+        orderId: id,
+        status: 'delivered',
+        deliveryMethod: result.deliveryMethod,
+        message: `Your personalized ${result.reportData.tier} Soulmate Sketch report has been delivered to ${order.email}`,
+        report: {
+          tier: result.reportData.tier,
+          sections: result.reportData.sections,
+          hasAddons: result.reportData.hasAddons,
+          imageQuality: result.reportData.imageMethod === 'dall-e' ? 'AI Generated' : 'Professional Placeholder'
+        },
+        // Provide file access paths (for development/testing only)
+        files: process.env.NODE_ENV === 'development' ? {
+          pdf: `uploads/${path.basename(result.files.pdf)}`,
+          image: `uploads/${path.basename(result.files.image)}`,
+          share: result.files.share ? `uploads/${path.basename(result.files.share)}` : null
+        } : null
+      });
+
+    } catch (error) {
+      console.error(`❌ Professional report generation failed for order ${req.params.id}:`, error);
+
+      // Update order status to failed if we have a valid order ID
+      if (req.params.id && req.params.id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        try {
+          db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
+            .run('failed', new Date().toISOString(), req.params.id);
+        } catch (updateError) {
+          console.error('Failed to update order status:', updateError);
+        }
+      }
+
+      // Return sanitized error response
+      res.status(500).json({
+        success: false,
+        error: 'Report generation failed',
+        message: 'We apologize for the inconvenience. Please try again in a few moments, or contact support if the issue persists.',
+        code: 'GENERATION_FAILED',
+        orderId: req.params.id,
+        ...sanitizeError(error, process.env.NODE_ENV === 'development')
+      });
     }
   });
 
   router.get('/orders/:id', (req, res) => {
     const { id } = req.params;
     const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
-    if (!order) return res.status(404).json({ error: 'not found' });
-    res.json(order);
+    if (!order) {
+      return res.status(404).json({ 
+        error: 'Order not found',
+        code: 'ORDER_NOT_FOUND'
+      });
+    }
+
+    // Clean response - remove sensitive/debug data
+    const cleanOrder = {
+      id: order.id,
+      tier: order.tier,
+      status: order.status,
+      created_at: order.created_at,
+      updated_at: order.updated_at,
+      currency: order.currency,
+      // Only include email for the order owner (in production, you'd verify ownership)
+      email: order.email,
+      // Only show if files exist and order is completed
+      hasResults: Boolean(order.result_pdf_path && order.result_image_path),
+      estimatedDelivery: order.status === 'paid' ? 
+        (order.tier === 'premium' ? '5-10 minutes' : '3-7 minutes') : null
+    };
+
+    res.json(cleanOrder);
+  });
+
+  // Professional monitoring endpoints (secured)
+  
+  // Health check for deliverables system (secured)
+  router.get('/health/deliverables', requireAuth, async (req, res) => {
+    try {
+      const health = await deliverables.healthCheck();
+      res.json(health);
+    } catch (error) {
+      console.error('Health check failed:', error);
+      res.status(500).json(sanitizeError(error));
+    }
+  });
+
+  // Delivery statistics (for internal monitoring - secured)
+  router.get('/stats/deliveries', requireAuth, async (req, res) => {
+    try {
+      const stats = await deliverables.getDeliveryStats();
+      res.json({
+        ...stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Stats retrieval failed:', error);
+      res.status(500).json(sanitizeError(error));
+    }
+  });
+
+  // Cleanup old files (maintenance endpoint - secured)
+  router.post('/maintenance/cleanup', requireAuth, async (req, res) => {
+    try {
+      // Validate input with Zod
+      const validatedData = CleanupSchema.parse(req.body || {});
+      const { olderThanDays } = validatedData;
+      
+      const result = await DeliverablesUtils.cleanupOldFiles(olderThanDays);
+      res.json({
+        ...result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Cleanup failed:', error);
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          error: 'Invalid cleanup parameters',
+          code: 'VALIDATION_ERROR',
+          details: error.errors.map(e => ({
+            field: e.path.join('.'),
+            message: e.message
+          }))
+        });
+      }
+      
+      res.status(500).json(sanitizeError(error));
+    }
+  });
+
+  // Validate specific PDF (for debugging - secured)
+  router.get('/validate/pdf/:orderId', requireAuth, (req, res) => {
+    try {
+      const { orderId } = req.params;
+      
+      // Validate UUID format
+      if (!orderId || !orderId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        return res.status(400).json({
+          error: 'Invalid order ID format',
+          code: 'INVALID_ORDER_ID'
+        });
+      }
+      
+      const order = db.prepare('SELECT result_pdf_path FROM orders WHERE id = ?').get(orderId);
+      
+      if (!order || !order.result_pdf_path) {
+        return res.status(404).json({ 
+          error: 'PDF not found for this order',
+          code: 'PDF_NOT_FOUND',
+          orderId 
+        });
+      }
+
+      const validation = DeliverablesUtils.validatePDF(order.result_pdf_path);
+      res.json({
+        orderId,
+        pdfPath: path.basename(order.result_pdf_path),
+        ...validation,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('PDF validation failed:', error);
+      res.status(500).json(sanitizeError(error));
+    }
   });
 
   return router;

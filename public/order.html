@@ -856,6 +856,7 @@
               
             </form>
 
+            <!-- Professional Success Section -->
             <div
               id="orderComplete"
               class="wow fadeInUp"
@@ -863,31 +864,143 @@
               style="display: none"
             >
               <div class="section-title section-title-center">
-                <h3>All done</h3>
+                <h3>Report Generated</h3>
                 <h2 data-cursor="-opaque" style="margin: 40px 0px 0px">
-                  You're <span>all set!</span>
+                  Your personalized <span>soulmate sketch</span> is ready!
                 </h2>
               </div>
-              <p
+              
+              <!-- Success Message -->
+              <div id="success-message" 
                 style="
                   display: flex;
-                  justify-content: center;
+                  flex-direction: column;
+                  align-items: center;
                   margin: 0px 0px 40px;
-                "
-              >
-                Your preferences are saved. Since ordering isn’t open yet, enjoy
-                a sample sketch and we’ll notify you when we launch.
-              </p>
-              <div class="what-we-btn order-complete-nav">
-                <a
-                  href="images/home/pencil-generated.jpg"
-                  class="btn-default"
-                  download
-                  >Download sample sketch</a
-                >
-                <a id="mailtoDraft" href="#" class="btn-default"
-                  >Subscribe for launch</a
-                >
+                  text-align: center;
+                ">
+                <div style="
+                  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+                  color: white;
+                  padding: 20px 30px;
+                  border-radius: 12px;
+                  margin-bottom: 20px;
+                  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+                ">
+                  <i class="fa-solid fa-check-circle" style="font-size: 24px; margin-right: 10px;"></i>
+                  <strong>Successfully Delivered!</strong>
+                </div>
+                <p style="
+                  font-size: 18px;
+                  line-height: 1.6;
+                  max-width: 500px;
+                  color: #6B7280;
+                ">
+                  Your personalized soulmate report has been delivered to your email inbox. 
+                  Check your email for a comprehensive PDF report including your AI-generated 
+                  soulmate sketch and detailed compatibility reading.
+                </p>
+              </div>
+
+              <!-- Email Delivery Info -->
+              <div id="delivery-info" 
+                style="
+                  background: #F3F4F6;
+                  border-radius: 12px;
+                  padding: 25px;
+                  margin: 0 0 30px 0;
+                  text-align: center;
+                ">
+                <h4 style="
+                  color: #374151;
+                  margin: 0 0 15px 0;
+                  font-size: 20px;
+                ">
+                  <i class="fa-solid fa-envelope" style="margin-right: 10px; color: #6366F1;"></i>
+                  Check Your Email
+                </h4>
+                <p style="
+                  color: #6B7280;
+                  margin: 0 0 15px 0;
+                  line-height: 1.5;
+                ">
+                  Your report was sent to: <strong id="delivery-email">your@email.com</strong>
+                </p>
+                <div style="
+                  display: flex;
+                  justify-content: center;
+                  gap: 20px;
+                  flex-wrap: wrap;
+                  margin-top: 20px;
+                ">
+                  <div style="
+                    display: flex;
+                    align-items: center;
+                    color: #059669;
+                    font-weight: 500;
+                  ">
+                    <i class="fa-solid fa-file-pdf" style="margin-right: 8px;"></i>
+                    Professional PDF Report
+                  </div>
+                  <div style="
+                    display: flex;
+                    align-items: center;
+                    color: #7C3AED;
+                    font-weight: 500;
+                  ">
+                    <i class="fa-solid fa-image" style="margin-right: 8px;"></i>
+                    AI-Generated Portrait
+                  </div>
+                </div>
+              </div>
+
+              <!-- Professional Actions -->
+              <div class="what-we-btn order-complete-nav" style="
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                flex-wrap: wrap;
+              ">
+                <a href="mailto:" 
+                   id="check-email-btn" 
+                   class="btn-default"
+                   style="
+                     background: #6366F1;
+                     border-color: #6366F1;
+                     display: flex;
+                     align-items: center;
+                   ">
+                  <i class="fa-solid fa-envelope-open-text" style="margin-right: 8px;"></i>
+                  Open Email App
+                </a>
+                <a href="/" 
+                   class="btn-default btn-highlighted"
+                   style="display: flex; align-items: center;">
+                  <i class="fa-solid fa-home" style="margin-right: 8px;"></i>
+                  Return Home
+                </a>
+              </div>
+
+              <!-- Support Information -->
+              <div style="
+                margin-top: 40px;
+                padding: 20px;
+                background: #FEF3C7;
+                border-radius: 8px;
+                text-align: center;
+                border-left: 4px solid #F59E0B;
+              ">
+                <p style="
+                  margin: 0;
+                  color: #92400E;
+                  font-size: 14px;
+                  line-height: 1.5;
+                ">
+                  <strong>Don't see your email?</strong> Check your spam/junk folder, or contact us at 
+                  <a href="mailto:support@sketchmysoulmate.com" style="color: #92400E; text-decoration: underline;">
+                    support@sketchmysoulmate.com
+                  </a>
+                </p>
               </div>
             </div>
           </div>
@@ -1428,6 +1541,8 @@
         // Process order after successful payment
         async function processOrderAfterPayment(paymentIntentId) {
           try {
+            showProcessingState('Generating your soulmate report...');
+            
             // Build quiz payload from state
             const quiz = {
               user: state.user,
@@ -1463,25 +1578,24 @@
             });
             if (!intakeRes.ok) throw new Error('Failed to submit quiz data');
 
-            // 3) Generate deliverables
+            // 3) Generate professional report
             const generateRes = await fetch(`/api/orders/${order.id}/generate`, {
               method: 'POST'
             });
-            if (!generateRes.ok) throw new Error('Failed to generate deliverables');
+            if (!generateRes.ok) throw new Error('Failed to generate report');
             const result = await generateRes.json();
 
-            // Update completion screen
-            document.getElementById('downloadSampleSketch').href = '/' + result.pdfPath;
-            document.getElementById('viewImage').href = '/' + result.imagePath;
+            // 4) Show professional success screen
+            showProfessionalSuccess(result, order.email);
             
-            showComplete();
           } catch (error) {
             console.error('Order processing error:', error);
-            alert('Payment succeeded but order processing failed. Please contact support with payment ID: ' + paymentIntentId);
+            hideProcessingState();
+            showErrorMessage('Payment succeeded but report generation failed. Please contact support with payment ID: ' + paymentIntentId);
           }
         }
 
-        // TEST Button Handler - Generate deliverables without payment
+        // TEST Button Handler - Generate professional report without payment
         document.getElementById('test-deliverables').addEventListener('click', async function(e) {
           e.preventDefault();
           
@@ -1495,24 +1609,27 @@
           // Build quiz payload from current form state
           const quiz = {
             user: state.user,
+            birth: state.birth,
+            appearance: state.appearance,
+            personality: state.personality,
+            relationship: state.relationship,
             preferences: state.preferences,
-            reading: state.reading,
-            timeOfBirth: state.user?.timeOfBirth || null,
-            birthLocation: state.user?.birthLocation || null,
-            name: state.user?.name || 'Test User',
-            email: state.user?.email || 'test@example.com',
-            gender: state.user?.gender || 'prefer not to say',
-            attractedTo: state.user?.attractedTo || 'surprise',
             interest: state.user?.attractedTo === 'women' ? 'female' : state.user?.attractedTo === 'men' ? 'male' : 'surprise',
             style: state.preferences?.artStyle || 'pencil-realistic'
           };
 
           try {
+            showProcessingState('Generating test report...');
+            
             // 1) Create test order
             const createRes = await fetch('/api/orders', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: quiz.email, tier: 'basic', addons: [] })
+              body: JSON.stringify({ 
+                email: state.user.email || 'test@example.com', 
+                tier: 'basic', 
+                addons: [] 
+              })
             });
             if (!createRes.ok) throw new Error('Failed to create test order');
             const order = await createRes.json();
@@ -1520,21 +1637,23 @@
             // 2) Submit intake
             const intakeRes = await fetch(`/api/orders/${order.id}/intake`, {
               method: 'POST',
-              body: (() => { const f = new FormData(); f.append('quiz', JSON.stringify(quiz)); return f; })()
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ quiz })
             });
             if (!intakeRes.ok) throw new Error('Failed to submit test intake');
 
-            // 3) Generate deliverables
+            // 3) Generate professional report
             const genRes = await fetch(`/api/orders/${order.id}/generate`, { method: 'POST' });
-            if (!genRes.ok) throw new Error('Failed to generate test deliverables');
+            if (!genRes.ok) throw new Error('Failed to generate test report');
             const result = await genRes.json();
 
-            // 4) Show results immediately
-            showOrderComplete(result.deliverables);
+            // 4) Show professional success screen
+            showProfessionalSuccess(result, order.email);
             
           } catch (error) {
             console.error('Test generation error:', error);
-            alert('Test generation failed: ' + error.message);
+            hideProcessingState();
+            showErrorMessage('Test generation failed: ' + error.message);
           } finally {
             // Reset button state
             testButton.disabled = false;
@@ -1598,22 +1717,11 @@
               });
               if (!intakeRes.ok) throw new Error('Failed to submit intake');
 
-              // 3) Generate deliverables
-              const genRes = await fetch(`/api/orders/${order.id}/generate`, { method: 'POST' });
-              if (!genRes.ok) throw new Error('Failed to generate');
-              const result = await genRes.json();
-
-              // 4) Show results
-              // Reuse existing complete section UI
-              const downloadBtn = document.querySelector('#orderComplete a[href$="pencil-generated.jpg"]');
-              if (downloadBtn && result.pdfPath) downloadBtn.href = '/' + result.pdfPath;
-              const subscribeBtn = document.getElementById('mailtoDraft');
-              if (subscribeBtn) subscribeBtn.textContent = 'View Image';
-              if (subscribeBtn && result.imagePath) subscribeBtn.href = '/' + result.imagePath;
-          showComplete();
+              // This legacy generation code has been moved to the test button
+              console.log('⚠️ Legacy form submission - use payment or test button instead');
             } catch (err) {
-              alert('Generation failed. Please try again.');
-              console.error(err);
+              console.error('Legacy form error:', err);
+              showErrorMessage('Please use the payment button to complete your order.');
             }
           })();
         });
@@ -2007,23 +2115,199 @@
           if (fmtPdf) fmtPdf.checked = !!state.preferences.formats.pdf;
         }
 
+        // Legacy function for backward compatibility
         function showComplete() {
-          // Build mailto link
-          try {
-            const subject = encodeURIComponent(
-              "Sketch My Soulmate — Subscribe for launch"
-            );
-            const body = encodeURIComponent(
-              "Draft data (JSON):\n\n" + JSON.stringify(state, null, 2)
-            );
-            mailtoDraft.href =
-              "mailto:support@soulmatesketch.com?subject=" +
-              subject +
-              "&body=" +
-              body;
-          } catch (e) {}
           orderForm.style.display = "none";
           orderComplete.style.display = "block";
+        }
+
+        // Professional success screen with clean API integration
+        function showProfessionalSuccess(result, email) {
+          console.log('✅ Showing professional success screen');
+          
+          // Hide all form steps
+          document.querySelectorAll('.order-step').forEach(step => {
+            step.style.display = 'none';
+          });
+          
+          // Show completion section
+          const completeSection = document.getElementById('orderComplete');
+          if (completeSection) {
+            completeSection.style.display = 'block';
+            
+            // Update email in success message
+            const emailElement = document.getElementById('delivery-email');
+            if (emailElement && email) {
+              emailElement.textContent = email;
+            }
+            
+            // Update email button link
+            const emailBtn = document.getElementById('check-email-btn');
+            if (emailBtn && email) {
+              emailBtn.href = `mailto:${email}`;
+            }
+            
+            // Scroll to top for better UX
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+          
+          // Hide the main order form
+          const orderForm = document.getElementById('orderForm');
+          if (orderForm) {
+            orderForm.style.display = "none";
+          }
+        }
+
+        // Show professional loading state
+        function showProcessingState(message = 'Processing your order...') {
+          // Add a professional loading overlay
+          let overlay = document.getElementById('processing-overlay');
+          if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'processing-overlay';
+            overlay.style.cssText = `
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.8);
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              z-index: 9999;
+              color: white;
+              font-family: inherit;
+            `;
+            document.body.appendChild(overlay);
+          }
+          
+          overlay.innerHTML = `
+            <div style="
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              padding: 40px;
+              border-radius: 20px;
+              text-align: center;
+              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+              max-width: 400px;
+              margin: 20px;
+            ">
+              <div style="
+                width: 60px;
+                height: 60px;
+                border: 4px solid rgba(255, 255, 255, 0.3);
+                border-top: 4px solid white;
+                border-radius: 50%;
+                margin: 0 auto 20px auto;
+                animation: spin 1s linear infinite;
+              "></div>
+              <h3 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 600;">
+                ${message}
+              </h3>
+              <p style="margin: 0; opacity: 0.9; font-size: 16px;">
+                This may take a few moments as we create your personalized report...
+              </p>
+            </div>
+            <style>
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            </style>
+          `;
+          
+          overlay.style.display = 'flex';
+        }
+
+        // Hide processing state
+        function hideProcessingState() {
+          const overlay = document.getElementById('processing-overlay');
+          if (overlay) {
+            overlay.style.display = 'none';
+          }
+        }
+
+        // Show professional error message
+        function showErrorMessage(message) {
+          // Create or update error modal
+          let errorModal = document.getElementById('error-modal');
+          if (!errorModal) {
+            errorModal = document.createElement('div');
+            errorModal.id = 'error-modal';
+            errorModal.style.cssText = `
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.8);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 10000;
+              font-family: inherit;
+            `;
+            document.body.appendChild(errorModal);
+          }
+          
+          errorModal.innerHTML = `
+            <div style="
+              background: white;
+              padding: 40px;
+              border-radius: 20px;
+              text-align: center;
+              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+              max-width: 500px;
+              margin: 20px;
+            ">
+              <div style="
+                width: 80px;
+                height: 80px;
+                background: linear-gradient(135deg, #FEE2E2, #FECACA);
+                border-radius: 50%;
+                margin: 0 auto 20px auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              ">
+                <i class="fa-solid fa-exclamation-triangle" style="
+                  font-size: 32px;
+                  color: #DC2626;
+                "></i>
+              </div>
+              <h3 style="margin: 0 0 15px 0; font-size: 24px; color: #DC2626; font-weight: 600;">
+                Something went wrong
+              </h3>
+              <p style="
+                margin: 0 0 30px 0;
+                color: #6B7280;
+                font-size: 16px;
+                line-height: 1.5;
+              ">
+                ${message}
+              </p>
+              <button onclick="document.getElementById('error-modal').style.display='none'" 
+                style="
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  color: white;
+                  border: none;
+                  padding: 12px 30px;
+                  border-radius: 8px;
+                  font-size: 16px;
+                  font-weight: 500;
+                  cursor: pointer;
+                  transition: transform 0.2s;
+                "
+                onmouseover="this.style.transform='translateY(-2px)'"
+                onmouseout="this.style.transform='translateY(0px)'"
+              >
+                Try Again
+              </button>
+            </div>
+          `;
+          
+          errorModal.style.display = 'flex';
         }
 
         function escapeHtml(s) {
@@ -2041,39 +2325,19 @@
         }
 
         // Show order completion with deliverables
+        // Legacy function - replaced by showProfessionalSuccess
         function showOrderComplete(deliverables) {
-          console.log('Showing order complete with deliverables:', deliverables);
+          console.warn('⚠️ showOrderComplete is deprecated - using professional success screen');
           
-          // Hide all steps
-          document.querySelectorAll('.order-step').forEach(step => {
-            step.style.display = 'none';
-          });
+          // Redirect to new professional success function
+          const email = state.user?.email || 'your@email.com';
+          const mockResult = {
+            success: true,
+            message: 'Report delivered via email',
+            deliveryMethod: 'email'
+          };
           
-          // Show completion section
-          const completeSection = document.getElementById('orderComplete');
-          completeSection.style.display = 'block';
-          
-          // Update download links if deliverables are provided
-          if (deliverables) {
-            if (deliverables.sketch) {
-              const sketchLink = completeSection.querySelector('a[href*="pencil-generated"]');
-              if (sketchLink) {
-                sketchLink.href = deliverables.sketch;
-                sketchLink.download = 'soulmate-sketch.jpg';
-              }
-            }
-            
-            if (deliverables.reading) {
-              const readingLink = completeSection.querySelector('a[href*="reading"]');
-              if (readingLink) {
-                readingLink.href = deliverables.reading;
-                readingLink.download = 'soulmate-reading.pdf';
-              }
-            }
-          }
-          
-          // Scroll to top
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          showProfessionalSuccess(mockResult, email);
         }
       })();
     </script>
@@ -2470,39 +2734,19 @@ attractedTo = el.value || "all-genders";
         }
 
         // Show order completion with deliverables
+        // Legacy function - replaced by showProfessionalSuccess
         function showOrderComplete(deliverables) {
-          console.log('Showing order complete with deliverables:', deliverables);
+          console.warn('⚠️ showOrderComplete is deprecated - using professional success screen');
           
-          // Hide all steps
-          document.querySelectorAll('.order-step').forEach(step => {
-            step.style.display = 'none';
-          });
+          // Redirect to new professional success function
+          const email = state.user?.email || 'your@email.com';
+          const mockResult = {
+            success: true,
+            message: 'Report delivered via email',
+            deliveryMethod: 'email'
+          };
           
-          // Show completion section
-          const completeSection = document.getElementById('orderComplete');
-          completeSection.style.display = 'block';
-          
-          // Update download links if deliverables are provided
-          if (deliverables) {
-            if (deliverables.sketch) {
-              const sketchLink = completeSection.querySelector('a[href*="pencil-generated"]');
-              if (sketchLink) {
-                sketchLink.href = deliverables.sketch;
-                sketchLink.download = 'soulmate-sketch.jpg';
-              }
-            }
-            
-            if (deliverables.reading) {
-              const readingLink = completeSection.querySelector('a[href*="reading"]');
-              if (readingLink) {
-                readingLink.href = deliverables.reading;
-                readingLink.download = 'soulmate-reading.pdf';
-              }
-            }
-          }
-          
-          // Scroll to top
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          showProfessionalSuccess(mockResult, email);
         }
       })();
     </script>

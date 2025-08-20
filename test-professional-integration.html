@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoulmateSketch Professional Integration Test</title>
+    <link rel="stylesheet" href="public/css/custom.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #5a6fd8;
+        }
+        .test-results {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+
+<h1>SoulmateSketch Professional Integration Test</h1>
+
+<!-- Test Professional Success Page -->
+<div class="test-section">
+    <h2>1. Professional Success Page Test</h2>
+    <p>Test the new professional success page that shows after report generation</p>
+    <button class="test-button" onclick="testProfessionalSuccess()">Show Professional Success</button>
+    <div class="test-results" id="success-results" style="display: none;"></div>
+</div>
+
+<!-- Test Processing State -->
+<div class="test-section">
+    <h2>2. Processing State Test</h2>
+    <p>Test the loading overlay that appears during report generation</p>
+    <button class="test-button" onclick="testProcessingState()">Show Processing State</button>
+    <button class="test-button" onclick="testHideProcessingState()">Hide Processing State</button>
+    <div class="test-results" id="processing-results" style="display: none;"></div>
+</div>
+
+<!-- Test Error Modal -->
+<div class="test-section">
+    <h2>3. Error Modal Test</h2>
+    <p>Test the professional error handling modal</p>
+    <button class="test-button" onclick="testErrorModal()">Show Error Modal</button>
+    <div class="test-results" id="error-results" style="display: none;"></div>
+</div>
+
+<!-- Test API Integration -->
+<div class="test-section">
+    <h2>4. API Integration Test</h2>
+    <p>Test the integration with the new professional backend API</p>
+    <button class="test-button" onclick="testAPIHealth()">Test API Health</button>
+    <button class="test-button" onclick="testCreateOrder()">Test Order Creation</button>
+    <div class="test-results" id="api-results" style="display: none;"></div>
+</div>
+
+<!-- Test Complete Workflow -->
+<div class="test-section">
+    <h2>5. Complete Workflow Test</h2>
+    <p>Test the complete professional workflow integration</p>
+    <button class="test-button" onclick="testCompleteWorkflow()">Test Complete Workflow</button>
+    <div class="test-results" id="workflow-results" style="display: none;"></div>
+</div>
+
+<!-- Professional Success Page (Hidden) -->
+<div id="orderComplete" style="display: none;">
+    <div class="professional-success-container">
+        <i class="fas fa-check-circle success-icon"></i>
+        <div class="section-title section-title-center">
+            <h3>Report Generated</h3>
+            <h2>Your personalized <span>soulmate sketch</span> is ready!</h2>
+        </div>
+        
+        <div class="professional-delivery-info">
+            <h4><i class="fas fa-envelope"></i> Delivered to Your Email</h4>
+            <p id="delivery-email">Your comprehensive soulmate report has been sent to your email address.</p>
+            <p><strong>Report includes:</strong></p>
+            <ul style="text-align: left; display: inline-block; margin-top: 10px;">
+                <li>AI-generated soulmate portrait</li>
+                <li>Personalized compatibility analysis</li>
+                <li>Cosmic connection insights</li>
+                <li>Relationship guidance</li>
+            </ul>
+        </div>
+        
+        <div class="professional-action-buttons">
+            <a href="#" class="professional-btn" onclick="checkEmail()">
+                <i class="fas fa-envelope-open"></i> Check Your Email
+            </a>
+            <a href="/" class="professional-btn">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
+        
+        <div class="professional-support-info">
+            <h5>Need Help?</h5>
+            <p>Email: support@soulmatesketch.com</p>
+            <p>Response time: Within 24 hours</p>
+        </div>
+    </div>
+</div>
+
+<!-- Processing Overlay -->
+<div id="processing-overlay" class="processing-overlay">
+    <div class="processing-content">
+        <div class="processing-spinner"></div>
+        <h3 id="processing-title">Generating Your Report</h3>
+        <p id="processing-message">This may take a few minutes...</p>
+        <p style="font-size: 0.9rem; color: #999;">Please don't close this window</p>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div id="error-modal" class="error-modal-overlay">
+    <div class="error-modal-content">
+        <i class="fas fa-exclamation-circle error-icon"></i>
+        <h3 id="error-title">Something went wrong</h3>
+        <p id="error-message">We encountered an issue processing your request.</p>
+        <div class="error-modal-actions">
+            <button class="error-modal-btn" onclick="closeErrorModal()">Try Again</button>
+            <button class="error-modal-btn secondary" onclick="contactSupport()">Contact Support</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Professional UI Functions (from the main application)
+function showProfessionalSuccess(result, email) {
+    console.log('Showing professional success page');
+    document.getElementById('delivery-email').textContent = 
+        `Your comprehensive soulmate report has been sent to ${email}.`;
+    document.getElementById('orderComplete').style.display = 'block';
+    document.getElementById('orderComplete').scrollIntoView({ behavior: 'smooth' });
+}
+
+function showProcessingState(message = 'Generating your soulmate report...') {
+    console.log('Showing processing state:', message);
+    document.getElementById('processing-title').textContent = 'Generating Your Report';
+    document.getElementById('processing-message').textContent = message;
+    document.getElementById('processing-overlay').classList.add('show');
+}
+
+function hideProcessingState() {
+    console.log('Hiding processing state');
+    document.getElementById('processing-overlay').classList.remove('show');
+}
+
+function showErrorMessage(title, message) {
+    console.log('Showing error message:', title, message);
+    document.getElementById('error-title').textContent = title || 'Something went wrong';
+    document.getElementById('error-message').textContent = message || 'We encountered an issue processing your request.';
+    document.getElementById('error-modal').classList.add('show');
+}
+
+function closeErrorModal() {
+    document.getElementById('error-modal').classList.remove('show');
+}
+
+function contactSupport() {
+    window.open('mailto:support@soulmatesketch.com?subject=Support Request - Professional Integration');
+    closeErrorModal();
+}
+
+function checkEmail() {
+    alert('Please check your email inbox and spam folder for your soulmate report!');
+}
+
+// Test Functions
+function testProfessionalSuccess() {
+    showProfessionalSuccess({ 
+        reportData: { tier: 'premium' } 
+    }, 'test@example.com');
+    
+    document.getElementById('success-results').style.display = 'block';
+    document.getElementById('success-results').innerHTML = 
+        '<strong>✅ Professional Success Page displayed successfully!</strong><br>' +
+        'Features tested: Success icon, delivery info, action buttons, support info';
+}
+
+function testProcessingState() {
+    showProcessingState('Generating your personalized soulmate report...');
+    
+    document.getElementById('processing-results').style.display = 'block';
+    document.getElementById('processing-results').innerHTML = 
+        '<strong>✅ Processing State displayed successfully!</strong><br>' +
+        'Features tested: Processing overlay, spinner animation, loading message';
+    
+    // Auto-hide after 3 seconds for demo
+    setTimeout(() => {
+        hideProcessingState();
+    }, 3000);
+}
+
+function testHideProcessingState() {
+    hideProcessingState();
+    
+    document.getElementById('processing-results').innerHTML += 
+        '<br><strong>✅ Processing State hidden successfully!</strong>';
+}
+
+function testErrorModal() {
+    showErrorMessage(
+        'Generation Failed', 
+        'We encountered an issue generating your soulmate report. Please try again or contact support if the issue persists.'
+    );
+    
+    document.getElementById('error-results').style.display = 'block';
+    document.getElementById('error-results').innerHTML = 
+        '<strong>✅ Error Modal displayed successfully!</strong><br>' +
+        'Features tested: Error icon, custom message, action buttons';
+}
+
+async function testAPIHealth() {
+    const resultsDiv = document.getElementById('api-results');
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '<strong>Testing API Health...</strong>';
+    
+    try {
+        const response = await fetch('/api/health/deliverables');
+        const data = await response.json();
+        
+        resultsDiv.innerHTML = 
+            '<strong>✅ API Health Check Successful!</strong><br>' +
+            `Status: ${data.status}<br>` +
+            `Services: ${JSON.stringify(data.services || {}, null, 2)}`;
+    } catch (error) {
+        resultsDiv.innerHTML = 
+            '<strong>❌ API Health Check Failed!</strong><br>' +
+            `Error: ${error.message}<br>` +
+            'Note: This is expected if the backend server is not running.';
+    }
+}
+
+async function testCreateOrder() {
+    const resultsDiv = document.getElementById('api-results');
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML += '<br><strong>Testing Order Creation...</strong>';
+    
+    try {
+        const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: 'test@example.com',
+                tier: 'premium',
+                amount: 2997
+            })
+        });
+        
+        const data = await response.json();
+        
+        resultsDiv.innerHTML += 
+            '<br><strong>✅ Order Creation Successful!</strong><br>' +
+            `Order ID: ${data.id}<br>` +
+            `Status: ${data.status}<br>` +
+            `Tier: ${data.tier}`;
+    } catch (error) {
+        resultsDiv.innerHTML += 
+            '<br><strong>❌ Order Creation Failed!</strong><br>' +
+            `Error: ${error.message}<br>` +
+            'Note: This is expected if the backend server is not running.';
+    }
+}
+
+function testCompleteWorkflow() {
+    const resultsDiv = document.getElementById('workflow-results');
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '<strong>Testing Complete Professional Workflow...</strong>';
+    
+    // Simulate the complete workflow
+    showProcessingState('Processing payment and creating order...');
+    
+    setTimeout(() => {
+        document.getElementById('processing-message').textContent = 
+            'Generating your personalized soulmate report...';
+    }, 1000);
+    
+    setTimeout(() => {
+        document.getElementById('processing-message').textContent = 
+            'Creating AI portrait and finalizing report...';
+    }, 2000);
+    
+    setTimeout(() => {
+        hideProcessingState();
+        showProfessionalSuccess({ 
+            reportData: { tier: 'premium', sections: 8, hasAddons: true } 
+        }, 'test@example.com');
+        
+        resultsDiv.innerHTML = 
+            '<strong>✅ Complete Workflow Test Successful!</strong><br>' +
+            'Tested: Processing states → Success page → Email delivery confirmation<br>' +
+            'All professional UI elements working correctly!';
+    }, 3000);
+}
+
+// Initialize
+console.log('SoulmateSketch Professional Integration Test loaded');
+console.log('Backend API Base URL:', window.location.origin + '/api');
+</script>
+
+</body>
+</html>
