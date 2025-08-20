@@ -3,9 +3,9 @@ const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey ? new Stripe(stripeKey, { apiVersion: '2024-06-20' }) : null;
 
 const TIER_PRICES = {
-  basic: 1799,     // $17.99 - Basic soulmate sketch + reading
-  plus: 4900,      // $49.00 - Plus: includes location insights
-  premium: 7900,   // $79.00 - Premium: includes full spiritual assessment
+  basic: 999,      // $9.99 - Basic soulmate sketch + reading
+  plus: 2999,      // $29.99 - Plus: includes location insights
+  premium: 4999,   // $49.99 - Premium: includes full spiritual assessment
   demo: 0,         // Demo is free
 };
 
