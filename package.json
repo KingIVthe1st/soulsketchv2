@@ -6,7 +6,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "seed": "node src/seed.js"
+    "build": "echo 'No build step required - serving static files directly'",
+    "seed": "node src/seed.js",
+    "production": "NODE_ENV=production node src/server.js",
+    "security-check": "./security-deployment-check.sh"
   },
   "keywords": [],
   "author": "",
