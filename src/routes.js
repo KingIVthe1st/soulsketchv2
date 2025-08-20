@@ -520,19 +520,40 @@ export function createRouter() {
       });
       console.log(`✅ Image generated: ${imageResult.method}`);
 
-      // Update order with success
-      db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
-        .run('delivered', new Date().toISOString(), id);
+      // Generate PDF for download
+      const { generatePdf } = await import('./ai.js');
+      const pdfPath = path.join(process.cwd(), 'uploads', `${id}_professional_report.pdf`);
+      
+      try {
+        await generatePdf({
+          text: aiText,
+          imagePath: imageResult.filePath,
+          outPath: pdfPath,
+          addons,
+          quiz
+        });
+        console.log(`✅ PDF generated: ${pdfPath}`);
+      } catch (pdfError) {
+        console.warn(`⚠️ PDF generation failed, continuing without PDF:`, pdfError.message);
+      }
+
+      // Store file paths in database
+      db.prepare('UPDATE orders SET status = ?, updated_at = ?, result_pdf_path = ?, result_image_path = ? WHERE id = ?')
+        .run('delivered', new Date().toISOString(), fs.existsSync(pdfPath) ? pdfPath : null, imageResult.filePath, id);
 
       console.log(`✅ SIMPLIFIED report completed for order ${id}`);
 
-      // Return success response
+      // Return success response with file paths for downloads
       res.json({ 
         success: true,
         orderId: id,
         status: 'delivered',
-        deliveryMethod: 'test_mode',
-        message: `Test report generated successfully`,
+        deliveryMethod: 'direct_download',
+        message: `Report generated successfully`,
+        files: {
+          pdf: fs.existsSync(pdfPath) ? path.basename(pdfPath) : null,
+          image: path.basename(imageResult.filePath)
+        },
         report: {
           tier: order.tier,
           sections: ['Overview', 'Profile Analysis'],
@@ -879,6 +900,49 @@ export function createRouter() {
         success: false,
         error: error.message,
         stack: error.stack
+      });
+    }
+  });
+
+  // File serving endpoints for downloads
+  router.get('/uploads/:filename', (req, res) => {
+    try {
+      const { filename } = req.params;
+      
+      // Security: Only allow specific file patterns for generated content
+      if (!filename.match(/^([a-f0-9-]+_(professional_report\.pdf)|result_\d+(_story)?\.(png|jpg|jpeg))$/i)) {
+        return res.status(403).json({
+          error: 'Access denied',
+          code: 'INVALID_FILE_ACCESS'
+        });
+      }
+      
+      const filePath = path.join(process.cwd(), 'uploads', filename);
+      
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({
+          error: 'File not found',
+          code: 'FILE_NOT_FOUND'
+        });
+      }
+      
+      // Set appropriate headers for download
+      if (filename.endsWith('.pdf')) {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="soulmate-report-${filename}"`);
+      } else {
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Content-Disposition', `attachment; filename="soulmate-portrait-${filename}"`);
+      }
+      
+      // Serve the file
+      res.sendFile(filePath);
+      
+    } catch (error) {
+      console.error('File serving error:', error);
+      res.status(500).json({
+        error: 'File serving failed',
+        code: 'FILE_SERVE_ERROR'
       });
     }
   });
