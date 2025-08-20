@@ -456,74 +456,142 @@ export async function generateProfileText({ quiz, tier, addons }) {
   // Love language priorities
   const loveLangPriorities = analyzeLoveLanguages(personality.loveLanguages || {});
 
-	const prompt = `You are "Soulmate Sketch" AI. Create a hyper-personalized soulmate profile using the user's detailed quiz responses. This must feel uniquely crafted for them, incorporating their specific preferences, personality traits, and cosmic data.
+	const prompt = `You are an advanced AI combining the wisdom of master astrologers, numerologists, and relationship experts. Create a deeply personalized soulmate profile that feels like divine guidance tailored specifically for this person.
 
-PERSONALIZATION REQUIREMENTS:
-- Use their exact appearance preferences and personality traits
-- Reflect their zodiac sign (${birth.zodiac || 'not provided'}) and birth insights
-- Incorporate their love language preferences: ${loveLangPriorities}
-- Consider their relationship must-haves: ${(relationship.mustHaves || []).join(', ') || 'not specified'}
-- Factor in their deal-breakers: ${relationship.dealBreakers || 'not specified'}
-- Reference their cultural resonance: ${appearance.culturalResonance || 'not specified'}
-- Consider their location: ${user.country || 'not specified'}
-- Age preferences: ${user.ageRange || 'not specified'}
+🌟 COSMIC PROFILE DATA:
+${numerologyInfo ? `
+📊 NUMEROLOGY FOUNDATION:
+• Life Path Number: ${numerologyInfo.lifePath} - ${numerologyInfo.compatibility}
+• Soul Urge Number: ${numerologyInfo.soulUrge} - Core desires and motivations
+• Expression Number: ${numerologyInfo.expression} - How they naturally express themselves
+• Compatibility Pattern: ${numerologyInfo.compatibility}` : ''}
 
-PERSONALITY ANALYSIS:
+${astroInsights ? `
+🌙 ASTROLOGICAL ESSENCE:
+• Sun Sign: ${birth.zodiac || 'Unknown'} - ${astroInsights}
+• Birth Date: ${birth.date || 'Not provided'}
+• Birth Time: ${birth.time || 'Unknown'} 
+• Birth Location: ${birth.city || 'Unknown'}
+• Current Cosmic Weather: Analyze current planetary transits affecting love and relationships` : ''}
+
+💫 DEEP PERSONALITY MATRIX:
 ${personalityProfile}
+• Love Languages Priority: ${loveLangPriorities}
+• Core Values: ${(personality.values || []).join(', ') || 'Connection, growth, authenticity'}
+• Relationship Must-Haves: ${(relationship.mustHaves || []).join(', ') || 'Understanding, respect, shared growth'}
+• Deal-Breakers: ${relationship.dealBreakers || 'Dishonesty, lack of emotional availability'}
+• Seeking: ${relationship.lookingFor || 'Deep, meaningful connection'}
 
-${numerologyInfo ? `NUMEROLOGY INSIGHTS:
-Life Path: ${numerologyInfo.lifePath}
-Soul Urge: ${numerologyInfo.soulUrge}
-Expression: ${numerologyInfo.expression}
-Compatibility Notes: ${numerologyInfo.compatibility}` : ''}
+🎯 PERSONAL PREFERENCES:
+• Age Range: ${user.ageRange || 'Open'}
+• Location: ${user.country || 'Global'} ${user.timezone ? `(${user.timezone})` : ''}
+• Cultural Resonance: ${appearance.culturalResonance || 'Universal connection'}
+• Attracted To: ${user.attractedTo || 'Deep souls'}
 
-${astroInsights ? `ASTROLOGICAL FOUNDATION:
-${astroInsights}` : ''}
+CREATE SECTIONS (use exact headings):
 
-Required sections (use these headings exactly):
-- Overview (mention specific traits that align with their personality sliders and values)
-- Personality & Vibe (incorporate their introvert/extrovert level, grounded/adventurous, analytical/creative scores)
-- Attachment Style & Love Languages (prioritize their top love languages: ${loveLangPriorities})
-- First Meeting Scenario (consider their personality type and preferences)
-- What They're Looking For Now (reference their relationship.lookingFor: ${relationship.lookingFor || 'not specified'})
-- Numerology/Astro Notes (use actual birth data if provided)
+1. **Overview**
+   - Open with their specific numerological signature and astrological essence
+   - Reference their exact personality scores and what this reveals about their soulmate
+   - Mention specific details that only apply to them
+
+2. **Personality & Vibe**
+   - Detail how their introvert/extrovert score (${personality.introvertExtrovert || 50}/100) attracts specific energy
+   - Analyze their grounded/adventurous nature (${personality.groundedAdventurous || 50}/100) 
+   - Explore their analytical/creative balance (${personality.analyticalCreative || 50}/100)
+   - Connect this to their zodiac energy and life path number
+
+3. **Attachment Style & Love Languages**
+   - Focus on their top love languages: ${loveLangPriorities}
+   - Connect to their numerology and how their soulmate will naturally speak these languages
+   - Specific attachment patterns based on their astrological placements
+
+4. **First Meeting Scenario**
+   - Paint a vivid scene based on their personality type and preferences
+   - Include cosmic timing and numerological significance of when/how they'll meet
+   - Reference their location and cultural context
+
+5. **What They're Looking For Now**
+   - Deep dive into their stated desires: ${relationship.lookingFor || 'meaningful connection'}
+   - Connect to current astrological transits and life path lessons
+   - Address their specific must-haves and how soulmate embodies these
+
+6. **Advanced Numerology & Astrology**
+   - Detailed compatibility analysis using their birth numbers
+   - Current planetary influences on their love life
+   - Karmic lessons and soul growth through partnership
 
 ${tier === 'plus' || tier === 'premium' ? `
-PLUS TIER ADDITIONS - Add these sections:
-- Location Insights (based on their country: ${user.country}, timezone: ${user.timezone}, and cosmic alignment)
-- Enhanced Astrological Analysis (deeper analysis using birth date: ${birth.date}, time: ${birth.time}, location: ${birth.city})
-` : ''}
+🌍 PLUS TIER SECTIONS:
+
+7. **Location & Cosmic Alignment**
+   - How their location (${user.country}) affects their romantic energy
+   - Timezone and cosmic timing for optimal connection
+   - Geographic astrology and where their soulmate may be located
+
+8. **Enhanced Astrological Analysis**
+   - Birth chart synthesis if data available
+   - Venus and Mars placement interpretation for love style
+   - 7th house analysis for partnership themes
+   - Current transits affecting relationships` : ''}
 
 ${tier === 'premium' ? `
-PREMIUM TIER ADDITIONS - Add these sections:
-- Full Astrological AI Analysis (comprehensive birth chart analysis using date: ${birth.date}, time: ${birth.time}, location: ${birth.city})
-- Personal Relationship Strategy Guide (actionable steps based on their personality profile and love languages)
-- Spiritual Growth & Preparation (customized to their zodiac sign and personality traits)
-- Cosmic Timing & Manifestation (specific to their birth chart and current astrological transits)
-` : ''}
+👑 PREMIUM TIER SECTIONS:
 
-Tone: warm, contemporary, romantic-but-grounded. Output plain text (no markdown symbols like # or *).
+9. **Complete Birth Chart Analysis**
+   - Full natal chart interpretation for love and relationships
+   - Composite chart prediction with soulmate
+   - Progressed chart timing for when love arrives
+   - Synastry patterns to look for
 
-CRITICAL: Make this feel like it was written specifically for this person. Use their data points naturally throughout.
+10. **Personal Relationship Strategy Guide**
+    - Specific action steps based on their chart and numbers
+    - How to attract their soulmate using their natural magnetism
+    - Timing guidance for love manifestation
+    - Red flags and green flags personalized to their needs
 
-Length: Basic ~500-650 words, Plus ~700-900 words, Premium ~1000-1300+ words.
+11. **Spiritual Growth & Soul Preparation**
+    - Soul lessons needed before meeting "the one"
+    - Chakra and energy work specific to their profile
+    - Past life patterns affecting current relationships
+    - Spiritual practices for love alignment
 
-Complete User Data:
+12. **Cosmic Timing & Manifestation**
+    - Optimal timing windows for love based on their chart
+    - Moon cycle manifestation practices personalized for them
+    - Specific affirmations and visualization techniques
+    - Crystal and color recommendations for their energy signature` : ''}
+
+📝 WRITING REQUIREMENTS:
+- Write as if you've known them for years and can see their soul
+- Use warm, mystical but grounded language
+- Reference specific numbers, dates, and personality scores naturally
+- Make every sentence feel personally relevant
+- Include actionable insights they can use immediately
+- Balance spiritual wisdom with practical relationship advice
+
+LENGTH TARGETS:
+- Basic: 700-900 words with deep personalization
+- Plus: 1000-1300 words with location and enhanced astrology  
+- Premium: 1500-2000+ words with complete analysis and guidance
+
+🔮 COMPLETE SOUL DATA:
 ${JSON.stringify(quiz, null, 2)}
 
-Tier: ${tier}
-Add-ons: ${JSON.stringify(addons)}`;
+Service Level: ${tier}
+Enhancement Add-ons: ${JSON.stringify(addons)}`;
   if (!openai) {
     return `Name: Aiden (or similar)\n\nEssence: Warm, grounded, quietly confident. Likely to notice little details about you and make you feel safe to be fully yourself.\n\nAttachment & Love: Secure leaning. Gives reassurance without being overbearing. Primary love languages: Quality Time and Words of Affirmation.\n\nHow you meet: A calm setting where conversation flows—think a cozy cafe on a rainy day, a local bookstore aisle, or a friend’s intimate gathering. You’ll feel a sense of instant familiarity.\n\nRight now: Looking for a relationship that feels like a deep exhale—steady, playful, and honest. Values consistency, humor, and shared little rituals.\n\nAstro vibes (light): Complimentary energy balance with you (yin/yang). Numerology suggests a 2 or 6 life-path resonance—cooperation, care, and home-building.\n\nDisclaimer: This is an inspirational guide for reflection, not a prediction.`;
   }
   try {
     const resp = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4o',
       messages: [
-				{ role: 'system', content: 'You write beautiful, clear, uplifting soulmate reports with ethical, non-deterministic framing and sectioned formatting.' },
+				{ role: 'system', content: 'You are a world-class astrologer, numerologist, and relationship advisor. Create deeply personalized, spiritually insightful soulmate reports that feel like they were written by someone who truly knows this person. Use their specific birth data, personality traits, and preferences to craft reports that feel magical yet grounded. Every detail should feel personally relevant and meaningful.' },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.8,
+      temperature: 0.9,
+      max_tokens: 4000,
     });
     return resp.choices[0].message.content;
   } catch (err) {
@@ -539,6 +607,9 @@ export async function generateImage({ style, quiz, addons = [] }) {
   const personality = quiz.personality || {};
   const birth = quiz.birth || {};
   const preferences = quiz.preferences || {};
+  
+  // Calculate numerology for spiritual enhancement
+  const numerologyInfo = birth.date ? calculateNumerology(birth.date) : null;
   
   // Determine gender based on user preference
   const attractedTo = user.attractedTo || quiz.interest;
@@ -570,36 +641,50 @@ export async function generateImage({ style, quiz, addons = [] }) {
 	const twinFlameHint = Array.isArray(addons) && addons.includes('twin_flame') ? 
 	  'Include a faint twin-light effect or mirrored highlight in the background that gently suggests duality (keep it photographic and unobtrusive).' : '';
 	
-	const basePrompt = `Create a hyper-realistic portrait of a ${gender} as the user's ideal soulmate, incorporating their detailed preferences:
+	const basePrompt = `Create a breathtaking, hyper-realistic portrait of a ${gender} who embodies this person's ideal soulmate, using their detailed spiritual and personal preferences:
 
-APPEARANCE SPECIFICATIONS:
+🎨 SOULMATE APPEARANCE BLUEPRINT:
 ${appearanceDetails}
 ${culturalContext}
 
-PERSONALITY ENERGY:
+✨ SPIRITUAL ENERGY MANIFESTATION:
 ${personalityVibes}
 ${zodiacEnergy}
+- Numerological resonance: Life path ${numerologyInfo?.lifePath || 'unknown'} energy - ${numerologyInfo?.compatibility || 'harmonious connection'}
+- Astrological essence: ${birth.zodiac || 'Universal'} complementary energy with magnetic attraction field
 
-SCENE & COMPOSITION:
+🌟 SCENE & SPIRITUAL ATMOSPHERE:
 ${setting}
-- Composition: waist-up portrait, cinematic framing, soft depth of field, gentle rim light
-- Lighting: soft natural or studio key light, flattering and warm
-- Camera: 85mm portrait lens look, f/1.8 depth of field, high dynamic range, professional color grading
+- Sacred geometry in composition: Golden ratio framing, divine proportion aesthetics
+- Lighting: Ethereal yet natural lighting suggesting soul recognition and divine timing
+- Camera: Professional portrait lens (85mm f/1.4), cinematic depth, spiritual luminosity
+- Background: Subtle cosmic elements or sacred geometry that suggests destiny and connection
 
-TECHNICAL REQUIREMENTS:
-- Hyper-realism: photorealistic skin with natural texture, pores, flyaway hairs, realistic eyes with catchlights
-- Natural beauty: symmetrical features, flattering angles, genuine warmth and approachability  
-- Professional quality: studio-grade lighting, precise color balance, sharp focus on eyes
-- Skin rendering: natural subsurface scattering, appropriate skin tone with realistic variation
-- Hair detail: individual strands, natural movement, realistic texture and shine
-- Expression: warm, inviting smile or gentle expression that conveys connection
+💎 ULTRA-REALISTIC TECHNICAL MASTERY:
+- Skin: Photorealistic texture with natural pores, subtle skin variation, healthy glow suggesting inner light
+- Eyes: Crystal clear, soulful eyes with natural catchlights that suggest deep wisdom and kindness
+- Hair: Individual strand detail, natural movement, lustrous texture that catches light beautifully
+- Expression: Genuine warmth, slight mysterious smile suggesting they hold secrets to happiness
+- Energy: Radiates confidence, compassion, and magnetic attraction without effort
 
-${auraHint} ${twinFlameHint}
+🔮 PERSONALIZED ENHANCEMENTS:
+${auraHint}
+${twinFlameHint}
+- Incorporate subtle energy suggesting they're a perfect personality match (${personality.introvertExtrovert || 50}% extrovert, ${personality.groundedAdventurous || 50}% adventurous, ${personality.analyticalCreative || 50}% creative)
+- Cultural energy resonance: ${appearance.culturalResonance || 'Universal wisdom'}
+- Age appearance: ${user.ageRange || 'Timeless appeal'} with vitality and life experience
 
-STYLE TREATMENT:
+📸 PHOTOGRAPHIC EXCELLENCE:
 ${stylePrompt}
+- Master-level portrait photography with cinematic color grading
+- Subtle HDR processing for luminous skin and perfect exposure
+- Professional retouching that maintains complete realism while enhancing natural beauty
+- Color harmony that complements their stated preferences and aura colors
 
-Strictly avoid: cartoonish looks, plastic skin, heavy airbrushing, distorted anatomy, exaggerated features, fantasy elements, minors, weapons, text overlays, logos, watermarks, signatures, uncanny valley effects.`;
+🚫 ABSOLUTELY AVOID:
+Artificial/plastic appearance, heavy makeup, digital artifacts, unrealistic proportions, cartoon features, fantasy elements, overly perfect/airbrushed skin, fake expressions, inappropriate content, minors, text/logos/watermarks, uncanny valley effects.
+
+CREATE: The most beautiful, realistic person this individual would find absolutely irresistible - someone who looks like they could walk into their life tomorrow and change everything for the better.`;
   let buffer;
   if (!openai) {
     // Fallback: generate a soft gradient placeholder with text
@@ -745,17 +830,17 @@ export async function generatePdf({ text, imagePath, outPath, addons = [] }) {
 	}
 
 	// Enhanced personalized add-on sections
-	if (Array.isArray(addons) && addons.includes('aura')) {
+	if (Array.isArray(addons) && (addons.includes('aura-reading') || addons.includes('aura'))) {
 		const auraContent = generatePersonalizedAuraReading(quiz);
-		writeSection('Aura Reading', auraContent);
+		writeSection('Your Personal Aura Reading', auraContent);
 	}
-	if (Array.isArray(addons) && addons.includes('twin_flame')) {
+	if (Array.isArray(addons) && (addons.includes('compatibility-snapshot') || addons.includes('twin_flame'))) {
 		const twinFlameContent = generatePersonalizedTwinFlameInsight(quiz);
-		writeSection('Twin Flame Insight', twinFlameContent);
+		writeSection('Soul Compatibility Insights', twinFlameContent);
 	}
-	if (Array.isArray(addons) && addons.includes('past_life')) {
+	if (Array.isArray(addons) && (addons.includes('12-hour-rush') || addons.includes('past_life'))) {
 		const pastLifeContent = generatePersonalizedPastLifeGlimpse(quiz);
-		writeSection('Past Life Glimpse', pastLifeContent);
+		writeSection('Past Life Connection Glimpse', pastLifeContent);
 	}
 
   // Disclaimer
