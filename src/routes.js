@@ -904,10 +904,24 @@ export function createRouter() {
     }
   });
 
-  // Test DALL-E generation endpoint
+  // Test DALL-E generation endpoint with detailed logging
   router.post('/test-dalle', async (req, res) => {
+    const logs = [];
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    // Capture all console output
+    console.log = (...args) => {
+      logs.push(['LOG', ...args]);
+      originalLog(...args);
+    };
+    console.error = (...args) => {
+      logs.push(['ERROR', ...args]);
+      originalError(...args);
+    };
+    
     try {
-      console.log('🧪 Testing DALL-E image generation...');
+      logs.push(['INFO', '🧪 Starting DALL-E test with detailed logging']);
       
       const { generateImage } = await import('./ai.js');
       const testQuiz = {
@@ -920,19 +934,30 @@ export function createRouter() {
         addons: []
       });
       
+      // Restore console
+      console.log = originalLog;
+      console.error = originalError;
+      
       res.json({
         success: true,
         result: {
           method: result.method,
           filePath: result.filePath ? result.filePath.split('/').pop() : null,
           hasFile: result.filePath ? fs.existsSync(result.filePath) : false
-        }
+        },
+        logs: logs.map(log => log.join(' '))
       });
     } catch (error) {
-      console.error('❌ DALL-E test failed:', error);
+      // Restore console
+      console.log = originalLog;
+      console.error = originalError;
+      
+      logs.push(['ERROR', 'Test failed:', error.message]);
+      
       res.status(500).json({
         success: false,
         error: error.message,
+        logs: logs.map(log => log.join(' ')),
         stack: error.stack?.split('\n').slice(0, 10).join('\n')
       });
     }
