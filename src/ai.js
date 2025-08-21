@@ -689,6 +689,19 @@ export async function generateImage({ style, quiz, addons = [] }) {
     console.log(`  - hasOpenAIKey: ${hasOpenAIKey}`);
     console.log(`  - openai instance: ${openai ? 'initialized' : 'null'}`);
     console.log(`  - API Key prefix: ${process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'not set'}`);
+    console.log(`  - API Key length: ${process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0}`);
+    console.log(`  - Node version: ${process.version}`);
+    console.log(`  - fetch available: ${typeof fetch !== 'undefined'}`);
+    
+    if (!hasOpenAIKey) {
+      console.error('❌ No valid OpenAI API key detected - this should not happen in production');
+      throw new Error('OpenAI API key not properly configured');
+    }
+    
+    if (!openai) {
+      console.error('❌ OpenAI instance not initialized despite having valid key');
+      throw new Error('OpenAI instance initialization failed');
+    }
     
     if (openai) {
       try {

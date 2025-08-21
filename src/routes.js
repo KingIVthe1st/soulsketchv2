@@ -904,6 +904,56 @@ export function createRouter() {
     }
   });
 
+  // Direct OpenAI API test
+  router.post('/test-openai-direct', async (req, res) => {
+    try {
+      console.log('🧪 Testing OpenAI API directly...');
+      
+      const OpenAI = (await import('openai')).default;
+      const apiKey = process.env.OPENAI_API_KEY;
+      
+      if (!apiKey || apiKey === 'sk-replace-me') {
+        return res.json({ success: false, error: 'No API key available' });
+      }
+      
+      const openai = new OpenAI({ apiKey });
+      
+      // Test basic completion first
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4',
+        messages: [{ role: 'user', content: 'Say hello' }],
+        max_tokens: 10
+      });
+      
+      console.log('✅ OpenAI chat completion works');
+      
+      // Test image generation
+      const image = await openai.images.generate({
+        model: 'dall-e-3',
+        prompt: 'A simple test image of a red apple',
+        size: '1024x1024',
+        quality: 'standard'
+      });
+      
+      console.log('✅ DALL-E image generation works');
+      
+      res.json({
+        success: true,
+        chatResponse: completion.choices[0].message.content,
+        imageUrl: image.data[0].url,
+        apiKey: apiKey.substring(0, 10) + '...'
+      });
+      
+    } catch (error) {
+      console.error('❌ Direct OpenAI test failed:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        apiKey: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'not set'
+      });
+    }
+  });
+
   // Test DALL-E generation endpoint with detailed logging
   router.post('/test-dalle', async (req, res) => {
     const logs = [];
