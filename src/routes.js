@@ -1056,5 +1056,93 @@ export function createRouter() {
     }
   });
 
+  // Test endpoint for direct OpenAI API calls
+  router.post('/test-openai-direct', async (req, res) => {
+    try {
+      console.log('🧪 Direct OpenAI API Test Started');
+      
+      // Import AI functions
+      const { generateProfileText, generateImage } = await import('./ai.js');
+      
+      const { testType = 'both' } = req.body;
+      const results = {};
+      
+      // Test text generation
+      if (testType === 'text' || testType === 'both') {
+        console.log('🧪 Testing text generation...');
+        try {
+          const textResult = await generateProfileText({
+            quiz: {
+              age: '25-30',
+              gender: 'Female',
+              traits: ['Kind', 'Adventurous'],
+              interests: ['Travel', 'Reading']
+            },
+            tier: 'basic'
+          });
+          results.text = {
+            success: true,
+            length: textResult?.length || 0,
+            preview: textResult?.substring(0, 100) + '...'
+          };
+          console.log('✅ Text generation successful');
+        } catch (error) {
+          results.text = {
+            success: false,
+            error: error.message
+          };
+          console.error('❌ Text generation failed:', error);
+        }
+      }
+      
+      // Test image generation
+      if (testType === 'image' || testType === 'both') {
+        console.log('🧪 Testing image generation...');
+        try {
+          const imageResult = await generateImage({
+            quiz: {
+              age: '25-30',
+              gender: 'Female',
+              traits: ['Kind', 'Adventurous'],
+              interests: ['Travel', 'Reading']
+            },
+            style: 'realistic'
+          });
+          results.image = {
+            success: true,
+            method: imageResult.method,
+            path: imageResult.path || 'no path',
+            url: imageResult.url || 'no url'
+          };
+          console.log('✅ Image generation successful:', imageResult.method);
+        } catch (error) {
+          results.image = {
+            success: false,
+            error: error.message
+          };
+          console.error('❌ Image generation failed:', error);
+        }
+      }
+      
+      // Environment check
+      results.environment = {
+        hasOpenAIKey: !!process.env.OPENAI_API_KEY,
+        keyPrefix: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'not set',
+        nodeEnv: process.env.NODE_ENV
+      };
+      
+      console.log('🧪 Test completed:', results);
+      res.json(results);
+      
+    } catch (error) {
+      console.error('🧪 Test endpoint error:', error);
+      res.status(500).json({
+        error: 'Test failed',
+        message: error.message,
+        stack: error.stack?.split('\n').slice(0, 5).join('\n')
+      });
+    }
+  });
+
   return router;
 }
