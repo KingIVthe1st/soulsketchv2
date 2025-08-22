@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <meta
       name="description"
@@ -41,6 +41,12 @@
     <link rel="stylesheet" href="css/mousecursor.css" />
     <!-- Main Custom Css -->
     <link href="css/custom.css" rel="stylesheet" media="screen" />
+    <!-- Mobile Optimizations -->
+    <link href="css/mobile-optimized.css" rel="stylesheet" media="screen" />
+    <!-- DNS Prefetch for better performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//js.stripe.com">
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin>
     <!-- Stripe JS -->
     <script src="https://js.stripe.com/v3/"></script>
   </head>
@@ -785,6 +791,14 @@
                     <!-- Stripe Elements will be mounted here -->
                     <div id="payment-element" style="margin-bottom: 20px;"></div>
                     
+                    <!-- Apple Pay Button (if supported) -->
+                    <div id="apple-pay-button-container" style="margin-bottom: 20px; display: none;">
+                      <div style="text-align: center; margin-bottom: 10px;">
+                        <span style="color: #666; font-size: 14px;">— OR —</span>
+                      </div>
+                      <div id="apple-pay-button"></div>
+                    </div>
+                    
                     <!-- Payment Options -->
                     <div style="margin: 20px 0;">
                       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
@@ -1219,6 +1233,21 @@
     <script src="js/ScrollTrigger.min.js"></script>
     <!-- SmoothScroll -->
     <script src="js/SmoothScroll.js"></script>
+    <!-- Apple Pay -->
+    <script src="js/apple-pay.js"></script>
+    <!-- Mobile Optimizations -->
+    <script>
+      // Initialize Apple Pay if available
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.applePayService && window.applePayService.isApplePayAvailable()) {
+          const container = document.getElementById('apple-pay-button-container');
+          if (container) {
+            container.style.display = 'block';
+            window.applePayService.initApplePayButton('apple-pay-button');
+          }
+        }
+      });
+    </script>
     <!-- YTPlayer js File -->
     <script src="js/jquery.mb.YTPlayer.min.js"></script>
     <!-- Wow js file -->

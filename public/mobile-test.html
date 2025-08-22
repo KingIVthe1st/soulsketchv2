@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mobile Performance Test - SoulmateSketch</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-container {
+      max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+    }
+    .test-pass { border-color: #4CAF50; background: #f8fff8; }
+    .test-fail { border-color: #f44336; background: #fff8f8; }
+    .test-warning { border-color: #ff9800; background: #fffdf8; }
+    
+    /* Apple Pay button styles */
+    .apple-pay-button {
+      -webkit-appearance: -apple-pay-button;
+      -apple-pay-button-type: buy;
+      -apple-pay-button-style: black;
+      width: 100%;
+      height: 50px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .touch-test-button {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #E91E63;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 5px;
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>📱 Mobile Test Suite</h1>
+    
+    <div class="test-section" id="viewport-test">
+      <h3>Viewport Test</h3>
+      <p>Screen: <span id="screen-size"></span></p>
+      <p>Viewport: <span id="viewport-size"></span></p>
+      <p>Device Pixel Ratio: <span id="dpr"></span></p>
+    </div>
+    
+    <div class="test-section" id="touch-test">
+      <h3>Touch Target Test</h3>
+      <p>Minimum 44px × 44px touch targets:</p>
+      <button class="touch-test-button" onclick="touchTest(this)">Test Button 1</button>
+      <button class="touch-test-button" onclick="touchTest(this)">Test Button 2</button>
+      <div id="touch-results"></div>
+    </div>
+    
+    <div class="test-section" id="apple-pay-test">
+      <h3>Apple Pay Test</h3>
+      <div id="apple-pay-status"></div>
+      <div id="apple-pay-button"></div>
+    </div>
+    
+    <div class="test-section" id="performance-test">
+      <h3>Performance Test</h3>
+      <button onclick="runPerformanceTest()">Run Performance Test</button>
+      <div id="perf-results"></div>
+    </div>
+    
+    <div class="test-section" id="network-test">
+      <h3>Network Test</h3>
+      <div id="connection-info"></div>
+    </div>
+  </div>
+
+  <script>
+    // Update viewport info
+    document.getElementById('screen-size').textContent = 
+      `${screen.width} × ${screen.height}`;
+    document.getElementById('viewport-size').textContent = 
+      `${window.innerWidth} × ${window.innerHeight}`;
+    document.getElementById('dpr').textContent = window.devicePixelRatio;
+    
+    // Touch test
+    function touchTest(button) {
+      const rect = button.getBoundingClientRect();
+      const size = Math.min(rect.width, rect.height);
+      const results = document.getElementById('touch-results');
+      
+      if (size >= 44) {
+        results.innerHTML = '✅ Touch targets are appropriately sized';
+        document.getElementById('touch-test').className = 'test-section test-pass';
+      } else {
+        results.innerHTML = '❌ Touch targets too small (< 44px)';
+        document.getElementById('touch-test').className = 'test-section test-fail';
+      }
+    }
+    
+    // Apple Pay test
+    function testApplePay() {
+      const statusEl = document.getElementById('apple-pay-status');
+      const buttonEl = document.getElementById('apple-pay-button');
+      
+      if (window.ApplePaySession) {
+        if (ApplePaySession.canMakePayments()) {
+          statusEl.innerHTML = '✅ Apple Pay Available';
+          buttonEl.innerHTML = '<div class="apple-pay-button"></div>';
+          document.getElementById('apple-pay-test').className = 'test-section test-pass';
+        } else {
+          statusEl.innerHTML = '⚠️ Apple Pay Supported but No Cards Setup';
+          document.getElementById('apple-pay-test').className = 'test-section test-warning';
+        }
+      } else {
+        statusEl.innerHTML = '❌ Apple Pay Not Supported';
+        document.getElementById('apple-pay-test').className = 'test-section test-fail';
+      }
+    }
+    
+    // Performance test
+    function runPerformanceTest() {
+      const results = document.getElementById('perf-results');
+      results.innerHTML = 'Running tests...';
+      
+      // Test animation performance
+      const start = performance.now();
+      let frameCount = 0;
+      
+      function countFrames() {
+        frameCount++;
+        if (performance.now() - start < 1000) {
+          requestAnimationFrame(countFrames);
+        } else {
+          const fps = frameCount;
+          let status = '';
+          let className = '';
+          
+          if (fps >= 50) {
+            status = '✅ Excellent performance';
+            className = 'test-pass';
+          } else if (fps >= 30) {
+            status = '⚠️ Good performance';
+            className = 'test-warning';
+          } else {
+            status = '❌ Poor performance';
+            className = 'test-fail';
+          }
+          
+          results.innerHTML = `
+            <p>FPS: ${fps}</p>
+            <p>${status}</p>
+          `;
+          document.getElementById('performance-test').className = `test-section ${className}`;
+        }
+      }
+      
+      requestAnimationFrame(countFrames);
+    }
+    
+    // Network info
+    function updateNetworkInfo() {
+      const connectionEl = document.getElementById('connection-info');
+      
+      if ('connection' in navigator) {
+        const conn = navigator.connection;
+        connectionEl.innerHTML = `
+          <p>Type: ${conn.effectiveType || 'unknown'}</p>
+          <p>Downlink: ${conn.downlink || 'unknown'} Mbps</p>
+          <p>RTT: ${conn.rtt || 'unknown'} ms</p>
+        `;
+      } else {
+        connectionEl.innerHTML = '<p>Network API not supported</p>';
+      }
+    }
+    
+    // Initialize tests
+    document.addEventListener('DOMContentLoaded', () => {
+      testApplePay();
+      updateNetworkInfo();
+      
+      // Auto-run touch test
+      setTimeout(() => {
+        touchTest(document.querySelector('.touch-test-button'));
+      }, 100);
+    });
+  </script>
+</body>
+</html>
+  

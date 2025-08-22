@@ -1,0 +1,53 @@
+/* Mobile-first critical styles */
+.mobile-optimized {
+  /* Faster animations on mobile */
+  animation-duration: 0.2s !important;
+  transition-duration: 0.2s !important;
+}
+
+/* Reduce motion for better performance */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Touch-friendly buttons */
+.btn, button, [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Optimize tap targets */
+@media (max-width: 768px) {
+  .btn {
+    padding: 12px 24px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Improve scroll performance */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* GPU acceleration for animations */
+.animate, .wow {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Hide decorative elements on small screens */
+@media (max-width: 480px) {
+  .parallax-bg, .decorative-element {
+    display: none !important;
+  }
+}

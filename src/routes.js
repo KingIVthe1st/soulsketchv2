@@ -251,17 +251,204 @@ export function createRouter() {
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
-        console.log('Payment succeeded:', paymentIntent.id);
-        // Update order status in database if needed
+        console.log('✅ Payment succeeded webhook received:', paymentIntent.id);
+        
+        try {
+          // Find order by payment intent ID
+          const order = db.prepare('SELECT * FROM orders WHERE stripe_payment_intent = ?')
+            .get(paymentIntent.id);
+          
+          if (order) {
+            console.log(`🔄 Processing payment success for order ${order.id}`);
+            
+            // Update order status to paid
+            const result = db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
+              .run('paid', new Date().toISOString(), order.id);
+            
+            if (result.changes > 0) {
+              console.log(`✅ Order ${order.id} status updated to paid`);
+              
+              // Trigger order fulfillment process asynchronously
+              // Note: This will be processed when customer accesses their report
+              console.log(`🎯 Order ${order.id} ready for fulfillment`);
+            } else {
+              console.error(`❌ Failed to update order ${order.id} status`);
+            }
+          } else {
+            console.warn(`⚠️  No order found for payment intent ${paymentIntent.id}`);
+          }
+        } catch (error) {
+          console.error('❌ Error processing payment success webhook:', error);
+        }
         break;
+        
       case 'payment_intent.payment_failed':
-        console.log('Payment failed:', event.data.object.id);
+        const failedPayment = event.data.object;
+        console.log('❌ Payment failed webhook received:', failedPayment.id);
+        
+        try {
+          // Find order by payment intent ID
+          const order = db.prepare('SELECT * FROM orders WHERE stripe_payment_intent = ?')
+            .get(failedPayment.id);
+          
+          if (order) {
+            console.log(`🔄 Processing payment failure for order ${order.id}`);
+            
+            // Update order status to failed
+            const result = db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
+              .run('failed', new Date().toISOString(), order.id);
+            
+            if (result.changes > 0) {
+              console.log(`✅ Order ${order.id} status updated to failed`);
+            } else {
+              console.error(`❌ Failed to update order ${order.id} status`);
+            }
+          } else {
+            console.warn(`⚠️  No order found for failed payment intent ${failedPayment.id}`);
+          }
+        } catch (error) {
+          console.error('❌ Error processing payment failure webhook:', error);
+        }
         break;
+        
+      case 'payment_intent.canceled':
+        const canceledPayment = event.data.object;
+        console.log('🚫 Payment canceled webhook received:', canceledPayment.id);
+        
+        try {
+          // Find order by payment intent ID
+          const order = db.prepare('SELECT * FROM orders WHERE stripe_payment_intent = ?')
+            .get(canceledPayment.id);
+          
+          if (order) {
+            console.log(`🔄 Processing payment cancellation for order ${order.id}`);
+            
+            // Update order status to canceled
+            const result = db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
+              .run('cancelled', new Date().toISOString(), order.id);
+            
+            if (result.changes > 0) {
+              console.log(`✅ Order ${order.id} status updated to cancelled`);
+            } else {
+              console.error(`❌ Failed to update order ${order.id} status`);
+            }
+          } else {
+            console.warn(`⚠️  No order found for canceled payment intent ${canceledPayment.id}`);
+          }
+        } catch (error) {
+          console.error('❌ Error processing payment cancellation webhook:', error);
+        }
+        break;
+        
       default:
-        console.log(`Unhandled event type ${event.type}`);
+        console.log(`📝 Unhandled webhook event type: ${event.type}`);
     }
 
     res.status(200).send('OK');
+  });
+
+  // Apple Pay merchant validation endpoint
+  router.post('/api/applepay/validate-merchant', strictLimiter, async (req, res) => {
+    if (!stripe) {
+      return res.status(503).json({ error: 'Payment system not available' });
+    }
+    
+    try {
+      const { validationURL, displayName } = req.body;
+      
+      // This requires Apple Pay merchant certificates configured in Stripe
+      // For now, return a basic response - you'll need to set up Apple Pay in Stripe Dashboard
+      console.log('🍎 Apple Pay merchant validation requested');
+      
+      // In production, this would validate with Apple and return the merchant session
+      // For now, return an error instructing to complete Apple Pay setup
+      res.status(501).json({ 
+        error: 'Apple Pay merchant validation not configured',
+        message: 'Please complete Apple Pay setup in Stripe Dashboard first'
+      });
+      
+    } catch (error) {
+      console.error('Apple Pay validation error:', error);
+      res.status(500).json({ error: 'Validation failed' });
+    }
+  });
+
+  // Apple Pay payment processing endpoint
+  router.post('/api/process-apple-pay', strictLimiter, async (req, res) => {
+    if (!stripe) {
+      return res.status(503).json({ error: 'Payment system not available' });
+    }
+    
+    try {
+      const { paymentMethodId, orderData, billingContact, shippingContact } = req.body;
+      
+      console.log('🍎 Processing Apple Pay payment:', { 
+        tier: orderData.tier, 
+        price: orderData.price,
+        email: orderData.email 
+      });
+      
+      // Create order first
+      const orderId = randomUUID();
+      const now = new Date().toISOString();
+      
+      // Create payment intent with Apple Pay payment method
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: orderData.price,
+        currency: 'usd',
+        payment_method: paymentMethodId,
+        confirmation_method: 'manual',
+        confirm: true,
+        return_url: `${req.protocol}://${req.get('host')}/order-success`,
+        metadata: {
+          orderId,
+          tier: orderData.tier,
+          email: orderData.email,
+          source: 'apple_pay'
+        }
+      });
+      
+      // Insert order into database
+      db.prepare(`
+        INSERT INTO orders (
+          id, email, tier, addons, price_cents, status, 
+          stripe_payment_intent, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        orderId,
+        orderData.email,
+        orderData.tier,
+        JSON.stringify([]),
+        orderData.price,
+        paymentIntent.status === 'succeeded' ? 'paid' : 'processing',
+        paymentIntent.id,
+        now,
+        now
+      );
+      
+      console.log(`✅ Apple Pay order created: ${orderId}`);
+      
+      if (paymentIntent.status === 'succeeded') {
+        res.json({ 
+          success: true, 
+          orderId,
+          paymentIntentId: paymentIntent.id
+        });
+      } else {
+        res.json({ 
+          success: false, 
+          error: 'Payment requires additional action',
+          paymentIntent: paymentIntent.client_secret
+        });
+      }
+      
+    } catch (error) {
+      console.error('Apple Pay processing error:', error);
+      res.status(500).json({ 
+        error: 'Payment processing failed',
+        message: error.message 
+      });
+    }
   });
 
   router.post('/orders', strictLimiter, async (req, res) => {
@@ -458,25 +645,73 @@ export function createRouter() {
       
       console.log(`✅ Order found: ${order.id}, email: ${order.email}, status: ${order.status}`)
 
-      // Enhanced test order detection for bypassing payment verification
-      const isTestOrder = order.email && (
-        order.email.includes('test@') || 
-        order.email.includes('@test.') ||
-        order.email.includes('demo@') ||
-        order.email === 'test@example.com' ||
-        order.email.toLowerCase().includes('test')
-      );
+      // Restricted test order detection - only specific development emails in development mode
+      const DEVELOPMENT_TEST_EMAILS = [
+        'test@soulsketch.local',
+        'dev@soulsketch.local',
+        'test@example.com'
+      ];
+      
+      const isTestOrder = process.env.NODE_ENV === 'development' && 
+        order.email && 
+        DEVELOPMENT_TEST_EMAILS.includes(order.email.toLowerCase());
       
       console.log(`🔍 Payment check - Order ID: ${id}, Email: ${order.email}, Status: ${order.status}, IsTest: ${isTestOrder}, NODE_ENV: ${process.env.NODE_ENV}`);
       
-      // Allow test orders to bypass payment verification entirely
-      if (order.status !== 'paid' && !isTestOrder) {
-        console.log(`❌ Payment verification failed - Order ${id} with email ${order.email} is not paid and not a test order`);
-        return res.status(403).json({ 
-          error: 'Payment required',
-          code: 'PAYMENT_REQUIRED',
-          message: 'Order must be paid before generation'
-        });
+      // Verify payment before processing (unless test order in development)
+      if (!isTestOrder) {
+        console.log(`🔍 Verifying payment for production order ${id}`);
+        
+        if (!order.stripe_payment_intent) {
+          console.log(`❌ No payment intent found for order ${id}`);
+          return res.status(403).json({ 
+            error: 'Payment required',
+            code: 'NO_PAYMENT_INTENT',
+            message: 'No payment information found for this order'
+          });
+        }
+        
+        try {
+          // Verify payment with Stripe
+          const paymentIntent = await stripe.paymentIntents.retrieve(order.stripe_payment_intent);
+          
+          if (paymentIntent.status !== 'succeeded') {
+            console.log(`❌ Payment not completed for order ${id}. Status: ${paymentIntent.status}`);
+            return res.status(403).json({ 
+              error: 'Payment incomplete',
+              code: 'PAYMENT_NOT_SUCCEEDED',
+              message: `Payment status: ${paymentIntent.status}. Please complete payment before accessing your report.`
+            });
+          }
+          
+          // Verify payment amount matches tier pricing
+          const expectedAmount = getPriceCentsForTier(order.tier);
+          if (paymentIntent.amount !== expectedAmount) {
+            console.log(`❌ Payment amount mismatch for order ${id}. Expected: ${expectedAmount}, Received: ${paymentIntent.amount}`);
+            return res.status(403).json({ 
+              error: 'Payment amount incorrect',
+              code: 'AMOUNT_MISMATCH',
+              message: 'Payment amount does not match order total'
+            });
+          }
+          
+          console.log(`✅ Payment verified for order ${id}. Amount: ${paymentIntent.amount} cents`);
+          
+          // Update order status to paid if payment is verified but status isn't updated
+          if (order.status !== 'paid') {
+            db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
+              .run('paid', new Date().toISOString(), id);
+            console.log(`✅ Updated order ${id} status to paid`);
+          }
+          
+        } catch (error) {
+          console.error(`❌ Error verifying payment for order ${id}:`, error);
+          return res.status(500).json({ 
+            error: 'Payment verification failed',
+            code: 'PAYMENT_VERIFICATION_ERROR',
+            message: 'Unable to verify payment status. Please contact support.'
+          });
+        }
       }
       
       // Log test order bypass for debugging
