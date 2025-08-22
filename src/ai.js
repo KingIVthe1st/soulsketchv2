@@ -1004,110 +1004,322 @@ function getZodiacPhysicalTraits(zodiac) {
   return zodiacMap[zodiac] || 'Harmonious, attractive features with inner wisdom';
 }
 
-export async function generatePdf({ text, imagePath, outPath, addons = [], quiz = {} }) {
-	const doc = new PDFDocument({ autoFirstPage: false });
+// Generate location prediction based on numerology and astrology
+function generateLocationPrediction(quiz) {
+  const user = quiz.user || {};
+  const birth = quiz.birth || {};
+  const personality = quiz.personality || {};
+  
+  // Calculate numerology-based location insights
+  const numerologyInfo = birth.date ? calculateNumerology(birth.date) : null;
+  const lifePath = numerologyInfo?.lifePath || 5;
+  
+  // Location directions based on life path number
+  const locationMap = {
+    1: { direction: 'East or Northeast', type: 'urban centers', energy: 'dynamic business districts' },
+    2: { direction: 'Southeast or South', type: 'community-focused areas', energy: 'cooperative environments' },
+    3: { direction: 'West or Southwest', type: 'creative districts', energy: 'artistic communities' },
+    4: { direction: 'North or Northwest', type: 'established neighborhoods', energy: 'stable, traditional areas' },
+    5: { direction: 'Central or multiple directions', type: 'travel hubs', energy: 'cosmopolitan zones' },
+    6: { direction: 'Southwest or West', type: 'family-oriented areas', energy: 'nurturing communities' },
+    7: { direction: 'North or Northeast', type: 'educational centers', energy: 'intellectual environments' },
+    8: { direction: 'Northwest or North', type: 'financial districts', energy: 'ambitious professional areas' },
+    9: { direction: 'South or Southeast', type: 'diverse communities', energy: 'humanitarian organizations' },
+    11: { direction: 'East or multiple directions', type: 'spiritual centers', energy: 'enlightened communities' },
+    22: { direction: 'Northeast or East', type: 'development zones', energy: 'visionary projects' },
+    33: { direction: 'Central or all directions', type: 'healing centers', energy: 'service-oriented areas' }
+  };
+  
+  const location = locationMap[lifePath] || locationMap[5];
+  
+  // Astrological timing and location refinement
+  let astroInfluence = '';
+  if (birth.zodiac) {
+    const zodiacLocations = {
+      'aries': 'near sports facilities, gyms, or competitive venues',
+      'taurus': 'in gardens, parks, or areas with natural beauty',
+      'gemini': 'around libraries, schools, or communication hubs',
+      'cancer': 'near water, homes, or family gathering places',
+      'leo': 'in entertainment districts, theaters, or social venues',
+      'virgo': 'around health centers, organized spaces, or service areas',
+      'libra': 'in aesthetic areas, art galleries, or partnership-focused venues',
+      'scorpio': 'near transformative spaces, research centers, or intense environments',
+      'sagittarius': 'around universities, travel hubs, or international areas',
+      'capricorn': 'in business districts, government areas, or achievement-focused zones',
+      'aquarius': 'around innovative spaces, tech hubs, or humanitarian organizations',
+      'pisces': 'near spiritual centers, water, or artistic communities'
+    };
+    astroInfluence = zodiacLocations[birth.zodiac.toLowerCase()] || '';
+  }
+  
+  // Current location context
+  let currentLocationContext = '';
+  if (user.country) {
+    currentLocationContext = `Given your current location in ${user.country}, `;
+  }
+  
+  // Distance prediction based on personality
+  const introvert = personality.introvertExtrovert || 50;
+  const adventurous = personality.groundedAdventurous || 50;
+  
+  let distanceType = 'within your local area';
+  if (adventurous > 70) {
+    distanceType = 'potentially through travel or relocation';
+  } else if (introvert < 30) {
+    distanceType = 'through expanded social circles';
+  }
+  
+  return `${currentLocationContext}your soulmate is most likely to be found in the ${location.direction} direction from your current position. Look for connections in ${location.type}, particularly ${astroInfluence || location.energy}.
+
+The cosmic timing suggests meeting ${distanceType}. Your numerological signature (Life Path ${lifePath}) creates magnetic attraction in ${location.energy}, where your natural energy aligns with theirs.
+
+Key locations to focus your attention: ${location.type} that embody ${location.energy}. Trust your intuition when visiting these spaces - you'll feel a heightened sense of possibility and connection.`;
+}
+
+export async function generatePdf({ text, imagePath, outPath, addons = [], quiz = {}, tier = 'basic' }) {
+  const doc = new PDFDocument({ autoFirstPage: false });
   const stream = fs.createWriteStream(outPath);
   doc.pipe(stream);
 
-	// Cover page
-	doc.addPage({ size: 'LETTER', margins: { top: 56, left: 56, right: 56, bottom: 56 } });
-	// Title badge
-	doc.roundedRect(180, 60, 255, 28, 14).fillOpacity(0.06).fill('#E91E63').fillOpacity(1);
-	doc.fontSize(10).fillColor('#E91E63').font('Times-Bold').text('Soulmate Sketch • Personal Report', 190, 67);
-	// Main title
-	doc.moveDown(2);
-	doc.fontSize(30).fillColor('#000').font('Times-Bold').text('Your Soulmate Sketch', { align: 'center' });
-	if (imagePath && fs.existsSync(imagePath)) {
-		doc.moveDown();
-		doc.image(imagePath, { fit: [480, 480], align: 'center', valign: 'center' });
-	}
-	doc.moveDown(0.5);
-	doc.fontSize(11).fillColor('#666').font('Times-Roman').text('Prepared with care by Soulmate Sketch', { align: 'center' });
+  // Enhanced cover page with tier-specific styling
+  doc.addPage({ size: 'LETTER', margins: { top: 56, left: 56, right: 56, bottom: 56 } });
+  
+  // Tier-specific header with gradient background
+  const headerHeight = 120;
+  doc.rect(0, 0, doc.page.width, headerHeight)
+     .fillAndStroke(tier === 'premium' ? '#1A237E' : tier === 'plus' ? '#4A148C' : '#E91E63', '#FFF');
+  
+  // Tier badge with enhanced styling
+  const tierColors = {
+    'basic': { bg: '#E91E63', text: '#FFFFFF', label: '✨ BASIC EDITION' },
+    'plus': { bg: '#4A148C', text: '#FFFFFF', label: '🌟 PLUS EDITION' },
+    'premium': { bg: '#1A237E', text: '#FFFFFF', label: '👑 PREMIUM EDITION' }
+  };
+  
+  const tierStyle = tierColors[tier] || tierColors.basic;
+  doc.roundedRect(170, 25, 285, 32, 16)
+     .fillOpacity(0.9)
+     .fill(tierStyle.bg)
+     .fillOpacity(1);
+  
+  doc.fontSize(12)
+     .fillColor(tierStyle.text)
+     .font('Helvetica-Bold')
+     .text(tierStyle.label, 0, 35, { align: 'center' });
+     
+  doc.fontSize(10)
+     .fillColor('#FFFFFF')
+     .font('Helvetica')
+     .text('Soulmate Sketch • Personal Report', 0, 52, { align: 'center' });
 
-	// Report page
-	doc.addPage({ size: 'LETTER', margins: { top: 56, left: 56, right: 56, bottom: 56 } });
-	// Section header style
-	const writeSection = (heading, body) => {
-		if (!body) return;
-		doc.moveDown(0.6);
-		doc.fontSize(14).fillColor('#2D2240').font('Times-Bold').text(heading);
-		doc.moveDown(0.2);
-		doc.fontSize(12).fillColor('#111').font('Times-Roman').text(body, { align: 'left' });
-	};
+  // Main title with enhanced typography
+  doc.moveDown(2);
+  doc.fontSize(36)
+     .fillColor('#2D2240')
+     .font('Helvetica-Bold')
+     .text('Your Soulmate Sketch', { align: 'center' });
+     
+  doc.fontSize(14)
+     .fillColor('#666')
+     .font('Helvetica')
+     .text('A Personalized Spiritual Analysis', { align: 'center' });
 
-	// Split generated text by our requested headings if present
-	const sections = {
-		Overview: '',
-		'Personality & Vibe': '',
-		'Attachment Style & Love Languages': '',
-		'First Meeting Scenario': '',
-		"What They're Looking For Now": '',
-		'Numerology/Astro Notes': '',
-		// Plus tier sections
-		'Location Insights': '',
-		'Enhanced Astrological Analysis': '',
-		// Premium tier sections
-		'Full Astrological AI Analysis': '',
-		'Personal Relationship Strategy Guide': '',
-		'Spiritual Growth & Preparation': '',
-		'Cosmic Timing & Manifestation': ''
-	};
-	const lines = String(text || '').split(/\r?\n/);
-	let current = 'Overview';
-	for (const line of lines) {
-		const trimmed = line.trim();
-		if (sections.hasOwnProperty(trimmed)) { current = trimmed; continue; }
-		if (!sections[current]) sections[current] = trimmed; else sections[current] += (trimmed ? ('\n' + trimmed) : '');
-	}
+  // Image with enhanced frame
+  if (imagePath && fs.existsSync(imagePath)) {
+    doc.moveDown(1.5);
+    const imageSize = 320;
+    const imageX = (doc.page.width - imageSize) / 2;
+    const imageY = doc.y;
+    
+    // Add shadow effect
+    doc.rect(imageX + 5, imageY + 5, imageSize, imageSize)
+       .fillOpacity(0.1)
+       .fill('#000')
+       .fillOpacity(1);
+    
+    doc.image(imagePath, imageX, imageY, { width: imageSize, height: imageSize });
+    
+    // Enhanced frame with tier-specific accent
+    doc.rect(imageX - 3, imageY - 3, imageSize + 6, imageSize + 6)
+       .strokeColor(tierStyle.bg)
+       .lineWidth(3)
+       .stroke();
+       
+    doc.y = imageY + imageSize + 20;
+  }
 
-	writeSection('Overview', sections['Overview'] || text);
-	writeSection('Personality & Vibe', sections['Personality & Vibe']);
-	writeSection('Attachment Style & Love Languages', sections['Attachment Style & Love Languages']);
-	writeSection('First Meeting Scenario', sections['First Meeting Scenario']);
-	writeSection("What They're Looking For Now", sections["What They're Looking For Now"]);
-	writeSection('Numerology/Astro Notes', sections['Numerology/Astro Notes']);
+  // Enhanced footer with personalization
+  const userName = quiz.user?.name || quiz.user?.email?.split('@')[0] || 'You';
+  doc.fontSize(11)
+     .fillColor('#888')
+     .font('Helvetica')
+     .text(`Prepared especially for ${userName}`, { align: 'center' });
+     
+  doc.fontSize(9)
+     .fillColor('#AAA')
+     .text(`Generated on ${new Date().toLocaleDateString()}`, { align: 'center' });
 
-	// Plus tier sections
-	if (sections['Location Insights']) {
-		writeSection('Location Insights', sections['Location Insights']);
-	}
-	if (sections['Enhanced Astrological Analysis']) {
-		writeSection('Enhanced Astrological Analysis', sections['Enhanced Astrological Analysis']);
-	}
+  // Enhanced report page with professional layout
+  doc.addPage({ size: 'LETTER', margins: { top: 56, left: 56, right: 56, bottom: 56 } });
+  
+  // Enhanced section writing function with better styling
+  const writeSection = (heading, body, isSpecialSection = false) => {
+    if (!body || body.trim() === '') return;
+    
+    // Check if we need a new page
+    if (doc.y > doc.page.height - 200) {
+      doc.addPage({ size: 'LETTER', margins: { top: 56, left: 56, right: 56, bottom: 56 } });
+    }
+    
+    doc.moveDown(0.8);
+    
+    // Enhanced section headers with icons and better typography
+    const sectionIcons = {
+      'Overview': '🌟',
+      'Personality & Vibe': '✨',
+      'Attachment Style & Love Languages': '💝',
+      'First Meeting Scenario': '💫',
+      "What They're Looking For Now": '🎯',
+      'Numerology/Astro Notes': '🔮',
+      'Soulmate Location Prediction': '🗺️',
+      'Enhanced Astrological Analysis': '🌙',
+      'Full Astrological AI Analysis': '⭐',
+      'Personal Relationship Strategy Guide': '📋',
+      'Spiritual Growth & Preparation': '🙏',
+      'Cosmic Timing & Manifestation': '⏰'
+    };
+    
+    const icon = sectionIcons[heading] || '💎';
+    
+    // Section header with enhanced styling
+    if (isSpecialSection) {
+      doc.rect(doc.x - 10, doc.y - 5, doc.page.width - 112, 28)
+         .fillOpacity(0.05)
+         .fill(tierStyle.bg)
+         .fillOpacity(1);
+    }
+    
+    doc.fontSize(16)
+       .fillColor(isSpecialSection ? tierStyle.bg : '#2D2240')
+       .font('Helvetica-Bold')
+       .text(`${icon} ${heading}`, doc.x, doc.y + (isSpecialSection ? 5 : 0));
+    
+    doc.moveDown(0.4);
+    
+    // Section content with improved readability
+    doc.fontSize(12)
+       .fillColor('#111')
+       .font('Helvetica')
+       .text(body.trim(), {
+         align: 'left',
+         lineGap: 3,
+         paragraphGap: 8
+       });
+  };
 
-	// Premium tier sections  
-	if (sections['Full Astrological AI Analysis']) {
-		writeSection('Full Astrological AI Analysis', sections['Full Astrological AI Analysis']);
-	}
-	if (sections['Personal Relationship Strategy Guide']) {
-		writeSection('Personal Relationship Strategy Guide', sections['Personal Relationship Strategy Guide']);
-	}
-	if (sections['Spiritual Growth & Preparation']) {
-		writeSection('Spiritual Growth & Preparation', sections['Spiritual Growth & Preparation']);
-	}
-	if (sections['Cosmic Timing & Manifestation']) {
-		writeSection('Cosmic Timing & Manifestation', sections['Cosmic Timing & Manifestation']);
-	}
+  // Parse and organize content sections
+  const sections = {
+    Overview: '',
+    'Personality & Vibe': '',
+    'Attachment Style & Love Languages': '',
+    'First Meeting Scenario': '',
+    "What They're Looking For Now": '',
+    'Numerology/Astro Notes': '',
+    'Location Insights': '',
+    'Enhanced Astrological Analysis': '',
+    'Full Astrological AI Analysis': '',
+    'Personal Relationship Strategy Guide': '',
+    'Spiritual Growth & Preparation': '',
+    'Cosmic Timing & Manifestation': ''
+  };
+  
+  const lines = String(text || '').split(/\r?\n/);
+  let current = 'Overview';
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (sections.hasOwnProperty(trimmed)) { 
+      current = trimmed; 
+      continue; 
+    }
+    if (!sections[current]) {
+      sections[current] = trimmed;
+    } else if (trimmed) {
+      sections[current] += '\n' + trimmed;
+    }
+  }
 
-	// Enhanced personalized add-on sections
-	if (Array.isArray(addons) && (addons.includes('aura-reading') || addons.includes('aura'))) {
-		const auraContent = generatePersonalizedAuraReading(quiz);
-		writeSection('Your Personal Aura Reading', auraContent);
-	}
-	if (Array.isArray(addons) && (addons.includes('compatibility-snapshot') || addons.includes('twin_flame'))) {
-		const twinFlameContent = generatePersonalizedTwinFlameInsight(quiz);
-		writeSection('Soul Compatibility Insights', twinFlameContent);
-	}
-	if (Array.isArray(addons) && (addons.includes('12-hour-rush') || addons.includes('past_life'))) {
-		const pastLifeContent = generatePersonalizedPastLifeGlimpse(quiz);
-		writeSection('Past Life Connection Glimpse', pastLifeContent);
-	}
+  // Write core sections (available in all tiers)
+  writeSection('Overview', sections['Overview'] || text);
+  writeSection('Personality & Vibe', sections['Personality & Vibe']);
+  writeSection('Attachment Style & Love Languages', sections['Attachment Style & Love Languages']);
+  writeSection('First Meeting Scenario', sections['First Meeting Scenario']);
+  writeSection("What They're Looking For Now", sections["What They're Looking For Now"]);
+  writeSection('Numerology/Astro Notes', sections['Numerology/Astro Notes']);
 
-  // Disclaimer
-	doc.moveDown(1);
-	doc.fontSize(9).fillColor('#666').text('This experience is for inspiration and reflection. It does not promise outcomes or provide medical or professional advice.', { align: 'left' });
+  // PLUS TIER: Add location prediction and enhanced content
+  if (tier === 'plus' || tier === 'premium') {
+    // Generate location prediction based on numerology and astrology
+    const locationPrediction = generateLocationPrediction(quiz);
+    writeSection('Soulmate Location Prediction', locationPrediction, true);
+    
+    if (sections['Location Insights']) {
+      writeSection('Enhanced Location Insights', sections['Location Insights'], true);
+    }
+    if (sections['Enhanced Astrological Analysis']) {
+      writeSection('Enhanced Astrological Analysis', sections['Enhanced Astrological Analysis'], true);
+    }
+  }
+
+  // PREMIUM TIER: Add complete premium content
+  if (tier === 'premium') {
+    if (sections['Full Astrological AI Analysis']) {
+      writeSection('Full Astrological AI Analysis', sections['Full Astrological AI Analysis'], true);
+    }
+    if (sections['Personal Relationship Strategy Guide']) {
+      writeSection('Personal Relationship Strategy Guide', sections['Personal Relationship Strategy Guide'], true);
+    }
+    if (sections['Spiritual Growth & Preparation']) {
+      writeSection('Spiritual Growth & Preparation', sections['Spiritual Growth & Preparation'], true);
+    }
+    if (sections['Cosmic Timing & Manifestation']) {
+      writeSection('Cosmic Timing & Manifestation', sections['Cosmic Timing & Manifestation'], true);
+    }
+  }
+
+  // Enhanced personalized add-on sections
+  if (Array.isArray(addons) && (addons.includes('aura-reading') || addons.includes('aura'))) {
+    const auraContent = generatePersonalizedAuraReading(quiz);
+    writeSection('Your Personal Aura Reading', auraContent, true);
+  }
+  if (Array.isArray(addons) && (addons.includes('compatibility-snapshot') || addons.includes('twin_flame'))) {
+    const twinFlameContent = generatePersonalizedTwinFlameInsight(quiz);
+    writeSection('Soul Compatibility Insights', twinFlameContent, true);
+  }
+  if (Array.isArray(addons) && (addons.includes('12-hour-rush') || addons.includes('past_life'))) {
+    const pastLifeContent = generatePersonalizedPastLifeGlimpse(quiz);
+    writeSection('Past Life Connection Glimpse', pastLifeContent, true);
+  }
+
+  // Enhanced disclaimer with tier information
+  doc.moveDown(2);
+  doc.rect(doc.x - 10, doc.y - 5, doc.page.width - 112, 50)
+     .fillOpacity(0.02)
+     .fill('#000')
+     .fillOpacity(1);
+     
+  doc.fontSize(9)
+     .fillColor('#666')
+     .font('Helvetica')
+     .text('✨ Important Notice: This SoulmateSketch report is created for entertainment, inspiration, and self-reflection. It combines spiritual wisdom with AI technology to provide personalized insights for your journey.', {
+       align: 'left',
+       lineGap: 2
+     });
+     
+  doc.moveDown(0.5);
+  doc.fontSize(8)
+     .fillColor('#888')
+     .text(`© ${new Date().getFullYear()} SoulmateSketch ${tierStyle.label} • Generated with Love & AI`, { align: 'center' });
 
   doc.end();
-
   await new Promise((resolve) => stream.on('finish', resolve));
 }

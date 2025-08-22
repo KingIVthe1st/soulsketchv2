@@ -530,7 +530,8 @@ export function createRouter() {
           imagePath: imageResult.filePath,
           outPath: pdfPath,
           addons,
-          quiz
+          quiz,
+          tier: order.tier
         });
         console.log(`✅ PDF generated: ${pdfPath}`);
       } catch (pdfError) {
