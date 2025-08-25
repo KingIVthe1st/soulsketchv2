@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 /**
  * Professional Email Service for SoulmateSketch
@@ -9,6 +11,8 @@ export class EmailService {
   constructor() {
     this.fromEmail = process.env.SMTP_FROM_EMAIL || 'noreply@soulmatesketch.com';
     this.smtpConfig = this._getSmtpConfig();
+    this.resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+    this.emailMethod = this._determineEmailMethod();
   }
 
   /**
@@ -49,9 +53,17 @@ export class EmailService {
         });
       }
 
-      // Send email based on available service
-      if (this.smtpConfig) {
-        await this._sendViaSmtp({
+      // Send email using the best available service
+      let emailResult;
+      if (this.emailMethod === 'resend') {
+        emailResult = await this._sendViaResend({
+          to,
+          subject: emailContent.subject,
+          html: emailContent.html,
+          attachments
+        });
+      } else if (this.emailMethod === 'smtp') {
+        emailResult = await this._sendViaSmtp({
           to,
           subject: emailContent.subject,
           html: emailContent.html,
@@ -59,7 +71,7 @@ export class EmailService {
         });
       } else {
         // Log delivery for development/testing
-        await this._logEmailDelivery({
+        emailResult = await this._logEmailDelivery({
           to,
           subject: emailContent.subject,
           attachments,
@@ -67,8 +79,8 @@ export class EmailService {
         });
       }
 
-      console.log(`Soulmate report successfully sent to ${to}`);
-      return { success: true, method: this.smtpConfig ? 'smtp' : 'logged' };
+      console.log(`Soulmate report successfully sent to ${to} via ${this.emailMethod}`);
+      return { success: true, method: this.emailMethod, result: emailResult };
 
     } catch (error) {
       console.error('Email delivery failed:', error);
@@ -256,6 +268,22 @@ export class EmailService {
   }
 
   /**
+   * Determine the best email method available
+   */
+  _determineEmailMethod() {
+    if (this.resend) {
+      console.log('📧 Email service: Resend API configured');
+      return 'resend';
+    } else if (this.smtpConfig) {
+      console.log('📧 Email service: SMTP configured');
+      return 'smtp';
+    } else {
+      console.log('📧 Email service: Development logging mode');
+      return 'logging';
+    }
+  }
+
+  /**
    * Get SMTP configuration if available
    */
   _getSmtpConfig() {
@@ -274,29 +302,69 @@ export class EmailService {
   }
 
   /**
-   * Send email via SMTP (placeholder for actual implementation)
+   * Send email via Resend API
+   */
+  async _sendViaResend({ to, subject, html, attachments }) {
+    try {
+      console.log(`📤 Sending via Resend to ${to}`);
+      
+      // Convert file attachments to base64 for Resend
+      const resendAttachments = [];
+      for (const attachment of attachments) {
+        if (fs.existsSync(attachment.path)) {
+          const content = fs.readFileSync(attachment.path);
+          resendAttachments.push({
+            filename: attachment.filename,
+            content: content
+          });
+        }
+      }
+
+      const result = await this.resend.emails.send({
+        from: this.fromEmail,
+        to: [to],
+        subject: subject,
+        html: html,
+        attachments: resendAttachments
+      });
+
+      console.log(`✅ Resend email sent successfully:`, result.data?.id);
+      return { success: true, messageId: result.data?.id, service: 'resend' };
+      
+    } catch (error) {
+      console.error('❌ Resend email failed:', error);
+      throw new Error(`Resend delivery failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Send email via SMTP using nodemailer
    */
   async _sendViaSmtp({ to, subject, html, attachments }) {
-    // This would use nodemailer or similar SMTP library
-    // For now, we'll log the email for development
-    console.log('📧 SMTP Email (would send):');
-    console.log(`To: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Attachments: ${attachments.length}`);
-    
-    // In production, implement actual SMTP sending:
-    /*
-    const nodemailer = require('nodemailer');
-    const transporter = nodemailer.createTransporter(this.smtpConfig);
-    
-    await transporter.sendMail({
-      from: this.fromEmail,
-      to,
-      subject,
-      html,
-      attachments
-    });
-    */
+    try {
+      console.log(`📤 Sending via SMTP to ${to}`);
+      
+      const transporter = nodemailer.createTransporter(this.smtpConfig);
+      
+      // Verify connection
+      await transporter.verify();
+      console.log('✅ SMTP connection verified');
+      
+      const result = await transporter.sendMail({
+        from: this.fromEmail,
+        to,
+        subject,
+        html,
+        attachments
+      });
+
+      console.log(`✅ SMTP email sent successfully:`, result.messageId);
+      return { success: true, messageId: result.messageId, service: 'smtp' };
+      
+    } catch (error) {
+      console.error('❌ SMTP email failed:', error);
+      throw new Error(`SMTP delivery failed: ${error.message}`);
+    }
   }
 
   /**
@@ -415,10 +483,13 @@ export class EmailService {
 </body>
 </html>`;
 
-      if (this.smtpConfig) {
-        await this._sendViaSmtp({ to, subject, html, attachments: [] });
+      let emailResult;
+      if (this.emailMethod === 'resend') {
+        emailResult = await this._sendViaResend({ to, subject, html, attachments: [] });
+      } else if (this.emailMethod === 'smtp') {
+        emailResult = await this._sendViaSmtp({ to, subject, html, attachments: [] });
       } else {
-        await this._logEmailDelivery({ 
+        emailResult = await this._logEmailDelivery({ 
           to, 
           subject, 
           attachments: [], 

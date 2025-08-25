@@ -38,9 +38,16 @@ JWT_SECRET=your-jwt-secret-minimum-32-characters-here
 
 ## ⚡ Email Delivery Configuration
 
-**Choose ONE email service:**
+**Choose ONE email service (Resend recommended):**
 
-### Option A: SMTP (Gmail/Custom SMTP)
+### Option A: Resend (Recommended)
+```bash
+RESEND_API_KEY=re_your-resend-api-key
+SMTP_FROM_EMAIL=noreply@yourdomain.com
+EMAIL_TIMEOUT=30000
+```
+
+### Option B: SMTP (Gmail/Custom SMTP)
 ```bash
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
@@ -51,14 +58,14 @@ SMTP_FROM_EMAIL=noreply@yourdomain.com
 EMAIL_TIMEOUT=30000
 ```
 
-### Option B: SendGrid
+### Option C: SendGrid (Legacy Support)
 ```bash
 SENDGRID_API_KEY=SG.your-sendgrid-api-key
 SMTP_FROM_EMAIL=noreply@yourdomain.com
 EMAIL_TIMEOUT=30000
 ```
 
-### Option C: Mailgun
+### Option D: Mailgun (Legacy Support)
 ```bash
 MAILGUN_API_KEY=your-mailgun-api-key
 MAILGUN_DOMAIN=mg.yourdomain.com

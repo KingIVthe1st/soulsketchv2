@@ -1,0 +1,172 @@
+/* Safari-specific fixes for dark theme */
+
+/* Ensure root variables are applied */
+:root {
+  --primary-color: #FFFFFF;
+  --secondary-color: #1B1B1B33;
+  --text-color: #A7AABB;
+  --bg-color: #060606;
+  --accent-color: #A93E17;
+  --accent-secondary-color: #15399A;
+  --divider-color: #FFFFFF0F;
+  --dark-divider-color: #FFFFFF33;
+  --error-color: rgb(230, 87, 87);
+  --default-font: "Manrope", sans-serif;
+  --accent-font: "Funnel Display", sans-serif;
+}
+
+/* Force dark background on html and body for Safari */
+html {
+  background-color: #060606 !important;
+  background: #060606 !important;
+}
+
+body {
+  background-color: #060606 !important;
+  background: #060606 !important;
+  color: #A7AABB !important;
+  min-height: 100vh;
+}
+
+/* Target all major containers that could have white backgrounds */
+* {
+  box-sizing: border-box;
+}
+
+/* Force all major sections to inherit dark background */
+section,
+div,
+main,
+article,
+aside,
+header,
+footer {
+  background-color: inherit !important;
+}
+
+/* Specifically target elements that might override the dark theme */
+.container,
+.row,
+.col,
+[class*="col-"],
+.content,
+.main-content,
+.page-content,
+.section,
+.wrapper {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* Ensure form containers have dark background */
+.order-section,
+.content-section,
+.main-content,
+.container {
+  background-color: transparent !important;
+}
+
+/* Specific fix for order form background */
+#order-section,
+#order,
+.order-form,
+.order-container,
+[id*="step"] {
+  background-color: transparent !important;
+  color: #A7AABB !important;
+}
+
+/* Ensure the main wrapper has dark background */
+.main-wrapper,
+.page-wrapper,
+#main {
+  background-color: #060606 !important;
+}
+
+/* Fix form inputs for Safari */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+  -webkit-appearance: none;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+}
+
+/* Fix select dropdowns in Safari */
+select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 1.2em;
+  padding-right: 2.5rem;
+}
+
+/* Fix buttons for Safari */
+button,
+.btn {
+  -webkit-appearance: none;
+}
+
+/* Ensure payment form has correct background */
+.payment-form-container,
+.stripe-form-container {
+  background-color: transparent;
+}
+
+/* Fix any white flashes on load */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  /* Safari only */
+  ::selection {
+    background-color: rgba(169, 62, 23, 0.3);
+    color: #FFFFFF;
+  }
+}
+
+/* Aggressive Safari fix - target everything */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  /* Safari-specific styles */
+  * {
+    background-color: inherit !important;
+  }
+  
+  /* Override any white backgrounds */
+  *[style*="background-color: white"],
+  *[style*="background: white"],
+  *[style*="background-color: #ffffff"],
+  *[style*="background: #ffffff"],
+  *[style*="background-color: #fff"],
+  *[style*="background: #fff"] {
+    background-color: transparent !important;
+    background: transparent !important;
+  }
+  
+  /* Force text color */
+  * {
+    color: inherit !important;
+  }
+  
+  /* Ensure no element has a white background */
+  div:not([class*="white"]):not([id*="white"]) {
+    background-color: transparent !important;
+  }
+}
+
+/* Fix Safari-specific rendering issues */
+@supports (-webkit-appearance: none) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Additional Safari fix */
+  html, body {
+    background: #060606 !important;
+  }
+  
+  /* Force all children to inherit background */
+  body * {
+    background-color: inherit !important;
+  }
+}

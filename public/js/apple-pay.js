@@ -31,9 +31,22 @@ class ApplePayService {
    * Check if Apple Pay is available
    */
   isApplePayAvailable() {
-    return window.ApplePaySession && 
-           ApplePaySession.canMakePayments() &&
-           ApplePaySession.supportsVersion(3);
+    if (!window.ApplePaySession) {
+      console.log('Apple Pay not supported on this browser');
+      return false;
+    }
+    
+    if (!ApplePaySession.canMakePayments()) {
+      console.log('Apple Pay not available (no cards set up)');
+      return false;
+    }
+    
+    if (!ApplePaySession.supportsVersion(3)) {
+      console.log('Apple Pay version 3 not supported');
+      return false;
+    }
+    
+    return true;
   }
 
   /**
@@ -257,9 +270,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.applePayService = new ApplePayService(stripeKey);
     
     // Initialize Apple Pay button if container exists
-    const container = document.getElementById('apple-pay-button');
+    const container = document.getElementById('apple-pay-button-container');
     if (container) {
-      window.applePayService.initApplePayButton('apple-pay-button');
+      // Show the container first
+      container.style.display = 'block';
+      // Then initialize the button
+      if (window.applePayService.initApplePayButton('apple-pay-button')) {
+        console.log('Apple Pay button initialized successfully');
+      } else {
+        console.log('Apple Pay not available on this device');
+        container.style.display = 'none';
+      }
     }
   }
 });

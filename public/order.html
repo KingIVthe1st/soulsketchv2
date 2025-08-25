@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1"
     />
     <meta
       name="description"
@@ -41,14 +41,6 @@
     <link rel="stylesheet" href="css/mousecursor.css" />
     <!-- Main Custom Css -->
     <link href="css/custom.css" rel="stylesheet" media="screen" />
-    <!-- Mobile Optimizations -->
-    <link href="css/mobile-optimized.css" rel="stylesheet" media="screen" />
-    <!-- DNS Prefetch for better performance -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//js.stripe.com">
-    <link rel="preconnect" href="https://js.stripe.com" crossorigin>
-    <!-- Stripe JS -->
-    <script src="https://js.stripe.com/v3/"></script>
   </head>
   <body>
     <!-- Preloader Start -->
@@ -59,6 +51,31 @@
       </div>
     </div>
     <!-- Preloader End -->
+
+    <!-- Generating Report Screen Start -->
+    <div id="generatingReportScreen" class="generating-overlay" style="display: none; opacity: 0;">
+      <div class="generating-content">
+        <div class="mystical-orb">
+          <div class="orb-core"></div>
+          <div class="orb-ring ring-1"></div>
+          <div class="orb-ring ring-2"></div>
+          <div class="orb-ring ring-3"></div>
+        </div>
+        <div class="generating-text">
+          <h2>Channeling Your Soulmate's Energy</h2>
+          <p id="generatingStatus">Connecting with the cosmic forces...</p>
+        </div>
+        <div class="mystical-particles">
+          <div class="particle particle-1"></div>
+          <div class="particle particle-2"></div>
+          <div class="particle particle-3"></div>
+          <div class="particle particle-4"></div>
+          <div class="particle particle-5"></div>
+          <div class="particle particle-6"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Generating Report Screen End -->
 
     <!-- Header Start -->
     <header class="main-header bg-section">
@@ -90,12 +107,12 @@
         <div class="row section-row">
           <div class="col-lg-10 offset-lg-1">
             <div class="order-progress wow fadeInUp" data-wow-delay="0.1s">
-              <div id="stepLabel">Step 1 of 5 — About you</div>
+              <div id="stepLabel">Step 1 of 4 — About you</div>
               <div
                 class="progress"
                 role="progressbar"
                 aria-valuemin="1"
-                aria-valuemax="5"
+                aria-valuemax="4"
                 aria-valuenow="1"
               >
                 <div
@@ -201,8 +218,10 @@
                     email is needed for delivery.</small
                   >
                 </div>
-                <div class="what-we-btn order-nav" style="margin: 40px 0px; display: flex; justify-content: flex-end;">
-                  <button type="button" class="btn-default next">Next</button>
+                <div class="what-we-btn order-nav" style="margin: 40px 0px">
+                  <div>
+                    <button type="button" class="btn-default next">Next</button>
+                  </div>
                 </div>
               </section>
 
@@ -276,23 +295,24 @@
                 </div>
                 <div class="what-we-btn order-nav" style="margin: 40px 0px">
                   <button type="button" class="btn-default back">Back</button>
-                  <button id="reserveBtn" type="button" class="btn-default next">Generate your sketch</button>
+                  <button type="button" class="btn-default skip">Skip</button>
+                  <button type="button" class="btn-default next">Next</button>
                 </div>
               </section>
 
               
 
-              <!-- Step 3: Personality & Lifestyle -->
+              <!-- Step 4: Personality & Lifestyle -->
               <section
-                id="step3"
+                id="step4"
                 class="order-step"
-                aria-labelledby="step3_title"
+                aria-labelledby="step4_title"
                 style="display: none"
               >
                 <div class="section-title section-title-center">
                   <h3>Step 3</h3>
                   <h2
-                    id="step3_title"
+                    id="step4_title"
                     data-cursor="-opaque"
                     style="margin: 40px 0px"
                   >
@@ -548,15 +568,15 @@
 
               <!-- Step 4: Relationship Goals & Boundaries -->
               <section
-                id="step4"
+                id="step4b"
                 class="order-step"
-                aria-labelledby="step4_title"
+                aria-labelledby="step4b_title"
                 style="display: none"
               >
                 <div class="section-title section-title-center">
                   <h3>Step 4</h3>
                   <h2
-                    id="step4_title"
+                    id="step4b_title"
                     data-cursor="-opaque"
                     style="margin: 40px 0px"
                   >
@@ -684,11 +704,11 @@
                 <div class="what-we-btn order-nav" style="margin: 40px 0px">
                   <button type="button" class="btn-default back">Back</button>
                   <button type="button" class="btn-default skip">Skip</button>
-                  <button type="button" class="btn-default next" onclick="event.preventDefault(); event.stopPropagation(); console.log('Step4b Next clicked, going to step 5'); goToStep(5); return false;">Proceed to Checkout</button>
+                  <button type="button" class="btn-default next">Next</button>
                 </div>
               </section>
 
-              <!-- Step 5: Payment -->
+              <!-- Step 5: Choose Your Package -->
               <section
                 id="step5"
                 class="order-step"
@@ -704,173 +724,216 @@
                   >
                     Choose Your <span>Package</span>
                   </h2>
-                  <p style="margin-bottom: 30px; color: var(--primary-color);">
-                    Select your cosmic blueprint level and complete secure checkout for instant delivery.
-                  </p>
                 </div>
-
-                <!-- Package Selection -->
-                <div class="package-selection" style="margin-bottom: 40px;">
+                <div class="contact-us-form">
                   <div class="row">
-                    <!-- Basic Package -->
-                    <div class="col-lg-4 col-md-6 mb-4">
-                      <div class="package-card" data-package="basic" data-price="19.99" style="border: 2px solid var(--divider-color); border-radius: 12px; padding: 25px; cursor: pointer; transition: all 0.3s ease; height: 100%;">
-                        <div style="text-align: center; margin-bottom: 20px;">
-                          <h4 style="color: var(--primary-color); margin-bottom: 10px;">Basic</h4>
-                          <div style="font-size: 32px; font-weight: bold; color: var(--accent-color); margin-bottom: 10px;">$19.99</div>
-                          <p style="color: var(--secondary-color); margin-bottom: 20px;">Reveal your cosmic soulmate</p>
-                        </div>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> High-res soulmate sketch</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Detailed compatibility reading</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Numerology & astrology insights</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Instant digital delivery</li>
+                    <div class="col-md-4 mb-4">
+                      <div class="package-card" data-package="basic">
+                        <h4>Basic Package</h4>
+                        <p class="price">$19.99</p>
+                        <ul>
+                          <li>High-res soulmate sketch</li>
+                          <li>Detailed compatibility reading</li>
+                          <li>Numerology & astrology insights</li>
+                          <li>Instant digital delivery</li>
                         </ul>
+                        <button type="button" class="btn-default package-select">Select Basic</button>
                       </div>
                     </div>
-
-                    <!-- Plus Package -->
-                    <div class="col-lg-4 col-md-6 mb-4">
-                      <div class="package-card" data-package="plus" data-price="29.99" style="border: 2px solid var(--accent-color); border-radius: 12px; padding: 25px; cursor: pointer; transition: all 0.3s ease; height: 100%; position: relative; background: rgba(102, 126, 234, 0.05);">
-                        <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;">POPULAR</div>
-                        <div style="text-align: center; margin-bottom: 20px;">
-                          <h4 style="color: var(--primary-color); margin-bottom: 10px;">Plus</h4>
-                          <div style="font-size: 32px; font-weight: bold; color: var(--accent-color); margin-bottom: 10px;">$29.99</div>
-                          <p style="color: var(--secondary-color); margin-bottom: 20px;">+ Location mapping</p>
-                        </div>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Everything in Basic</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Location insights (where they live)</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Enhanced astrological analysis</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Expanded PDF report</li>
+                    <div class="col-md-4 mb-4">
+                      <div class="package-card featured" data-package="plus">
+                        <div class="badge">Most Popular</div>
+                        <h4>Plus Package</h4>
+                        <p class="price">$29.99</p>
+                        <ul>
+                          <li>Everything in Basic</li>
+                          <li>Location insights (where they live)</li>
+                          <li>Enhanced astrological analysis</li>
+                          <li>Expanded PDF report</li>
                         </ul>
+                        <button type="button" class="btn-default package-select">Select Plus</button>
                       </div>
                     </div>
-
-                    <!-- Premium Package -->
-                    <div class="col-lg-4 col-md-6 mb-4">
-                      <div class="package-card" data-package="premium" data-price="49.99" style="border: 2px solid var(--divider-color); border-radius: 12px; padding: 25px; cursor: pointer; transition: all 0.3s ease; height: 100%;">
-                        <div style="text-align: center; margin-bottom: 20px;">
-                          <h4 style="color: var(--primary-color); margin-bottom: 10px;">Premium</h4>
-                          <div style="font-size: 32px; font-weight: bold; color: var(--accent-color); margin-bottom: 10px;">$49.99</div>
-                          <p style="color: var(--secondary-color); margin-bottom: 20px;">Complete cosmic blueprint</p>
-                        </div>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Everything in Plus</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Full astrological AI analysis</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Personal relationship strategy guide</li>
-                          <li style="margin-bottom: 8px; display: flex; align-items: center;"><span style="color: #10B981; margin-right: 8px;">✓</span> Complete cosmic profile</li>
+                    <div class="col-md-4 mb-4">
+                      <div class="package-card" data-package="premium">
+                        <h4>Premium Package</h4>
+                        <p class="price">$49.99</p>
+                        <ul>
+                          <li>Everything in Plus</li>
+                          <li>Full astrological AI analysis</li>
+                          <li>Personal relationship strategy guide</li>
+                          <li>Complete cosmic profile</li>
                         </ul>
+                        <button type="button" class="btn-default package-select">Select Premium</button>
                       </div>
                     </div>
                   </div>
+                  <div id="selectedPackage" style="display: none;">
+                    <h4>Selected Package: <span id="packageName"></span></h4>
+                    <p>Total: <span id="packagePrice"></span></p>
+                  </div>
                 </div>
-
-                <!-- Pricing Summary -->
-                <div class="payment-summary" style="background: var(--section-bg-color); border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--divider-color);">
-                  <h4 style="margin-bottom: 20px; font-size: 18px;">Order Summary</h4>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <span id="package-name">Plus Soulmate Package</span>
-                    <strong id="package-price" style="font-size: 20px; color: var(--accent-color);">$29.99</strong>
-                    </div>
-                  <hr style="border-color: var(--divider-color); margin: 20px 0;">
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>Total</strong>
-                    <strong id="total-price" style="font-size: 24px; color: var(--accent-color);">$29.99</strong>
-                    </div>
-                  <div style="margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
-                    <small id="package-description" style="color: var(--primary-color);">
-                      ✨ Includes: Everything in Basic + location-based cosmic insights + enhanced astrological analysis using birth data + expanded personalized PDF report with deeper compatibility insights
-                    </small>
-                          </div>
-                        </div>
-
-                <!-- Payment Form -->
-                <div class="payment-form">
-                  <form id="payment-form">
-                    <!-- Stripe Elements will be mounted here -->
-                    <div id="payment-element" style="margin-bottom: 20px;"></div>
-                    
-                    <!-- Apple Pay Button (if supported) -->
-                    <div id="apple-pay-button-container" style="margin-bottom: 20px; display: none;">
-                      <div style="text-align: center; margin-bottom: 10px;">
-                        <span style="color: #666; font-size: 14px;">— OR —</span>
-                      </div>
-                      <div id="apple-pay-button"></div>
-                    </div>
-                    
-                    <!-- Payment Options -->
-                    <div style="margin: 20px 0;">
-                      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
-                        <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24">
-                          <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 17 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5M13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/>
-                        </svg>
-                        <span style="color: var(--primary-color); font-weight: 500;">Apple Pay supported</span>
-                      </div>
-                      
-                      <div style="display: flex; gap: 15px; align-items: center; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
-                        <!-- Visa -->
-                        <div style="background: white; padding: 4px 8px; border-radius: 4px;">
-                          <svg style="height: 16px; width: 50px;" viewBox="0 0 156 50">
-                            <path fill="#1A1F71" d="M34.216 33.114l-4.552-21.42h-7.284l11.484 28.572h6.708l11.484-28.572h-7.284l-4.552 21.42h-6.004z"/>
-                            <path fill="#1A1F71" d="M66.012 11.694c-1.44-.576-3.708-.864-6.804-.864-7.5 0-12.78 3.996-12.816 9.72-.036 4.248 3.78 6.624 6.672 8.028 2.964 1.44 3.96 2.376 3.96 3.672-.036 1.98-2.376 2.88-4.572 2.88-3.06 0-4.68-.432-7.2-1.512l-.972-.468-1.08 6.624c1.8.828 5.148 1.548 8.604 1.584 7.992 0 13.176-3.924 13.212-10.008.036-3.384-2.016-5.94-6.444-8.064-2.664-1.368-4.284-2.304-4.284-3.708.036-1.26 1.404-2.556 4.428-2.556 2.52-.036 4.356.54 5.76 1.152l.684.324 1.044-6.408z"/>
-                            <path fill="#1A1F71" d="M84.708 11.694h-5.616c-1.764 0-3.06.504-3.816 2.376l-10.8 26.196h7.956c0 0 1.296-3.6 1.584-4.392h9.756c.216 1.044.9 4.392.9 4.392h7.02l-6.12-28.572h-.864zm-8.352 18.036c.612-1.656 2.988-8.028 2.988-8.028s.612-1.656.972-2.736l.504 2.484s1.404 6.732 1.692 8.28h-6.156z"/>
-                            <path fill="#1A1F71" d="M18.756 11.694l-7.2 19.476-.756-3.888c-1.296-4.392-5.364-9.18-9.9-11.556l6.516 24.54h8.028L28.404 11.694h-9.648z"/>
-                            <path fill="#F7B600" d="M7.2 11.694H.252l-.072.432c9.54 2.448 15.876 8.352 18.504 15.444L15.876 14.07c-.54-2.088-2.088-3.24-3.96-3.384L7.2 11.694z"/>
-                          </svg>
-                        </div>
-                        
-                        <!-- Mastercard -->
-                        <div style="background: white; padding: 4px 8px; border-radius: 4px;">
-                          <svg style="height: 16px; width: 26px;" viewBox="0 0 50 31">
-                            <circle fill="#EB001B" cx="15.5" cy="15.5" r="15.5"/>
-                            <circle fill="#F79E1B" cx="34.5" cy="15.5" r="15.5"/>
-                            <path fill="#FF5F00" d="M31 15.5c0-5.9-2.6-11.2-6.5-14.8C21.6 4.3 19 15.5 19 15.5s2.6 11.2 5.5 14.8C28.4 26.7 31 21.4 31 15.5z"/>
-                          </svg>
-                        </div>
-                        
-                        <!-- American Express -->
-                        <div style="background: white; padding: 4px 8px; border-radius: 4px;">
-                          <svg style="height: 16px; width: 26px;" viewBox="0 0 50 31">
-                            <rect fill="#006FCF" width="50" height="31" rx="2"/>
-                            <path fill="white" d="M8.5 10.5h3.2l.7 1.7.7-1.7h3.2v8.8h-2.1v-5.4l-.8 2h-1.1l-.8-2v5.4H8.5v-8.8zm15.8 0h-4.5v8.8h4.5v-1.8h-2.4v-1.4h2.3v-1.8h-2.3v-1.9h2.4v-1.9zm2.7 0h2.1l1.2 3.4 1.2-3.4h2.1l-2.3 8.8h-1.9l-2.4-8.8zm10.2 0h2.1v7h2.4v1.8h-4.5v-8.8z"/>
-                          </svg>
-                        </div>
-                        
-                        <div style="margin-left: auto;">
-                          <span style="font-size: 12px; color: var(--primary-color); display: flex; align-items: center; gap: 5px;">
-                            <svg style="width: 16px; height: 16px; fill: #10B981;" viewBox="0 0 24 24">
-                              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-                              <path fill="white" d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
-                            </svg>
-                            Secure SSL encryption
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div id="payment-messages" role="alert" style="margin: 15px 0; min-height: 20px;"></div>
-                  </form>
-                        </div>
-
                 <div class="what-we-btn order-nav" style="margin: 40px 0px">
                   <button type="button" class="btn-default back">Back</button>
-                  <div style="display: flex; gap: 15px; align-items: center;">
-                    <button id="test-deliverables" type="button" class="btn-default" style="background: #10B981; border-color: #10B981;">
-                      TEST Deliverables
-                    </button>
-                    <button id="submit-payment" type="button" class="btn-default" disabled>
-                      <span id="payment-button-text">Complete Order - $19.99</span>
-                      <div id="payment-spinner" class="spinner" style="display: none;"></div>
-                    </button>
-                  </div>
+                  <button type="submit" class="btn-default" id="proceedToCheckout">Proceed to Checkout</button>
                 </div>
               </section>
 
               
             </form>
 
-            <!-- Professional Success Section -->
+            <!-- Checkout Section -->
+            <div
+              id="checkoutSection"
+              class="wow fadeInUp"
+              data-wow-delay="0.1s"
+              style="display: none"
+            >
+              <div class="section-title section-title-center">
+                <h3>Checkout</h3>
+                <h2 data-cursor="-opaque" style="margin: 40px 0px">
+                  Complete Your <span>Order</span>
+                </h2>
+              </div>
+              
+              <div class="row">
+                <div class="col-lg-8">
+                  <!-- Payment Form -->
+                  <div class="contact-us-form payment-form">
+                    <h4 style="color: var(--primary-color); margin-bottom: 20px;">Payment Details</h4>
+                    
+                    <div class="secure-checkout-header" style="margin-bottom: 20px;">
+                      <div style="display: flex; align-items: center; color: #00d4aa;">
+                        <span style="margin-right: 8px;">🔒</span>
+                        <span>Secure, fast checkout with Stripe</span>
+                      </div>
+                    </div>
+
+                    <div id="stripe-payment-element">
+                      <!-- Stripe Elements will mount here -->
+                    </div>
+
+                    <!-- Fallback payment form for demo -->
+                    <div id="fallback-payment-form">
+                      <div class="row">
+                        <div class="form-group col-md-12 mb-3">
+                          <label class="form-label">Card number</label>
+                          <div style="position: relative;">
+                            <input type="text" class="form-control" id="cardNumber" placeholder="1234 1234 1234 1234" maxlength="19">
+                            <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 5px;">
+                              <img src="/logos/visa.png" alt="Visa" style="height: 16px; object-fit: contain;">
+                              <img src="/logos/mastercard.png" alt="Mastercard" style="height: 16px; object-fit: contain;">
+                              <img src="/logos/amex.png" alt="American Express" style="height: 16px; object-fit: contain;">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                          <label class="form-label">Expiration date</label>
+                          <input type="text" class="form-control" id="expDate" placeholder="MM / YY" maxlength="7">
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                          <label class="form-label">Security code</label>
+                          <input type="text" class="form-control" id="securityCode" placeholder="CVC" maxlength="4">
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                          <label class="form-label">Country</label>
+                          <select class="form-control" id="country">
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="AU">Australia</option>
+                          </select>
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                          <label class="form-label">ZIP code</label>
+                          <input type="text" class="form-control" id="zipCode" placeholder="12345">
+                        </div>
+                      </div>
+
+                      <!-- Apple Pay Button -->
+                      <div id="applePayContainer" style="margin: 20px 0;">
+                        <button id="applePayButton" class="apple-pay-button" style="
+                          width: 100%;
+                          height: 44px;
+                          background: linear-gradient(135deg, #000 0%, #333 100%);
+                          border: 1px solid #333;
+                          border-radius: 8px;
+                          color: white;
+                          font-size: 16px;
+                          font-weight: 500;
+                          cursor: pointer;
+                          display: none;
+                          align-items: center;
+                          justify-content: center;
+                          gap: 8px;
+                          transition: all 0.3s ease;
+                        ">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.12 2c1.01 0 1.85.84 1.85 1.85v.43c0 .86-.54 1.6-1.29 1.89-.75.29-1.56-.14-1.56-.98v-.43c0-.36.29-.65.65-.65s.65.29.65.65v.43c0 .36.29.65.65.65s.65-.29.65-.65v-.43c0-1.01-.84-1.85-1.85-1.85s-1.85.84-1.85 1.85v.43c0 .86.54 1.6 1.29 1.89.75.29 1.56-.14 1.56-.98v-.43c0-.36-.29-.65-.65-.65s-.65.29-.65.65v.43c0 .36-.29.65-.65.65s-.65-.29-.65-.65v-.43C10.27 2.84 11.11 2 12.12 2z"/>
+                          </svg>
+                          Pay with Apple Pay
+                        </button>
+                      </div>
+
+                      <div style="margin: 20px 0; text-align: center; color: var(--text-color); font-size: 14px;">
+                        <span style="background: var(--bg-color); padding: 0 15px;">or pay with card</span>
+                        <div style="height: 1px; background: var(--divider-color); margin-top: -10px; z-index: -1; position: relative;"></div>
+                      </div>
+
+                      <div style="margin: 20px 0; padding: 15px; background: rgba(169, 62, 23, 0.1); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                          <span style="margin-right: 8px;">🍎</span>
+                          <span style="color: var(--primary-color);">Apple Pay supported</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                          <img src="/logos/visa.png" alt="Visa" style="height: 20px; object-fit: contain;">
+                          <img src="/logos/mastercard.png" alt="Mastercard" style="height: 20px; object-fit: contain;">
+                          <img src="/logos/amex.png" alt="American Express" style="height: 20px; object-fit: contain;">
+                        </div>
+                        <div style="display: flex; align-items: center; margin-top: 10px; color: #00d4aa;">
+                          <span style="margin-right: 5px;">✓</span>
+                          <span style="font-size: 14px;">Secure SSL encryption</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <!-- Order Summary -->
+                  <div class="payment-summary" style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 12px; margin-bottom: 30px;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 20px;">Order Summary</h4>
+                    
+                    <div id="selectedPackageSummary">
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span id="packageSummaryName" style="color: var(--text-color);">Plus Soulmate Package</span>
+                        <span id="packageSummaryPrice" style="color: var(--accent-color); font-weight: 600;">$29.99</span>
+                      </div>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--divider-color); padding-top: 15px; margin-top: 20px;">
+                      <div style="display: flex; justify-content: space-between; font-size: 1.2rem;">
+                        <strong style="color: var(--primary-color);">Total</strong>
+                        <strong id="totalPrice" style="color: var(--accent-color);">$29.99</strong>
+                      </div>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(169, 62, 23, 0.1); border-radius: 8px; font-size: 14px; color: var(--text-color);">
+                      <div style="margin-bottom: 5px;">✨ <strong>Includes:</strong> Everything in Basic + location-based cosmic insights + enhanced astrological analysis using birth data + expanded personalized PDF report with deeper compatibility insights</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="what-we-btn checkout-nav" style="margin: 40px 0px; display: flex; justify-content: space-between; align-items: center;">
+                <button type="button" class="btn-default" id="backToStep5">Back</button>
+                <div style="display: flex; gap: 15px;">
+                  <button type="button" class="btn-default" id="testDeliverables" style="background: #00d4aa; border-color: #00d4aa;">TEST Deliverables</button>
+                  <button type="button" class="btn-default" id="completeOrder">Complete Order - $29.99</button>
+                </div>
+              </div>
+            </div>
+
             <div
               id="orderComplete"
               class="wow fadeInUp"
@@ -878,151 +941,39 @@
               style="display: none"
             >
               <div class="section-title section-title-center">
-                <h3>Report Generated</h3>
+                <h3>All done</h3>
                 <h2 data-cursor="-opaque" style="margin: 40px 0px 0px">
-                  Your personalized <span>soulmate sketch</span> is ready!
+                  You're <span>all set!</span>
                 </h2>
               </div>
-              
-              <!-- Success Message -->
-              <div id="success-message" 
+              <p
                 style="
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  margin: 0px 0px 40px;
-                  text-align: center;
-                ">
-                <div style="
-                  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-                  color: white;
-                  padding: 20px 30px;
-                  border-radius: 12px;
-                  margin-bottom: 20px;
-                  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
-                ">
-                  <i class="fa-solid fa-check-circle" style="font-size: 24px; margin-right: 10px;"></i>
-                  <strong>Successfully Delivered!</strong>
-                </div>
-                <p style="
-                  font-size: 18px;
-                  line-height: 1.6;
-                  max-width: 500px;
-                  color: #6B7280;
-                ">
-                  Your personalized soulmate report has been delivered to your email inbox. 
-                  Check your email for a comprehensive PDF report including your AI-generated 
-                  soulmate sketch and detailed compatibility reading.
-                </p>
-              </div>
-
-              <!-- Email Delivery Info -->
-              <div id="delivery-info" 
-                style="
-                  background: #F3F4F6;
-                  border-radius: 12px;
-                  padding: 25px;
-                  margin: 0 0 30px 0;
-                  text-align: center;
-                ">
-                <h4 style="
-                  color: #374151;
-                  margin: 0 0 15px 0;
-                  font-size: 20px;
-                ">
-                  <i class="fa-solid fa-envelope" style="margin-right: 10px; color: #6366F1;"></i>
-                  Check Your Email
-                </h4>
-                <p style="
-                  color: #6B7280;
-                  margin: 0 0 15px 0;
-                  line-height: 1.5;
-                ">
-                  Your report was sent to: <strong id="delivery-email">your@email.com</strong>
-                </p>
-                <div style="
                   display: flex;
                   justify-content: center;
-                  gap: 20px;
-                  flex-wrap: wrap;
-                  margin-top: 20px;
-                ">
-                  <a id="pdf-download-link" href="#" onclick="previewDeliverable(event, 'pdf')" style="
-                    display: flex;
-                    align-items: center;
-                    color: #059669;
-                    font-weight: 500;
-                    text-decoration: none;
-                    cursor: pointer;
-                    cursor: pointer;
-                    transition: opacity 0.2s;
-                  " onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-                    <i class="fa-solid fa-file-pdf" style="margin-right: 8px;"></i>
-                    Professional PDF Report
-                  </a>
-                  <a id="image-download-link" href="#" onclick="previewDeliverable(event, 'image')" style="
-                    display: flex;
-                    align-items: center;
-                    color: #7C3AED;
-                    font-weight: 500;
-                    text-decoration: none;
-                    cursor: pointer;
-                    cursor: pointer;
-                    transition: opacity 0.2s;
-                  " onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-                    <i class="fa-solid fa-image" style="margin-right: 8px;"></i>
-                    AI-Generated Portrait
-                  </a>
+                  margin: 0px 0px 40px;
+                "
+              >
+                🎉 Success! Your personalized soulmate sketch has been generated! 
+                Check your email for your custom sketch and reading.
+              </p>
+              <div class="what-we-btn order-complete-nav">
+                <a
+                  id="viewSoulSketchImage"
+                  href="#"
+                  class="btn-default"
+                  >View SoulSketch Image</a
+                >
+                <a id="viewSoulSketchReport" href="#" class="btn-default"
+                  >View SoulSketch PDF Report</a
+                >
+              </div>
+              
+              <!-- In-App Viewer Modal -->
+              <div id="deliverableViewer" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; padding: 20px; box-sizing: border-box;">
+                <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                  <button id="closeViewer" style="position: absolute; top: 20px; right: 30px; background: rgba(255,255,255,0.9); border: none; font-size: 24px; padding: 10px 15px; cursor: pointer; border-radius: 5px; z-index: 10001;">✕</button>
+                  <div id="viewerContent" style="max-width: 95%; width: min(1200px, 95vw); max-height: 90%; overflow: auto; background: white; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);"></div>
                 </div>
-              </div>
-
-              <!-- Professional Actions -->
-              <div class="what-we-btn order-complete-nav" style="
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-                flex-wrap: wrap;
-              ">
-                <a href="mailto:" 
-                   id="check-email-btn" 
-                   class="btn-default"
-                   style="
-                     background: #6366F1;
-                     border-color: #6366F1;
-                     display: flex;
-                     align-items: center;
-                   ">
-                  <i class="fa-solid fa-envelope-open-text" style="margin-right: 8px;"></i>
-                  Open Email App
-                </a>
-                <a href="/" 
-                   class="btn-default btn-highlighted"
-                   style="display: flex; align-items: center;">
-                  <i class="fa-solid fa-home" style="margin-right: 8px;"></i>
-                  Return Home
-                </a>
-              </div>
-
-              <!-- Support Information -->
-              <div style="
-                margin-top: 40px;
-                padding: 20px;
-                background: #FEF3C7;
-                border-radius: 8px;
-                text-align: center;
-                border-left: 4px solid #F59E0B;
-              ">
-                <p style="
-                  margin: 0;
-                  color: #92400E;
-                  font-size: 14px;
-                  line-height: 1.5;
-                ">
-                  <strong>Don't see your email?</strong> Check your spam/junk folder, or contact us at 
-                  <a href="mailto:support@sketchmysoulmate.com" style="color: #92400E; text-decoration: underline;">
-                    support@sketchmysoulmate.com
-                  </a>
-                </p>
               </div>
             </div>
           </div>
@@ -1079,8 +1030,8 @@
               <!-- About Footer Content Start -->
               <div class="about-footer-content">
                 <p>
-                  Hyper-personalized soulmate sketches crafted with 
-                  advanced AI technology delivered instantly to your inbox.
+                  Personalized soulmate sketches crafted with AI‑assisted
+                  artistry — delivered to your inbox within 24 hours.
                 </p>
               </div>
               <!-- About Footer Content End -->
@@ -1233,21 +1184,6 @@
     <script src="js/ScrollTrigger.min.js"></script>
     <!-- SmoothScroll -->
     <script src="js/SmoothScroll.js"></script>
-    <!-- Apple Pay -->
-    <script src="js/apple-pay.js"></script>
-    <!-- Mobile Optimizations -->
-    <script>
-      // Initialize Apple Pay if available
-      document.addEventListener('DOMContentLoaded', () => {
-        if (window.applePayService && window.applePayService.isApplePayAvailable()) {
-          const container = document.getElementById('apple-pay-button-container');
-          if (container) {
-            container.style.display = 'block';
-            window.applePayService.initApplePayButton('apple-pay-button');
-          }
-        }
-      });
-    </script>
     <!-- YTPlayer js File -->
     <script src="js/jquery.mb.YTPlayer.min.js"></script>
     <!-- Wow js file -->
@@ -1315,10 +1251,6 @@
             },
             formats: { jpg: true, pdf: false },
           },
-          package: {
-            tier: "plus", // default to plus (popular)
-            price: 29.99
-          },
         };
 
         let state = defaultState;
@@ -1355,13 +1287,8 @@
         orderForm.addEventListener("click", function (e) {
           const t = e.target;
           if (t.classList.contains("next")) {
-            console.log('🔵 Next button clicked on step:', currentStep);
             e.preventDefault();
-            if (!validateCurrentStep()) {
-              console.log('❌ Validation failed for step:', currentStep);
-              return;
-            }
-            console.log('✅ Validation passed, going to next step');
+            if (!validateCurrentStep()) return;
             goToStep(Math.min(5, currentStep + 1));
           }
           if (t.classList.contains("back")) {
@@ -1372,427 +1299,36 @@
             e.preventDefault();
             goToStep(Math.min(5, currentStep + 1));
           }
-        });
-
-        // Package Selection Logic
-        function initializePackageSelection() {
-          const packageCards = document.querySelectorAll('.package-card');
-          
-          // Package details
-          const packages = {
-            basic: {
-              name: 'Basic Soulmate Package',
-              price: 19.99,
-              description: '✨ Includes: Hyper-personalized AI soulmate portrait + detailed compatibility reading using your personality analysis + real numerology calculations + genuine astrological insights'
-            },
-            plus: {
-              name: 'Plus Soulmate Package',
-              price: 29.99,
-              description: '✨ Includes: Everything in Basic + location-based cosmic insights + enhanced astrological analysis using birth data + expanded personalized PDF report with deeper compatibility insights'
-            },
-            premium: {
-              name: 'Premium Soulmate Package',
-              price: 49.99,
-              description: '✨ Includes: Everything in Plus + comprehensive birth chart analysis + personalized relationship strategy guide + spiritual growth guidance + cosmic timing insights + complete soul profile'
-            }
-          };
-
-          // Set default selection (Plus)
-          updatePackageSelection('plus');
-
-          // Add click handlers to package cards
-          packageCards.forEach(card => {
-            card.addEventListener('click', function() {
-              const selectedPackage = this.dataset.package;
-              updatePackageSelection(selectedPackage);
-            });
-          });
-
-          function updatePackageSelection(packageType) {
-            // Remove selection from all cards
-            packageCards.forEach(card => {
-              card.style.border = '2px solid var(--divider-color)';
-              card.style.background = 'transparent';
-            });
-
-            // Highlight selected card
-            const selectedCard = document.querySelector(`[data-package="${packageType}"]`);
-            if (selectedCard) {
-              selectedCard.style.border = '2px solid var(--accent-color)';
-              selectedCard.style.background = 'rgba(102, 126, 234, 0.05)';
-            }
-
+          if (t.classList.contains("package-select")) {
+            e.preventDefault();
+            // Handle package selection
+            const packageCard = t.closest('.package-card');
+            const packageType = packageCard.getAttribute('data-package');
+            const packageName = packageCard.querySelector('h4').textContent;
+            const packagePrice = packageCard.querySelector('.price').textContent;
+            
             // Update state
-            state.package.tier = packageType;
-            state.package.price = packages[packageType].price;
-
-            // Update order summary
-            const packageInfo = packages[packageType];
-            document.getElementById('package-name').textContent = packageInfo.name;
-            document.getElementById('package-price').textContent = `$${packageInfo.price.toFixed(2)}`;
-            document.getElementById('total-price').textContent = `$${packageInfo.price.toFixed(2)}`;
-            document.getElementById('package-description').innerHTML = packageInfo.description;
-
-            console.log('📦 Package selected:', packageType, 'Price:', packageInfo.price);
-          }
-        }
-
-        // Initialize package selection when page loads
-        initializePackageSelection();
-
-        // Stripe initialization
-        let stripe, elements, paymentElement;
-        
-        // Initialize Stripe when entering payment step
-        async function initializeStripe() {
-          console.log('🔵 Initializing Stripe payment system...');
-          try {
-            // Stripe publishable key - LIVE KEY
-            stripe = Stripe('pk_live_51QQbn5HwfRkd7scfTdD4OaXCyatdCtujr37Zxs1bhd4riDG9AadZpSxlVC6SWxUs30mlR3XiI5i44TxfBkOLP0Nn00CMqIc62o');
-            console.log('✅ Stripe object created successfully');
-          
-          const appearance = {
-            theme: 'night',
-            variables: {
-              colorPrimary: '#667eea',
-              colorBackground: '#1a1a1a',
-              colorText: '#ffffff',
-              colorDanger: '#df1b41',
-              fontFamily: 'Manrope, system-ui, sans-serif',
-              spacingUnit: '4px',
-              borderRadius: '8px',
-            },
-          };
-
-          elements = stripe.elements({
-            appearance,
-            mode: 'payment',
-            amount: Math.round(state.package.price * 100), // Convert to cents
-            currency: 'usd',
-            payment_method_types: ['card'],
-          });
-
-          paymentElement = elements.create('payment');
-          console.log('🔵 Mounting payment element to #payment-element...');
-          paymentElement.mount('#payment-element');
-          console.log('✅ Payment element mounted successfully');
-
-          // Listen for changes in the Element
-          paymentElement.on('change', (event) => {
-            console.log('🔵 Payment element changed:', event);
-            const submitButton = document.getElementById('submit-payment');
-            if (event.complete) {
-              submitButton.disabled = false;
-              console.log('✅ Payment form is complete, enabling submit button');
-            } else {
-              submitButton.disabled = true;
-              console.log('⚠️ Payment form incomplete, submit button disabled');
-            }
-            
-            const messageContainer = document.getElementById('payment-messages');
-            if (event.error) {
-              messageContainer.textContent = event.error.message;
-              messageContainer.style.color = '#df1b41';
-              console.log('❌ Payment error:', event.error.message);
-            } else {
-              messageContainer.textContent = '';
-            }
-          });
-          
-          console.log('🎉 Stripe payment system fully initialized!');
-          } catch (error) {
-            console.error('❌ Failed to initialize Stripe:', error);
-          }
-        }
-
-        // Handle payment submission
-        document.getElementById('submit-payment').addEventListener('click', async function(e) {
-          e.preventDefault();
-          
-          const submitButton = e.target;
-          const buttonText = document.getElementById('payment-button-text');
-          const spinner = document.getElementById('payment-spinner');
-          
-          // Show loading state
-          submitButton.disabled = true;
-          buttonText.style.display = 'none';
-          spinner.style.display = 'inline-block';
-
-          try {
-            // Create payment intent on backend
-            const paymentResponse = await fetch('/api/create-payment-intent', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                amount: Math.round(state.package.price * 100), // Convert to cents
-                currency: 'usd',
-                email: state.user.email || 'test@example.com',
-                tier: state.package.tier
-              })
-            });
-            
-            if (!paymentResponse.ok) throw new Error('Failed to create payment intent');
-            const { client_secret } = await paymentResponse.json();
-
-            // Confirm payment with Stripe
-            const {error, paymentIntent} = await stripe.confirmPayment({
-              elements,
-              clientSecret: client_secret,
-              confirmParams: {
-                return_url: window.location.origin + '/payment-success',
-                payment_method_data: {
-                  billing_details: {
-                    email: state.user.email || 'test@example.com',
-                    name: state.user.firstName || 'Anonymous'
-                  }
-                }
-              },
-              redirect: 'if_required'
-            });
-
-            if (error) {
-              // Payment failed
-              document.getElementById('payment-messages').textContent = error.message;
-              document.getElementById('payment-messages').style.color = '#df1b41';
-              
-              // Reset button state
-              submitButton.disabled = false;
-              buttonText.style.display = 'inline';
-              spinner.style.display = 'none';
-            } else if (paymentIntent.status === 'succeeded') {
-              // Payment succeeded - proceed with order generation
-              await processOrderAfterPayment(paymentIntent.id);
-            }
-          } catch (error) {
-            console.error('Payment error:', error);
-            document.getElementById('payment-messages').textContent = 'Payment failed. Please try again.';
-            document.getElementById('payment-messages').style.color = '#df1b41';
-            
-            // Reset button state
-            submitButton.disabled = false;
-            buttonText.style.display = 'inline';
-            spinner.style.display = 'none';
-          }
-        });
-
-        // Process order after successful payment
-        async function processOrderAfterPayment(paymentIntentId) {
-          try {
-            showProcessingState('Generating your soulmate report...');
-            
-            // Build quiz payload from state
-            const quiz = {
-              user: state.user,
-              birth: state.birth,
-              appearance: state.appearance,
-              personality: state.personality,
-              relationship: state.relationship,
-              preferences: state.preferences,
-              interest: state.user?.attractedTo === 'women' ? 'female' : state.user?.attractedTo === 'men' ? 'male' : 'surprise',
-              style: state.preferences?.artStyle || 'pencil-realistic'
+            state.selectedPackage = {
+              type: packageType,
+              name: packageName,
+              price: packagePrice
             };
-
-            // 1) Create order with payment info
-            const createRes = await fetch('/api/orders', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                email: state.user.email || 'test@example.com', 
-                tier: state.package.tier, 
-                addons: [],
-                paymentIntentId: paymentIntentId,
-                amount: Math.round(state.package.price * 100)
-              })
-            });
-            if (!createRes.ok) throw new Error('Failed to create order');
-            const order = await createRes.json();
-
-            // 2) Submit quiz data (using FormData to match backend expectations)
-            const formData = new FormData();
-            formData.append('quiz', JSON.stringify(quiz));
-            const intakeRes = await fetch(`/api/orders/${order.id}/intake`, {
-              method: 'POST',
-              body: formData
-            });
-            if (!intakeRes.ok) throw new Error('Failed to submit quiz data');
-
-            // 3) Generate professional report
-            const generateRes = await fetch(`/api/orders/${order.id}/generate`, {
-              method: 'POST'
-            });
-            if (!generateRes.ok) throw new Error('Failed to generate report');
-            const result = await generateRes.json();
-
-            // 4) Show professional success screen
-            showProfessionalSuccess(result, order.email);
             
-          } catch (error) {
-            console.error('Order processing error:', error);
-            hideProcessingState();
-            showErrorMessage('Payment succeeded but report generation failed. Please contact support with payment ID: ' + paymentIntentId);
-          }
-        }
-
-        // TEST Button Handler - Generate professional report without payment
-        document.getElementById('test-deliverables').addEventListener('click', async function(e) {
-          e.preventDefault();
-          
-          const testButton = e.target;
-          const originalText = testButton.textContent;
-          
-          // Show loading state
-          testButton.disabled = true;
-          testButton.textContent = 'Generating...';
-          
-          // Build quiz payload from current form state
-          // Ensure we have basic user data for test
-          if (!state.user) {
-            state.user = {};
-          }
-          if (!state.user.email) {
-            state.user.email = 'testuser@test.com';
-          }
-          if (!state.user.attractedTo) {
-            state.user.attractedTo = 'women';
-          }
-          
-          const quiz = {
-            user: {
-              ...state.user,
-              email: state.user.email,
-              name: state.user.name || 'Test User',
-              attractedTo: state.user.attractedTo || 'women'
-            },
-            birth: state.birth || { zodiac: 'leo' },
-            appearance: state.appearance || { faceShape: 'oval', hairColor: 'brown', eyeColor: 'brown' },
-            personality: state.personality || { introvertExtrovert: 50, groundedAdventurous: 50, analyticalCreative: 50 },
-            relationship: state.relationship || { lookingFor: 'long-term' },
-            preferences: state.preferences || { auraPalette: 'warm' },
-            interest: state.user?.attractedTo === 'women' ? 'female' : state.user?.attractedTo === 'men' ? 'male' : 'surprise',
-            style: state.preferences?.artStyle || 'pencil-realistic'
-          };
-          
-          console.log('🧪 Quiz data for test:', quiz);
-
-          try {
-            showProcessingState('Generating test report...');
+            // Visual feedback
+            document.querySelectorAll('.package-card').forEach(card => card.classList.remove('selected'));
+            packageCard.classList.add('selected');
             
-            // 1) Create test order with full premium package and all addons
-            // Use actual user email but with test suffix to ensure bypass works
-            const userEmail = state.user?.email || 'partner@test.com';
-            let testEmail;
-            if (userEmail.includes('test')) {
-              testEmail = userEmail;
-            } else if (userEmail.includes('@')) {
-              testEmail = `${userEmail.split('@')[0]}+test@${userEmail.split('@')[1]}`;
-            } else {
-              testEmail = 'testuser@test.com';
-            }
-            console.log('🧪 Creating test order with email:', testEmail);
-            
-            const createRes = await fetch('/api/orders', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                email: testEmail, 
-                tier: 'premium', 
-                addons: ['color-upgrade', 'aura-reading', 'compatibility-snapshot', '12-hour-rush'] // All premium addons
-              })
-            });
-            if (!createRes.ok) {
-              const errorText = await createRes.text();
-              console.error('🧪 Order creation failed:', createRes.status, errorText);
-              throw new Error(`Failed to create test order (${createRes.status}): ${errorText}`);
-            }
-            const order = await createRes.json();
-            console.log('🧪 Test order created successfully:', order.id);
-
-            // 2) Submit intake as form data
-            const formData = new FormData();
-            formData.append('quiz', JSON.stringify(quiz));
-            const intakeUrl = `/api/orders/${order.id}/intake`;
-            console.log('🧪 Submitting intake to:', intakeUrl);
-            
-            const intakeRes = await fetch(intakeUrl, {
-              method: 'POST',
-              body: formData
-            });
-            
-            console.log('🧪 Intake response status:', intakeRes.status);
-            if (!intakeRes.ok) {
-              let errorMsg = `Failed to submit test intake (${intakeRes.status})`;
-              try {
-                const errorData = await intakeRes.text();
-                console.error('🧪 Intake error response:', errorData);
-                // Try to parse as JSON to get structured error
-                try {
-                  const errorJson = JSON.parse(errorData);
-                  errorMsg = errorJson.error || errorJson.message || errorMsg;
-                  console.error('🧪 Parsed error details:', errorJson);
-                } catch (jsonError) {
-                  errorMsg += ': ' + errorData;
-                }
-              } catch (e) {
-                console.error('🧪 Could not parse intake error response:', e);
-              }
-              throw new Error(errorMsg);
-            }
-            const intakeResult = await intakeRes.json();
-            console.log('🧪 Intake submitted successfully:', intakeResult);
-
-            // 3) Generate professional report
-            console.log('🧪 Attempting to generate test report for order:', order.id);
-            const genRes = await fetch(`/api/orders/${order.id}/generate`, { method: 'POST' });
-            console.log('🧪 Generation response status:', genRes.status);
-            
-            if (!genRes.ok) {
-              let errorMsg = `Failed to generate test report (${genRes.status})`;
-              try {
-                const errorData = await genRes.json();
-                errorMsg = errorData.message || errorData.error || errorMsg;
-                console.error('🧪 Generation API error details:', errorData);
-              } catch (e) {
-                console.error('🧪 Could not parse error response:', e);
-              }
-              throw new Error(errorMsg);
-            }
-            const result = await genRes.json();
-
-            // 4) Hide processing state and show professional success screen
-            hideProcessingState();
-            showProfessionalSuccess(result, testEmail);
-            
-          } catch (error) {
-            console.error('Test generation error:', error);
-            hideProcessingState();
-            showErrorMessage('Test generation failed: ' + error.message);
-          } finally {
-            // Reset button state
-            testButton.disabled = false;
-            testButton.textContent = originalText;
+            // Show selected package info
+            const selectedPackageDiv = document.getElementById('selectedPackage');
+            document.getElementById('packageName').textContent = packageName;
+            document.getElementById('packagePrice').textContent = packagePrice;
+            selectedPackageDiv.style.display = 'block';
           }
         });
 
-        // Override goToStep to initialize Stripe when entering payment step
-        const originalGoToStep = goToStep;
-        goToStep = function(n) {
-          originalGoToStep(n);
-          if (n === 5 && !paymentElement) {
-            initializeStripe();
-          }
-        };
-
-        // Submit (generate deliverables) - now only used for testing without payment
+        // Submit (generate deliverables)
         orderForm.addEventListener("submit", function (e) {
           e.preventDefault();
-          console.log('Form submit triggered, currentStep:', currentStep);
-          
-          // Don't process if we're on the payment step - payment handles its own submission
-          if (currentStep === 5) {
-            console.log('Blocking form submission - on payment step');
-            return;
-          }
-          
           if (!validateCurrentStep(true)) return;
 
           // Build quiz payload from state
@@ -1813,14 +1349,37 @@
               const createRes = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  email: state.user.email || 'test@example.com', 
-                  tier: state.package.tier, 
-                  addons: []
+                body: JSON.stringify({
+                  email: state.user.email || 'test@example.com',
+                  name: state.user.firstName || 'Test User',
+                  gender: state.user.pronouns || 'prefer-not-to-say',
+                  preferred_gender: state.user.attractedTo || 'all-genders',
+                  age_range: state.user.ageRange || '25-34',
+                  hair_color: state.appearance.hairColor || 'no-preference',
+                  eye_color: state.appearance.eyeColor || 'no-preference',
+                  personality_traits: JSON.stringify({
+                    introvertExtrovert: state.personality.introvertExtrovert,
+                    groundedAdventurous: state.personality.groundedAdventurous,
+                    analyticalCreative: state.personality.analyticalCreative,
+                    values: state.personality.values,
+                    loveLanguages: state.personality.loveLanguages
+                  }),
+                  hobbies: JSON.stringify({
+                    lookingFor: state.relationship.lookingFor,
+                    mustHaves: state.relationship.mustHaves,
+                    dealBreakers: state.relationship.dealBreakers
+                  }),
+                  birth_date: state.birth.date,
+                  birth_time: state.birth.time,
+                  birth_city: state.birth.city,
+                  package: state.selectedPackage?.type || 'premium'
                 })
               });
               if (!createRes.ok) throw new Error('Failed to create order');
               const order = await createRes.json();
+              
+              // Store order ID in localStorage for later access
+              localStorage.setItem('currentOrderId', order.id);
 
               // 2) Submit intake (no photo in this flow)
               const intakeRes = await fetch(`/api/orders/${order.id}/intake`, {
@@ -1829,19 +1388,81 @@
               });
               if (!intakeRes.ok) throw new Error('Failed to submit intake');
 
-              // This legacy generation code has been moved to the test button
-              console.log('⚠️ Legacy form submission - use payment or test button instead');
+              // 3) Show generating screen and generate deliverables
+              showGeneratingScreen();
+              
+              const genRes = await fetch(`/api/orders/${order.id}/generate`, { method: 'POST' });
+              if (!genRes.ok) {
+                hideGeneratingScreen();
+                throw new Error('Failed to generate');
+              }
+              const result = await genRes.json();
+              
+              hideGeneratingScreen();
+
+              // 4) Show results
+              // Store the result paths for viewer
+              window.currentSketchImage = result.sketch_url || result.imagePath;
+              window.currentReportPath = `/api/orders/${order.id}/report`;
+              console.log('Generation complete, image URL:', window.currentSketchImage);
+              showCheckout();
             } catch (err) {
-              console.error('Legacy form error:', err);
-              showErrorMessage('Please use the payment button to complete your order.');
+              hideGeneratingScreen();
+              alert('Generation failed. Please try again.');
+              console.error(err);
             }
           })();
+        });
+
+        // Checkout button event listeners
+        document.addEventListener('click', function(e) {
+          if (e.target.id === 'backToStep5') {
+            // Go back to step 5
+            document.getElementById('checkoutSection').style.display = 'none';
+            orderForm.style.display = 'block';
+            goToStep(5);
+          }
+          
+          if (e.target.id === 'testDeliverables') {
+            // TEST button - show completion without payment
+            document.getElementById('checkoutSection').style.display = 'none';
+            showComplete();
+          }
+          
+          if (e.target.id === 'completeOrder') {
+            // Complete Order button - process payment then show completion
+            // For now, simulate successful payment
+            alert('Payment processed successfully! (Demo mode)');
+            document.getElementById('checkoutSection').style.display = 'none';
+            showComplete();
+          }
+        });
+
+        // Credit card formatting
+        document.addEventListener('input', function(e) {
+          if (e.target.id === 'cardNumber') {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            if (formattedValue.length > 19) formattedValue = formattedValue.substr(0, 19);
+            e.target.value = formattedValue;
+          }
+          
+          if (e.target.id === 'expDate') {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+              value = value.substr(0, 2) + (value.length > 2 ? ' / ' + value.substr(2, 2) : '');
+            }
+            e.target.value = value;
+          }
+          
+          if (e.target.id === 'securityCode') {
+            e.target.value = e.target.value.replace(/\D/g, '');
+          }
         });
 
         function handleInputChange(e) {
           const id = e.target.id;
           const el = e.target;
-          
           // Map inputs to state
           switch (id) {
             // Step 1
@@ -2081,26 +1702,16 @@
         }
 
         function goToStep(n) {
-          console.log(`goToStep called: going to step ${n}, current step was ${currentStep}`);
           currentStep = n;
 
           stepSections.forEach((s, i) => {
-            const shouldShow = i + 1 === n;
-            s.style.display = shouldShow ? "block" : "none";
-            if (shouldShow) {
-              console.log(`Showing step section: ${s.id} (index ${i})`);
-            }
+            s.style.display = i + 1 === n ? "block" : "none";
           });
           const pct = Math.round((n / 5) * 100);
           progressBar.style.width = pct + "%";
           progressBar.parentElement.setAttribute("aria-valuenow", String(n));
           stepLabel.textContent = `Step ${n} of 5 — ${getStepLabel(n)}`;
-          
-          console.log(`Step ${n} should now be visible. Step sections:`, stepSections.map(s => `${s.id}: ${s.style.display}`));
         }
-
-        // Make goToStep globally accessible for inline onclick handlers
-        window.goToStep = goToStep;
 
         function getStepLabel(n) {
           return (
@@ -2109,28 +1720,27 @@
               "Birth & spiritual insights",
               "Personality & lifestyle",
               "Relationship goals",
-              "Secure checkout",
+              "Choose your package",
             ][n - 1] || ""
           );
         }
 
         function validateCurrentStep(isSubmit) {
-          console.log('🔍 Validating step:', currentStep, 'State:', state);
-          
           if (currentStep === 1) {
             const email = (state.user.email || "").trim();
-            console.log('🔍 Email validation - current email:', email);
             const ok = /.+@.+\..+/.test(email);
-            console.log('🔍 Email validation result:', ok);
             if (!ok) {
-              console.log('❌ Email validation failed');
-              alert("Please enter a valid email address to continue.");
+              alert("Please enter a valid email.");
               return false;
             }
-            console.log('✅ Email validation passed');
+          }
+          if (currentStep === 5) {
+            if (!state.selectedPackage) {
+              alert("Please select a package to continue.");
+              return false;
+            }
           }
 
-          console.log('✅ Step validation completed successfully');
           return true;
         }
 
@@ -2173,7 +1783,6 @@
           setVal("ll_gifts", state.personality.loveLanguages.gifts);
           setVal("ll_acts", state.personality.loveLanguages.acts);
           setVal("ll_touch", state.personality.loveLanguages.touch);
-          
           // values checkboxes
           [
             "family",
@@ -2190,7 +1799,6 @@
             const el = document.getElementById("val_" + v);
             if (el) el.checked = (state.personality.values || []).includes(v);
           });
-          
           // must‑haves
           const mh = new Set(state.relationship.mustHaves || []);
           const map = {
@@ -2206,11 +1814,11 @@
             const el = document.getElementById(id);
             if (el) el.checked = mh.has(map[id]);
           });
-          
-          // step 6 formats/addons - only set if elements exist
+          // step 6 formats/addons
           setVal("artStyle", state.preferences.artStyle);
           setVal("auraPalette", state.preferences.auraPalette);
           
+          // Safely set addon checkboxes with null checks
           const addonColor = document.getElementById("addon_color");
           if (addonColor) addonColor.checked = !!state.preferences.addons.colorUpgrade;
           
@@ -2230,656 +1838,141 @@
           if (fmtPdf) fmtPdf.checked = !!state.preferences.formats.pdf;
         }
 
-        // Legacy function for backward compatibility
-        function showComplete() {
+        function showCheckout() {
+          // Update order summary with selected package
+          if (state.selectedPackage) {
+            const packageSummaryName = document.getElementById('packageSummaryName');
+            const packageSummaryPrice = document.getElementById('packageSummaryPrice');
+            const totalPrice = document.getElementById('totalPrice');
+            const completeOrderBtn = document.getElementById('completeOrder');
+            
+            if (packageSummaryName) packageSummaryName.textContent = state.selectedPackage.name;
+            if (packageSummaryPrice) packageSummaryPrice.textContent = state.selectedPackage.price;
+            if (totalPrice) totalPrice.textContent = state.selectedPackage.price;
+            if (completeOrderBtn) completeOrderBtn.textContent = `Complete Order - ${state.selectedPackage.price}`;
+          }
+          
+          // Initialize Apple Pay if available
+          initializeApplePay();
+          
+          // Hide form and show checkout
           orderForm.style.display = "none";
-          orderComplete.style.display = "block";
+          document.getElementById('checkoutSection').style.display = "block";
         }
 
-        // Professional success screen with clean API integration
-        function showProfessionalSuccess(result, email) {
-          console.log('✅ Showing professional success screen', result);
-          
-          // Hide all form steps
-          document.querySelectorAll('.order-step').forEach(step => {
-            step.style.display = 'none';
-          });
-          
-          // Show completion section
-          const completeSection = document.getElementById('orderComplete');
-          if (completeSection) {
-            completeSection.style.display = 'block';
-            
-            // Update email in success message
-            const emailElement = document.getElementById('delivery-email');
-            if (emailElement && email) {
-              emailElement.textContent = email;
+        // Apple Pay functionality
+        function initializeApplePay() {
+          if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+            const applePayButton = document.getElementById('applePayButton');
+            if (applePayButton) {
+              applePayButton.style.display = 'flex';
+              applePayButton.addEventListener('click', startApplePaySession);
             }
-            
-            // Update email button link
-            const emailBtn = document.getElementById('check-email-btn');
-            if (emailBtn && email) {
-              emailBtn.href = `mailto:${email}`;
-            }
-            
-            // Set up download links if files are available
-            if (result.files) {
-              const pdfLink = document.getElementById('pdf-download-link');
-              const imageLink = document.getElementById('image-download-link');
-              
-              if (pdfLink && result.files.pdf) {
-                pdfLink.href = `/uploads/${result.files.pdf.split('/').pop()}`;
-                pdfLink.target = '_blank';
-                pdfLink.download = `soulmate-report-${result.orderId || 'download'}.pdf`;
-                console.log('✅ PDF download link set:', pdfLink.href);
-              }
-              
-              if (imageLink && result.files.image) {
-                imageLink.href = `/uploads/${result.files.image.split('/').pop()}`;
-                imageLink.target = '_blank';
-                imageLink.download = `soulmate-portrait-${result.orderId || 'download'}.png`;
-                console.log('✅ Image download link set:', imageLink.href);
-              }
-            } else {
-              console.warn('⚠️ No files data in result:', result);
-            }
-            
-            // Scroll to top for better UX
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-          
-          // Hide the main order form
-          const orderForm = document.getElementById('orderForm');
-          if (orderForm) {
-            orderForm.style.display = "none";
           }
         }
 
-        // Show professional loading state
-        function showProcessingState(message = 'Processing your order...') {
-          // Add a professional loading overlay
-          let overlay = document.getElementById('processing-overlay');
-          if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'processing-overlay';
-            overlay.style.cssText = `
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background: rgba(0, 0, 0, 0.8);
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-              z-index: 9999;
-              color: white;
-              font-family: inherit;
-            `;
-            document.body.appendChild(overlay);
-          }
+        function startApplePaySession() {
+          if (!state.selectedPackage) return;
           
-          overlay.innerHTML = `
-            <div style="
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              padding: 40px;
-              border-radius: 20px;
-              text-align: center;
-              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-              max-width: 400px;
-              margin: 20px;
-              position: relative;
-            ">
-              <button onclick="hideProcessingState()" style="
-                position: absolute;
-                top: 10px;
-                right: 15px;
-                background: rgba(255,255,255,0.2);
-                border: none;
-                color: white;
-                font-size: 20px;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: background 0.2s;
-              " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
-              <div style="
-                width: 60px;
-                height: 60px;
-                border: 4px solid rgba(255, 255, 255, 0.3);
-                border-top: 4px solid white;
-                border-radius: 50%;
-                margin: 0 auto 20px auto;
-                animation: spin 1s linear infinite;
-              "></div>
-              <h3 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 600;">
-                ${message}
-              </h3>
-              <p style="margin: 0; opacity: 0.9; font-size: 16px;">
-                This may take a few moments as we create your personalized report...
-              </p>
-              <p style="margin: 15px 0 0 0; opacity: 0.7; font-size: 14px;">
-                Click the × to close if stuck
-              </p>
-            </div>
-            <style>
-              @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-            </style>
-          `;
-          
-          // Add click-to-close functionality
-          overlay.onclick = function(e) {
-            if (e.target === overlay) {
-              hideProcessingState();
+          const request = {
+            countryCode: 'US',
+            currencyCode: 'USD',
+            supportedNetworks: ['visa', 'masterCard', 'amex'],
+            merchantCapabilities: ['supports3DS'],
+            total: {
+              label: state.selectedPackage.name,
+              amount: state.selectedPackage.price.replace('$', '')
             }
           };
-          
-          overlay.style.display = 'flex';
-        }
 
-        // Hide processing state
-        function hideProcessingState() {
-          const overlay = document.getElementById('processing-overlay');
-          if (overlay) {
-            overlay.style.display = 'none';
-          }
-        }
-
-        // Show professional error message
-        function showErrorMessage(message) {
-          // Create or update error modal
-          let errorModal = document.getElementById('error-modal');
-          if (!errorModal) {
-            errorModal = document.createElement('div');
-            errorModal.id = 'error-modal';
-            errorModal.style.cssText = `
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background: rgba(0, 0, 0, 0.8);
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              z-index: 10000;
-              font-family: inherit;
-            `;
-            document.body.appendChild(errorModal);
-          }
+          const session = new ApplePaySession(3, request);
           
-          errorModal.innerHTML = `
-            <div style="
-              background: white;
-              padding: 40px;
-              border-radius: 20px;
-              text-align: center;
-              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-              max-width: 500px;
-              margin: 20px;
-            ">
-              <div style="
-                width: 80px;
-                height: 80px;
-                background: linear-gradient(135deg, #FEE2E2, #FECACA);
-                border-radius: 50%;
-                margin: 0 auto 20px auto;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              ">
-                <i class="fa-solid fa-exclamation-triangle" style="
-                  font-size: 32px;
-                  color: #DC2626;
-                "></i>
-              </div>
-              <h3 style="margin: 0 0 15px 0; font-size: 24px; color: #DC2626; font-weight: 600;">
-                Something went wrong
-              </h3>
-              <p style="
-                margin: 0 0 30px 0;
-                color: #6B7280;
-                font-size: 16px;
-                line-height: 1.5;
-              ">
-                ${message}
-              </p>
-              <button onclick="document.getElementById('error-modal').style.display='none'" 
-                style="
-                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                  color: white;
-                  border: none;
-                  padding: 12px 30px;
-                  border-radius: 8px;
-                  font-size: 16px;
-                  font-weight: 500;
-                  cursor: pointer;
-                  transition: transform 0.2s;
-                "
-                onmouseover="this.style.transform='translateY(-2px)'"
-                onmouseout="this.style.transform='translateY(0px)'"
-              >
-                Try Again
-              </button>
-            </div>
-          `;
-          
-          errorModal.style.display = 'flex';
-        }
-
-        function escapeHtml(s) {
-          return String(s).replace(
-            /[&<>"']/g,
-            (c) =>
-              ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;",
-              }[c])
-          );
-        }
-
-        // Show order completion with deliverables
-        // Legacy function - replaced by showProfessionalSuccess
-        function showOrderComplete(deliverables) {
-          console.warn('⚠️ showOrderComplete is deprecated - using professional success screen');
-          
-          // Redirect to new professional success function
-          const email = state.user?.email || 'your@email.com';
-          const mockResult = {
-            success: true,
-            message: 'Report delivered via email',
-            deliveryMethod: 'email'
+          session.onvalidatemerchant = (event) => {
+            // In production, you would validate with your payment processor
+            console.log('Apple Pay merchant validation:', event);
+            // For demo purposes, we'll just show a completion message
+            setTimeout(() => {
+              session.completePayment(ApplePaySession.STATUS_SUCCESS);
+              showComplete();
+            }, 1000);
           };
+
+          session.onpaymentauthorized = (event) => {
+            console.log('Apple Pay authorized:', event.payment);
+            // Process the payment with your payment processor
+            session.completePayment(ApplePaySession.STATUS_SUCCESS);
+            showComplete();
+          };
+
+          session.oncancel = () => {
+            console.log('Apple Pay cancelled');
+          };
+
+          session.begin();
+        }
+
+        // Generating Screen Functions
+        function showGeneratingScreen() {
+          const screen = document.getElementById('generatingReportScreen');
+          const statusElement = document.getElementById('generatingStatus');
+          const messages = [
+            'Connecting with the cosmic forces...',
+            'Analyzing your spiritual energy...',
+            'Channeling your soulmate\'s essence...',
+            'Drawing from the universe\'s wisdom...',
+            'Manifesting your perfect match...',
+            'Finalizing your cosmic connection...'
+          ];
           
-          showProfessionalSuccess(mockResult, email);
-        }
-      })();
-    </script>
-  </body>
-</html>
-attractedTo = el.value || "all-genders";
-              break;
-            case "ageRange":
-              state.user.ageRange = el.value || "";
-              break;
-            // Step 2
-            case "birthDate":
-              state.birth.date = el.value || "";
-              deriveZodiac();
-              break;
-            case "birthTime":
-              state.birth.time = el.value || "";
-              break;
-            case "birthCity":
-              state.birth.city = el.value || "";
-              break;
-            case "zodiac":
-              state.birth.zodiac = el.value || "";
-              break;
-            case "includeReading":
-              state.birth.includeSpiritualReading = !!el.checked;
-              break;
-            // Step 3
-            case "faceShape":
-              state.appearance.faceShape = el.value;
-              break;
-            case "facialHair":
-              state.appearance.facialHair = el.value;
-              break;
-            case "freckles":
-              state.appearance.freckles = el.value;
-              break;
-            case "hairLength":
-              state.appearance.hairLength = el.value;
-              break;
-            case "hairTexture":
-              state.appearance.hairTexture = el.value;
-              break;
-            case "hairColor":
-              state.appearance.hairColor = el.value;
-              break;
-            case "eyeColor":
-              state.appearance.eyeColor = el.value;
-              break;
-            case "eyeShape":
-              state.appearance.eyeShape = el.value;
-              break;
-            case "skinTone":
-              state.appearance.skinTone = el.value;
-              break;
-            case "apparentAge":
-              state.appearance.apparentAge = el.value;
-              break;
-            case "culturalResonance":
-              state.appearance.culturalResonance = el.value || "";
-              break;
-            // Step 4
-            case "slider_introvert":
-              state.personality.introvertExtrovert = parseInt(
-                el.value || "50",
-                10
-              );
-              break;
-            case "slider_grounded":
-              state.personality.groundedAdventurous = parseInt(
-                el.value || "50",
-                10
-              );
-              break;
-            case "slider_analytical":
-              state.personality.analyticalCreative = parseInt(
-                el.value || "50",
-                10
-              );
-              break;
-            case "ll_words":
-              state.personality.loveLanguages.words = parseInt(
-                el.value || "20",
-                10
-              );
-              break;
-            case "ll_qualityTime":
-              state.personality.loveLanguages.qualityTime = parseInt(
-                el.value || "20",
-                10
-              );
-              break;
-            case "ll_gifts":
-              state.personality.loveLanguages.gifts = parseInt(
-                el.value || "20",
-                10
-              );
-              break;
-            case "ll_acts":
-              state.personality.loveLanguages.acts = parseInt(
-                el.value || "20",
-                10
-              );
-              break;
-            case "ll_touch":
-              state.personality.loveLanguages.touch = parseInt(
-                el.value || "20",
-                10
-              );
-              break;
-            // Step 5 handled by checkbox listeners below
-            case "lookingFor":
-              state.relationship.lookingFor = el.value;
-              break;
-            case "dealBreakers":
-              state.relationship.dealBreakers = el.value || "";
-              break;
-            // Step 6
-            case "artStyle":
-              state.preferences.artStyle = el.value;
-              break;
-            case "auraPalette":
-              state.preferences.auraPalette = el.value;
-              break;
-            case "addon_color":
-              state.preferences.addons.colorUpgrade = !!el.checked;
-              break;
-            case "addon_reading":
-              state.preferences.addons.reading = !!el.checked;
-              break;
-            case "addon_compat":
-              state.preferences.addons.compatibility = !!el.checked;
-              break;
-            case "addon_rush":
-              state.preferences.addons.rush12h = !!el.checked;
-              break;
-            case "fmt_jpg":
-              state.preferences.formats.jpg = !!el.checked;
-              break;
-            case "fmt_pdf":
-              state.preferences.formats.pdf = !!el.checked;
-              break;
-          }
-
-          // Step 4 values multi-select (checkboxes)
-          if (id && id.startsWith("val_")) {
-            const value = el.value;
-            const list = new Set(state.personality.values);
-            if (el.checked) list.add(value);
-            else list.delete(value);
-            state.personality.values = Array.from(list);
-          }
-
-          // Step 5 must-haves
-          if (
-            [
-              "mh_kids",
-              "mh_pet",
-              "mh_smoke",
-              "mh_active",
-              "mh_spirit",
-              "mh_career",
-              "mh_family",
-            ].includes(id)
-          ) {
-            const mhMap = {
-              mh_kids: "non-empty:wants-kids",
-              mh_pet: "non-empty:pet-friendly",
-              mh_smoke: "non-empty:non-smoker",
-              mh_active: "non-empty:active-lifestyle",
-              mh_spirit: "non-empty:spiritual-openness",
-              mh_career: "non-empty:career-driven",
-              mh_family: "non-empty:family-oriented",
-            };
-            const value = mhMap[id].split(":")[1];
-            const set = new Set(state.relationship.mustHaves);
-            if (el.checked) set.add(value);
-            else set.delete(value);
-            state.relationship.mustHaves = Array.from(set);
-          }
-
-          if (id === "birthDate") syncStateToForm(["zodiac"]);
+          let messageIndex = 0;
+          screen.style.display = 'flex';
+          
+          // Animate screen entrance
+          setTimeout(() => {
+            screen.style.opacity = '1';
+          }, 10);
+          
+          // Cycle through mystical messages
+          window.generatingInterval = setInterval(() => {
+            messageIndex = (messageIndex + 1) % messages.length;
+            statusElement.textContent = messages[messageIndex];
+          }, 3000);
         }
 
-        function deriveZodiac() {
-          if (!state.birth.date) {
-            state.birth.zodiac = "";
-            return;
+        function hideGeneratingScreen() {
+          const screen = document.getElementById('generatingReportScreen');
+          
+          // Clear the message interval
+          if (window.generatingInterval) {
+            clearInterval(window.generatingInterval);
+            window.generatingInterval = null;
           }
+          
+          // Fade out animation
+          screen.style.opacity = '0';
+          screen.style.transition = 'opacity 0.5s ease-out';
+          
+          setTimeout(() => {
+            screen.style.display = 'none';
+            screen.style.transition = '';
+          }, 500);
+        }
+
+        function showComplete() {
+          // Build mailto link
           try {
-            const d = new Date(state.birth.date + "T12:00:00");
-            const m = d.getUTCMonth() + 1;
-            const day = d.getUTCDate();
-            // Simple western zodiac ranges (approximate)
-            const z =
-              (m == 3 && day >= 21) || (m == 4 && day <= 19)
-                ? "Aries"
-                : (m == 4 && day >= 20) || (m == 5 && day <= 20)
-                ? "Taurus"
-                : (m == 5 && day >= 21) || (m == 6 && day <= 20)
-                ? "Gemini"
-                : (m == 6 && day >= 21) || (m == 7 && day <= 22)
-                ? "Cancer"
-                : (m == 7 && day >= 23) || (m == 8 && day <= 22)
-                ? "Leo"
-                : (m == 8 && day >= 23) || (m == 9 && day <= 22)
-                ? "Virgo"
-                : (m == 9 && day >= 23) || (m == 10 && day <= 22)
-                ? "Libra"
-                : (m == 10 && day >= 23) || (m == 11 && day <= 21)
-                ? "Scorpio"
-                : (m == 11 && day >= 22) || (m == 12 && day <= 21)
-                ? "Sagittarius"
-                : (m == 12 && day >= 22) || (m == 1 && day <= 19)
-                ? "Capricorn"
-                : (m == 1 && day >= 20) || (m == 2 && day <= 18)
-                ? "Aquarius"
-                : "Pisces";
-            state.birth.zodiac = z;
-          } catch (e) {
-            state.birth.zodiac = "";
-          }
-        }
-
-        function goToStep(n) {
-          console.log(`goToStep called: going to step ${n}, current step was ${currentStep}`);
-          currentStep = n;
-
-          stepSections.forEach((s, i) => {
-            const shouldShow = i + 1 === n;
-            s.style.display = shouldShow ? "block" : "none";
-            if (shouldShow) {
-              console.log(`Showing step section: ${s.id} (index ${i})`);
-            }
-          });
-          const pct = Math.round((n / 5) * 100);
-          progressBar.style.width = pct + "%";
-          progressBar.parentElement.setAttribute("aria-valuenow", String(n));
-          stepLabel.textContent = `Step ${n} of 5 — ${getStepLabel(n)}`;
-          
-          console.log(`Step ${n} should now be visible. Step sections:`, stepSections.map(s => `${s.id}: ${s.style.display}`));
-          
-          // Initialize Stripe when entering payment step
-          if (n === 5 && !stripeInitialized) {
-            initializeStripe();
-          }
-        }
-
-        function getStepLabel(n) {
-          return (
-            [
-              "About you",
-              "Birth & spiritual insights",
-              "Personality & lifestyle",
-              "Relationship goals",
-              "Secure checkout",
-            ][n - 1] || ""
-          );
-        }
-
-        function validateCurrentStep(isSubmit) {
-          console.log('🔍 Validating step:', currentStep, 'State:', state);
-          
-          if (currentStep === 1) {
-            const email = (state.user.email || "").trim();
-            console.log('🔍 Email validation - current email:', email);
-            const ok = /.+@.+\..+/.test(email);
-            console.log('🔍 Email validation result:', ok);
-            if (!ok) {
-              console.log('❌ Email validation failed');
-              alert("Please enter a valid email address to continue.");
-              return false;
-            }
-            console.log('✅ Email validation passed');
-          }
-
-          console.log('✅ Step validation completed successfully');
-          return true;
-        }
-
-        function syncStateToForm(only) {
-          const ids = new Set(only || []);
-          function setVal(id, val) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            if (el.type === "checkbox") el.checked = !!val;
-            else el.value = val == null ? "" : String(val);
-          }
-          setVal("firstName", state.user.firstName);
-          setVal("email", state.user.email);
-          setVal("pronouns", state.user.pronouns);
-          setVal("country", state.user.country);
-          setVal("timezone", state.user.timezone);
-          setVal("attractedTo", state.user.attractedTo);
-          setVal("ageRange", state.user.ageRange);
-          setVal("birthDate", state.birth.date);
-          setVal("birthTime", state.birth.time);
-          setVal("birthCity", state.birth.city);
-          setVal("zodiac", state.birth.zodiac);
-          setVal("includeReading", state.birth.includeSpiritualReading);
-          setVal("faceShape", state.appearance.faceShape);
-          setVal("facialHair", state.appearance.facialHair);
-          setVal("freckles", state.appearance.freckles);
-          setVal("hairLength", state.appearance.hairLength);
-          setVal("hairTexture", state.appearance.hairTexture);
-          setVal("hairColor", state.appearance.hairColor);
-          setVal("eyeColor", state.appearance.eyeColor);
-          setVal("eyeShape", state.appearance.eyeShape);
-          setVal("skinTone", state.appearance.skinTone);
-          setVal("apparentAge", state.appearance.apparentAge);
-          setVal("culturalResonance", state.appearance.culturalResonance);
-          setVal("slider_introvert", state.personality.introvertExtrovert);
-          setVal("slider_grounded", state.personality.groundedAdventurous);
-          setVal("slider_analytical", state.personality.analyticalCreative);
-          setVal("ll_words", state.personality.loveLanguages.words);
-          setVal("ll_qualityTime", state.personality.loveLanguages.qualityTime);
-          setVal("ll_gifts", state.personality.loveLanguages.gifts);
-          setVal("ll_acts", state.personality.loveLanguages.acts);
-          setVal("ll_touch", state.personality.loveLanguages.touch);
-          
-          // values checkboxes
-          [
-            "family",
-            "growth",
-            "stability",
-            "kindness",
-            "spirituality",
-            "ambition",
-            "humor",
-            "health",
-            "curiosity",
-            "service",
-          ].forEach((v) => {
-            const el = document.getElementById("val_" + v);
-            if (el) el.checked = (state.personality.values || []).includes(v);
-          });
-          
-          // must‑haves
-          const mh = new Set(state.relationship.mustHaves || []);
-          const map = {
-            mh_kids: "wants-kids",
-            mh_pet: "pet-friendly",
-            mh_smoke: "non-smoker",
-            mh_active: "active-lifestyle",
-            mh_spirit: "spiritual-openness",
-            mh_career: "career-driven",
-            mh_family: "family-oriented",
-          };
-          Object.keys(map).forEach((id) => {
-            const el = document.getElementById(id);
-            if (el) el.checked = mh.has(map[id]);
-          });
-          
-          // step 6 formats/addons - only set if elements exist
-          setVal("artStyle", state.preferences.artStyle);
-          setVal("auraPalette", state.preferences.auraPalette);
-          
-          const addonColor = document.getElementById("addon_color");
-          if (addonColor) addonColor.checked = !!state.preferences.addons.colorUpgrade;
-          
-          const addonReading = document.getElementById("addon_reading");
-          if (addonReading) addonReading.checked = !!state.preferences.addons.reading;
-          
-          const addonCompat = document.getElementById("addon_compat");
-          if (addonCompat) addonCompat.checked = !!state.preferences.addons.compatibility;
-          
-          const addonRush = document.getElementById("addon_rush");
-          if (addonRush) addonRush.checked = !!state.preferences.addons.rush12h;
-          
-          const fmtJpg = document.getElementById("fmt_jpg");
-          if (fmtJpg) fmtJpg.checked = !!state.preferences.formats.jpg;
-          
-          const fmtPdf = document.getElementById("fmt_pdf");
-          if (fmtPdf) fmtPdf.checked = !!state.preferences.formats.pdf;
-        }
-
-        function showComplete() {
+            const subject = encodeURIComponent(
+              "Sketch My Soulmate — Order Completed"
+            );
+            const body = encodeURIComponent(
+              "Draft data (JSON):\n\n" + JSON.stringify(state, null, 2)
+            );
+            mailtoDraft.href =
+              "mailto:support@soulmatesketch.com?subject=" +
+              subject +
+              "&body=" +
+              body;
+          } catch (e) {}
           orderForm.style.display = "none";
           orderComplete.style.display = "block";
         }
@@ -2898,198 +1991,131 @@ attractedTo = el.value || "all-genders";
           );
         }
 
-        // Show order completion with deliverables
-        // Legacy function - replaced by showProfessionalSuccess
-        function showOrderComplete(deliverables) {
-          console.warn('⚠️ showOrderComplete is deprecated - using professional success screen');
+        // Check if there's a completed order and set up deliverable paths
+        async function checkForCompletedOrder() {
+          // Check if completion section exists (may be hidden initially)
+          const completionSection = document.querySelector('.order-complete-nav');
           
-          // Redirect to new professional success function
-          const email = state.user?.email || 'your@email.com';
-          const mockResult = {
-            success: true,
-            message: 'Report delivered via email',
-            deliveryMethod: 'email'
-          };
+          // Continue regardless of visibility - we'll show it if needed
+
+          // Look for any recent order ID in localStorage or check the most recent order
+          const urlParams = new URLSearchParams(window.location.search);
+          let orderId = urlParams.get('orderId');
           
-          showProfessionalSuccess(mockResult, email);
-        }
-        }
-      })();
-    </script>
-
-    <!-- Deliverable Preview Modal -->
-    <div id="deliverableModal" style="
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 10000;
-      overflow: auto;
-    " onclick="closePreview(event)">
-      <div style="
-        position: relative;
-        width: 90%;
-        max-width: 1000px;
-        margin: 20px auto;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-      " onclick="event.stopPropagation()">
-        <!-- Modal Header -->
-        <div style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px;
-          border-bottom: 1px solid #E5E7EB;
-          background: #F9FAFB;
-        ">
-          <h3 id="modalTitle" style="margin: 0; color: #1F2937; font-size: 24px;">Preview</h3>
-          <div style="display: flex; gap: 15px; align-items: center;">
-            <button onclick="downloadDeliverable()" style="
-              background: #10B981;
-              color: white;
-              border: none;
-              padding: 10px 20px;
-              border-radius: 8px;
-              font-size: 16px;
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              gap: 8px;
-              transition: background 0.2s;
-            " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10B981'">
-              <i class="fa-solid fa-download"></i>
-              Download
-            </button>
-            <button onclick="closePreview()" style="
-              background: none;
-              border: none;
-              font-size: 24px;
-              cursor: pointer;
-              color: #6B7280;
-              padding: 5px;
-            ">
-              <i class="fa-solid fa-times"></i>
-            </button>
-          </div>
-        </div>
-        <!-- Modal Content -->
-        <div id="modalContent" style="
-          padding: 20px;
-          height: calc(90vh - 100px);
-          overflow: auto;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background: #F3F4F6;
-        ">
-          <!-- Content will be inserted here -->
-        </div>
-      </div>
-    </div>
-
-    <script>
-      let currentDeliverable = null;
-      let deliverableUrls = {
-        pdf: null,
-        image: null
-      };
-
-      function previewDeliverable(event, type) {
-        event.preventDefault();
-        
-        const modal = document.getElementById('deliverableModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalContent = document.getElementById('modalContent');
-        
-        currentDeliverable = type;
-        
-        if (type === 'pdf') {
-          modalTitle.textContent = 'Professional PDF Report';
-          const pdfUrl = deliverableUrls.pdf || document.getElementById('pdf-download-link').href;
-          
-          // Create iframe for PDF
-          modalContent.innerHTML = `
-            <iframe src="${pdfUrl}" style="
-              width: 100%;
-              height: 100%;
-              border: none;
-              border-radius: 8px;
-              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            "></iframe>
-          `;
-        } else if (type === 'image') {
-          modalTitle.textContent = 'AI-Generated Soulmate Portrait';
-          const imageUrl = deliverableUrls.image || document.getElementById('image-download-link').href;
-          
-          // Create image element
-          modalContent.innerHTML = `
-            <img src="${imageUrl}" style="
-              max-width: 100%;
-              max-height: 100%;
-              object-fit: contain;
-              border-radius: 8px;
-              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            " alt="Your AI-Generated Soulmate Portrait">
-          `;
-        }
-        
-        modal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closePreview(event) {
-        if (event && event.target !== event.currentTarget) return;
-        
-        const modal = document.getElementById('deliverableModal');
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        currentDeliverable = null;
-      }
-
-      function downloadDeliverable() {
-        if (!currentDeliverable) return;
-        
-        const link = currentDeliverable === 'pdf' 
-          ? document.getElementById('pdf-download-link')
-          : document.getElementById('image-download-link');
-        
-        if (link && link.href && link.href !== '#') {
-          // Create a temporary link to force download
-          const a = document.createElement('a');
-          a.href = link.href;
-          a.download = currentDeliverable === 'pdf' 
-            ? 'soulmate-report.pdf' 
-            : 'soulmate-portrait.png';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }
-      }
-
-      // Enhance the existing setup function to store URLs
-      (function() {
-        const originalShowProfessionalSuccess = window.showProfessionalSuccess;
-        window.showProfessionalSuccess = function(result, email) {
-          // Store the URLs for the modal
-          if (result.files) {
-            if (result.files.pdf) {
-              deliverableUrls.pdf = `/uploads/${result.files.pdf.split('/').pop()}`;
-            }
-            if (result.files.image) {
-              deliverableUrls.image = `/uploads/${result.files.image.split('/').pop()}`;
-            }
+          if (!orderId) {
+            // Try to get the most recent order from localStorage
+            orderId = localStorage.getItem('currentOrderId');
           }
           
-          // Call the original function
-          if (originalShowProfessionalSuccess) {
-            originalShowProfessionalSuccess(result, email);
+          // No fallback order - user must complete the flow to see results
+
+          if (orderId) {
+            try {
+              const response = await fetch(`/api/orders/${orderId}`);
+              if (response.ok) {
+                const order = await response.json();
+                if (order.status === 'completed' && order.generation_completed) {
+                  // Set up the deliverable paths for the viewer
+                  if (order.image_path) {
+                    // Convert image file path to API URL format
+                    const imageFilename = order.image_path.split('/').pop(); // Get just the filename
+                    window.currentSketchImage = `/api/images/${imageFilename}`;
+                  }
+                  window.currentReportPath = `/api/orders/${orderId}/report`;
+                  
+                  // Show the completion section only for actually completed orders
+                  if (completionSection) {
+                    const parentSection = completionSection.closest('section');
+                    if (parentSection && parentSection.style.display === 'none') {
+                      parentSection.style.display = 'block';
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              // Silently handle errors - no debug output
+            }
           }
+        }
+
+        // SoulSketch deliverable viewer functionality
+        function initDeliverableViewer() {
+          const viewer = document.getElementById('deliverableViewer');
+          const viewerContent = document.getElementById('viewerContent');
+          const closeBtn = document.getElementById('closeViewer');
+          const imageBtn = document.getElementById('viewSoulSketchImage');
+          const reportBtn = document.getElementById('viewSoulSketchReport');
+
+          // Close viewer
+          closeBtn.addEventListener('click', function() {
+            viewer.style.display = 'none';
+            viewerContent.innerHTML = '';
+          });
+
+          // Close on background click
+          viewer.addEventListener('click', function(e) {
+            if (e.target === viewer) {
+              viewer.style.display = 'none';
+              viewerContent.innerHTML = '';
+            }
+          });
+
+          // View SoulSketch Image
+          imageBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.currentSketchImage) {
+              viewerContent.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                  <h2 style="color: #667eea; margin-bottom: 20px;">Your SoulSketch Image</h2>
+                  <img src="${window.currentSketchImage}" style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);" alt="Your Soulmate Sketch">
+                  <div style="margin-top: 20px;">
+                    <a href="${window.currentSketchImage}" download="my-soulmate-sketch.png" style="background: #667eea; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; display: inline-block;">Download Image</a>
+                  </div>
+                </div>
+              `;
+              viewer.style.display = 'block';
+            } else {
+              alert('Image not yet available. Please complete the generation process first.');
+            }
+          });
+
+          // View SoulSketch Report
+          reportBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.currentReportPath) {
+              viewerContent.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                  <h2 style="color: #667eea; margin-bottom: 20px;">Your SoulSketch PDF Report</h2>
+                  <iframe src="${window.currentReportPath}" style="width: 100%; height: 75vh; border: none; border-radius: 10px;" frameborder="0"></iframe>
+                  <div style="margin-top: 20px;">
+                    <a href="${window.currentReportPath}" download="my-soulmate-report.pdf" style="background: #667eea; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; display: inline-block;">Download PDF</a>
+                  </div>
+                </div>
+              `;
+              viewer.style.display = 'block';
+            } else {
+              alert('Report not yet available. Please complete the generation process first.');
+            }
+          });
+        }
+
+        // Placeholder for future image loading functionality
+        window.setImagePaths = function(imagePath, reportPath) {
+          window.currentSketchImage = imagePath;
+          window.currentReportPath = reportPath;
         };
+        
+        // Initialize viewer when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+          initDeliverableViewer();
+          
+          // Only check for completed orders, don't auto-show completion section
+          checkForCompletedOrder().then(() => {
+            // Completion section will only show if there's actually a completed order
+          }).catch(error => {
+            // Silently handle errors - don't show debug content
+          });
+        });
       })();
     </script>
   </body>
