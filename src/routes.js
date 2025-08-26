@@ -8,9 +8,26 @@ import OpenAI from 'openai';
 
 // OpenAI configuration (add your OpenAI API key to environment variables)
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+// Startup validation
+console.log('🚀 STARTUP - OpenAI Configuration Check:', {
+  apiKeyExists: !!OPENAI_API_KEY,
+  apiKeyValid: OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-'),
+  apiKeyLength: OPENAI_API_KEY ? OPENAI_API_KEY.length : 0,
+  apiKeyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 20) + '...' : 'undefined',
+  nodeEnv: process.env.NODE_ENV,
+  timestamp: new Date().toISOString()
+});
+
 const openai = OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-') ? new OpenAI({
   apiKey: OPENAI_API_KEY
 }) : null;
+
+if (!openai) {
+  console.error('❌ CRITICAL: OpenAI client not initialized. Check environment variables.');
+} else {
+  console.log('✅ OpenAI client initialized successfully');
+}
 
 // Enhanced quiz data storage (in production, use a database)
 const orders = new Map();
@@ -1710,10 +1727,20 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
   router.post('/orders/:orderId/generate', async (req, res) => {
     try {
       const { orderId } = req.params;
+      console.log('🔍 Generation request for orderId:', orderId);
+      console.log('🗃️ Total orders in memory:', orders.size);
+      console.log('🗃️ All order IDs:', Array.from(orders.keys()));
+      
       const order = orders.get(orderId);
+      console.log('📋 Order found:', !!order);
       
       if (!order) {
-        return res.status(404).json({ error: 'Order not found' });
+        console.error('❌ Order not found in memory:', orderId);
+        return res.status(404).json({ 
+          error: 'Order not found',
+          orderId: orderId,
+          availableOrders: Array.from(orders.keys())
+        });
       }
 
       console.log('Generation requested for order:', orderId);
