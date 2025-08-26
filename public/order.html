@@ -2099,6 +2099,9 @@
                     }
                   }
                 }
+              } else if (response.status === 404) {
+                // Order not found - clean up invalid localStorage data
+                localStorage.removeItem('currentOrderId');
               }
             } catch (error) {
               // Silently handle errors - no debug output
