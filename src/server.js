@@ -122,6 +122,14 @@ app.get('/order.html', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'public', 'order.html'));
 });
 
+// Apple logo - ensure image is served properly
+app.get('/images/apple-logo.png', (req, res) => {
+  res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+  console.log('🍎 Serving Apple logo image');
+  res.sendFile(path.join(process.cwd(), 'public', 'images', 'apple-logo.png'));
+});
+
 const port = Number(process.env.PORT || 8080);
 app.listen(port, () => {
   logger.info(`Soulmate Sketch backend running on http://localhost:${port}`);
