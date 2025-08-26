@@ -2052,6 +2052,12 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
   // Get Stripe publishable key endpoint
   router.get('/stripe-config', (req, res) => {
     try {
+      console.log('🔑 Stripe Config Request - Key Status:', {
+        publishableKey: stripePublishableKey ? stripePublishableKey.substring(0, 20) + '...' : null,
+        isConfigured: !!stripePublishableKey,
+        keyLength: stripePublishableKey ? stripePublishableKey.length : 0
+      });
+      
       res.json({
         publishableKey: stripePublishableKey || null,
         isConfigured: !!stripePublishableKey
