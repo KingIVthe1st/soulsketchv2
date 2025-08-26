@@ -40,10 +40,57 @@ async function testOpenAIConnection() {
   try {
     console.log('🧪 Testing OpenAI API connection...');
     
-    // Test with a simple API call to check key validity
-    const response = await openai.models.list();
-    console.log('✅ OpenAI API connection successful');
-    console.log('📋 Available models:', response.data.slice(0, 3).map(m => m.id).join(', '), '...');
+    // Test 1: Basic API access with models.list
+    console.log('🧪 Test 1: Basic API access...');
+    const modelsResponse = await openai.models.list();
+    console.log('✅ Basic API access successful');
+    console.log('📋 Available models:', modelsResponse.data.slice(0, 5).map(m => m.id).join(', '), '...');
+    
+    // Test 2: Check for DALL-E 3 access specifically
+    console.log('🧪 Test 2: Testing DALL-E 3 access...');
+    try {
+      const testImageResponse = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: "A simple test image of a red circle on white background",
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
+        response_format: "url"
+      });
+      console.log('✅ DALL-E 3 access successful - image generation working');
+    } catch (dalleError) {
+      console.error('❌ DALL-E 3 test failed:', {
+        status: dalleError.status,
+        message: dalleError.message,
+        code: dalleError.code,
+        type: dalleError.type
+      });
+      if (dalleError.status === 401) {
+        console.error('🔑 DALL-E 3 API Key Issue: The key lacks DALL-E 3 permissions or billing');
+      }
+    }
+    
+    // Test 3: Check GPT-4 access
+    console.log('🧪 Test 3: Testing GPT-4 access...');
+    try {
+      const testChatResponse = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [{ role: "user", content: "Say 'API test successful' if you can read this." }],
+        max_tokens: 10
+      });
+      console.log('✅ GPT-4 access successful - chat completion working');
+    } catch (gptError) {
+      console.error('❌ GPT-4 test failed:', {
+        status: gptError.status,
+        message: gptError.message,
+        code: gptError.code,
+        type: gptError.type
+      });
+      if (gptError.status === 401) {
+        console.error('🔑 GPT-4 API Key Issue: The key lacks GPT-4 permissions or billing');
+      }
+    }
+    
     return true;
   } catch (error) {
     console.error('❌ OpenAI API connection failed:', {
