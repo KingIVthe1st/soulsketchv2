@@ -2196,7 +2196,7 @@
         let currentPackageType = '';
         
         // Initialize Stripe when page loads
-        async function initializeStripe() {
+        window.initializeStripe = async function() {
           try {
             // Get Stripe publishable key from server
             const configResponse = await fetch('/api/stripe-config');
@@ -2236,7 +2236,7 @@
         }
         
         // Create payment intent and setup Stripe Elements
-        async function setupStripePayment(amount, packageType) {
+        window.setupStripePayment = async function(amount, packageType) {
           if (!stripe) {
             console.log('Stripe not initialized - using demo mode');
             return;
