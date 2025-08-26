@@ -70,11 +70,17 @@ app.use(morgan('dev'));
 app.use(limiter);
 
 // Serve static from public (for starfield.js and assets)
-app.use(express.static(path.join(process.cwd(), 'public'), {
+const publicPath = path.join(process.cwd(), 'public');
+console.log('🗂️ Serving static files from:', publicPath);
+console.log('🗂️ Current working directory:', process.cwd());
+console.log('🗂️ Public directory exists:', fs.existsSync(publicPath));
+
+app.use(express.static(publicPath, {
   etag: false,
   lastModified: false,
   cacheControl: true,
-  setHeaders: (res) => {
+  setHeaders: (res, filePath) => {
+    console.log('📁 Serving static file:', filePath);
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
   }
 }));
