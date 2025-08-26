@@ -8,9 +8,9 @@ import OpenAI from 'openai';
 
 // OpenAI configuration (add your OpenAI API key to environment variables)
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const openai = new OpenAI({
+const openai = OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-') ? new OpenAI({
   apiKey: OPENAI_API_KEY
-});
+}) : null;
 
 // Enhanced quiz data storage (in production, use a database)
 const orders = new Map();
@@ -481,7 +481,7 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       keyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 15) + '...' : 'undefined'
     });
 
-    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !OPENAI_API_KEY.startsWith('sk-')) {
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !OPENAI_API_KEY.startsWith('sk-') || !openai) {
       const errorMessage = 'CRITICAL: OpenAI API key not properly configured for image generation. Cannot generate AI content without valid API key.';
       console.error('❌', errorMessage);
       throw new Error(errorMessage);
@@ -693,7 +693,7 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       keyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 15) + '...' : 'undefined'
     });
 
-    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !OPENAI_API_KEY.startsWith('sk-')) {
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !OPENAI_API_KEY.startsWith('sk-') || !openai) {
       const errorMessage = 'CRITICAL: OpenAI API key not properly configured for text generation. Cannot generate AI content without valid API key.';
       console.error('❌', errorMessage);
       throw new Error(errorMessage);
