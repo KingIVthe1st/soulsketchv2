@@ -430,62 +430,53 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
   }
 
   function generateLocationPredictions(numerologyData, astrologyData, userLocation, interests) {
-    // CRITICAL: These are predictions for where the soulmate CURRENTLY LIVES/RESIDES
-    // NOT where they were born - people move for career, love, family, dreams
-    // Focus on CURRENT RESIDENCE based on spiritual energy attraction
-    const lifePathLocations = {
-      1: ["New York City, NY - 94%", "Los Angeles, CA - 91%", "London, UK - 88%", "Singapore - 85%", "Dubai, UAE - 82%"],
-      2: ["Portland, OR - 93%", "Amsterdam, Netherlands - 89%", "Kyoto, Japan - 86%", "Copenhagen, Denmark - 83%", "Austin, TX - 80%"],
-      3: ["Miami, FL - 92%", "Paris, France - 90%", "Barcelona, Spain - 88%", "Nashville, TN - 85%", "Rio de Janeiro, Brazil - 82%"],
-      4: ["Denver, CO - 91%", "Toronto, Canada - 88%", "Minneapolis, MN - 85%", "Munich, Germany - 82%", "Zurich, Switzerland - 79%"],
-      5: ["Bangkok, Thailand - 95%", "Barcelona, Spain - 92%", "Sydney, Australia - 89%", "San Francisco, CA - 86%", "Berlin, Germany - 83%"],
-      6: ["Asheville, NC - 90%", "Boulder, CO - 87%", "Burlington, VT - 84%", "Portland, ME - 81%", "Santa Barbara, CA - 78%"],
-      7: ["San Francisco, CA - 93%", "Boston, MA - 90%", "Sedona, AZ - 87%", "Edinburgh, Scotland - 84%", "Dharamshala, India - 81%"],
-      8: ["New York City, NY - 96%", "Dubai, UAE - 93%", "Singapore - 90%", "Hong Kong - 87%", "Frankfurt, Germany - 84%"],
-      9: ["Geneva, Switzerland - 92%", "San Francisco, CA - 89%", "Copenhagen, Denmark - 86%", "Vancouver, Canada - 83%", "Melbourne, Australia - 80%"],
-      11: ["Sedona, AZ - 97%", "Mount Shasta, CA - 94%", "Glastonbury, UK - 91%", "Rishikesh, India - 88%", "Santa Fe, NM - 85%"],
-      22: ["London, UK - 95%", "Tokyo, Japan - 92%", "Washington DC - 89%", "Geneva, Switzerland - 86%", "Sydney, Australia - 83%"],
-      33: ["San Francisco, CA - 93%", "Copenhagen, Denmark - 90%", "Vancouver, Canada - 87%", "Amsterdam, Netherlands - 84%", "Melbourne, Australia - 81%"]
-    };
-
-    const elementLocations = {
-      'Fire': ["Phoenix, AZ", "Miami, FL", "Los Angeles, CA", "Barcelona, Spain", "Tel Aviv, Israel"],
-      'Earth': ["Boulder, CO", "Portland, OR", "Vancouver, Canada", "Munich, Germany", "Wellington, New Zealand"],
-      'Air': ["Boston, MA", "Seattle, WA", "Edinburgh, Scotland", "Vienna, Austria", "Cambridge, MA"],
-      'Water': ["San Diego, CA", "Venice, Italy", "Vancouver, Canada", "Seattle, WA", "Honolulu, HI"]
-    };
-
-    const interestLocations = {
-      'travel': ["International hubs like London, Tokyo, or Singapore",],
-      'music': ["Nashville, Austin, or Berlin for vibrant music scenes"],
-      'art': ["Paris, New York, or Florence for artistic communities"],
-      'nature': ["Boulder, Portland, or Vancouver near natural beauty"],
-      'fitness': ["Los Angeles, Miami, or Sydney with active lifestyles"],
-      'technology': ["San Francisco, Seattle, or Boston in tech corridors"],
-      'food': ["New York, Paris, or Tokyo for culinary excellence"]
+    // CRITICAL: Generate exactly 3 specific cities where soulmate currently lives
+    // MUST exclude user's birth city - emphasize they live somewhere completely different
+    
+    const allCitiesByLifePath = {
+      1: ["New York City, NY", "Los Angeles, CA", "London, UK", "Singapore", "Dubai, UAE", "Tokyo, Japan", "Hong Kong"],
+      2: ["Portland, OR", "Amsterdam, Netherlands", "Copenhagen, Denmark", "Austin, TX", "Vienna, Austria", "Kyoto, Japan"],
+      3: ["Miami, FL", "Paris, France", "Barcelona, Spain", "Nashville, TN", "Rio de Janeiro, Brazil", "Sydney, Australia"],
+      4: ["Denver, CO", "Toronto, Canada", "Minneapolis, MN", "Munich, Germany", "Zurich, Switzerland", "Seattle, WA"],
+      5: ["Bangkok, Thailand", "Barcelona, Spain", "Sydney, Australia", "San Francisco, CA", "Berlin, Germany", "Buenos Aires, Argentina"],
+      6: ["Asheville, NC", "Boulder, CO", "Santa Barbara, CA", "Vancouver, Canada", "Edinburgh, Scotland", "Wellington, New Zealand"],
+      7: ["San Francisco, CA", "Boston, MA", "Sedona, AZ", "Edinburgh, Scotland", "Dharamshala, India", "Glastonbury, UK"],
+      8: ["New York City, NY", "Dubai, UAE", "Singapore", "Hong Kong", "Frankfurt, Germany", "Zurich, Switzerland"],
+      9: ["Geneva, Switzerland", "San Francisco, CA", "Copenhagen, Denmark", "Vancouver, Canada", "Melbourne, Australia", "Amsterdam, Netherlands"],
+      11: ["Sedona, AZ", "Mount Shasta, CA", "Glastonbury, UK", "Rishikesh, India", "Santa Fe, NM", "Byron Bay, Australia"],
+      22: ["London, UK", "Tokyo, Japan", "Washington DC", "Geneva, Switzerland", "Sydney, Australia", "Stockholm, Sweden"],
+      33: ["San Francisco, CA", "Copenhagen, Denmark", "Vancouver, Canada", "Amsterdam, Netherlands", "Melbourne, Australia", "Reykjavik, Iceland"]
     };
 
     const lifePathNumber = numerologyData?.lifePath?.number || 1;
-    const element = astrologyData?.element || 'Water';
+    const availableCities = allCitiesByLifePath[lifePathNumber] || allCitiesByLifePath[1];
     
-    let predictions = {
-      primaryLocations: lifePathLocations[lifePathNumber] || lifePathLocations[1],
-      elementalRegions: elementLocations[element] || elementLocations['Water'],
-      interestBased: [],
-      spiritualVortexes: ["Sedona, AZ", "Mount Shasta, CA", "Glastonbury, UK", "Machu Picchu, Peru"],
-      meetingTiming: `Your Personal Year ${numerologyData?.personalYear?.number || 1} indicates ${numerologyData?.personalYear?.number === 1 || numerologyData?.personalYear?.number === 5 ? 'high potential for new encounters' : numerologyData?.personalYear?.number === 2 || numerologyData?.personalYear?.number === 6 ? 'relationship-focused opportunities' : 'steady relationship development'}`
-    };
-
-    // Add interest-based locations
-    if (interests) {
-      for (let interest in interestLocations) {
-        if (interests.toLowerCase().includes(interest)) {
-          predictions.interestBased.push(...interestLocations[interest]);
-        }
+    // Filter out user's birth location if it matches any city
+    const userBirthCity = userLocation?.toLowerCase() || '';
+    const filteredCities = availableCities.filter(city => {
+      const cityLower = city.toLowerCase();
+      return !cityLower.includes(userBirthCity) && !userBirthCity.includes(cityLower.split(',')[0]);
+    });
+    
+    // Select exactly 3 cities with percentages
+    const selectedCities = filteredCities.slice(0, 3).map((city, index) => {
+      const percentages = [92, 87, 81]; // High, medium, lower probability
+      return `${city} - ${percentages[index]}%`;
+    });
+    
+    // Ensure we always have 3 cities even if filtering removes too many
+    if (selectedCities.length < 3) {
+      const backupCities = ["Barcelona, Spain - 89%", "Toronto, Canada - 85%", "Amsterdam, Netherlands - 82%"];
+      while (selectedCities.length < 3) {
+        selectedCities.push(backupCities[selectedCities.length]);
       }
     }
-
-    return predictions;
+    
+    return {
+      primaryLocations: selectedCities, // Exactly 3 cities with percentages
+      userBirthCity: userLocation, // For reference in prompts
+      meetingTiming: `Your Personal Year ${numerologyData?.personalYear?.number || 1} indicates ${numerologyData?.personalYear?.number === 1 || numerologyData?.personalYear?.number === 5 ? 'high potential for new encounters' : numerologyData?.personalYear?.number === 2 || numerologyData?.personalYear?.number === 6 ? 'relationship-focused opportunities' : 'steady relationship development'}`
+    };
   }
 
   // ASTROLOGY CALCULATIONS
@@ -942,25 +933,34 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
           4. ${userName}'s Soul Urge ${numerologyData?.soulUrge?.number} deep desires
           5. ${userName}'s Personal Year ${numerologyData?.personalYear?.number} meeting timing
           
-          🌍 SECTION 2: PREMIUM LOCATION INTELLIGENCE (Minimum 300 words)
+          🌍 SECTION 2: PREMIUM LOCATION INTELLIGENCE (Minimum 400 words)
           
-          **CRITICAL LOCATION FOCUS: Predict WHERE ${userName}'s soulmate currently LIVES and RESIDES - their actual home city/address NOW, not their birth city. Most people move multiple times in life for career, education, family, dreams, love, or spiritual calling. Focus entirely on their CURRENT RESIDENCE location.**
+          **CRITICAL: ${userName}'s soulmate does NOT live where ${userName} was born (${locationPredictions.userBirthCity || 'same area'}). They live in a completely DIFFERENT city, far from ${userName}'s birth location. Based on ${userName}'s spiritual energy, predict exactly where their soulmate currently calls HOME:**
           
-          **${userName}'s Soulmate's Current Home City:**
-          Based on ${userName}'s Life Path ${numerologyData?.lifePath?.number} and ${astrologyData?.sign} energy, predict the EXACT CITY where ${userName}'s soulmate calls HOME right now. Choose ONE primary city from: ${locationPredictions.primaryLocations.join(', ')} and explain WHY they moved there or chose to stay there (what drew them to make this their current residence).
+          **🏠 SOULMATE'S 3 CURRENT RESIDENCE CITIES:**
           
-          **Secondary Residence Possibilities:**
-          List 2-3 additional cities where ${userName}'s soulmate might currently live, with specific percentages and reasons related to ${userName}'s numerological and astrological profile.
+          **Primary City: ${locationPredictions.primaryLocations[0] || 'Unknown City - 90%'}**
+          - Specific reasons WHY they live there NOW (career move, family relocation, education, spiritual calling)
+          - How this city's energy aligns with ${userName}'s Life Path ${numerologyData?.lifePath?.number} vibration
+          - What originally drew them to make this their current home base
+          - Their daily lifestyle and community in this location
           
-          **${userName}'s Soulmate's Lifestyle Location Alignment:**
-          Based on ${userName}'s interests in ${interests}, predict what TYPE of location environment ${userName}'s soulmate chooses to live in and WHY they were drawn to move there.
+          **Secondary City: ${locationPredictions.primaryLocations[1] || 'Alternative City - 85%'}**
+          - WHY they chose this as their current residence over other options
+          - Connection to ${userName}'s ${astrologyData?.sign} ${astrologyData?.element} elemental energy
+          - Their work/social life and why they stayed in this city
+          - How ${userName} might cross paths with someone from here
           
-          **${astrologyData?.element} Element Regional Energy:**
-          Explain how ${userName}'s ${astrologyData?.element} element creates magnetic attraction to people living in: ${locationPredictions.elementalRegions.join(', ')}
+          **Third Possibility: ${locationPredictions.primaryLocations[2] || 'Third City - 80%'}**
+          - What life circumstances brought them to live in this location
+          - How ${userName}'s interests in ${interests} create magnetic pull to people residing here
+          - Their current living situation and what keeps them in this city
+          - Potential connection points between ${userName} and this distant location
           
-          **Sacred Meeting Timing & Places:** ${locationPredictions.meetingTiming}
+          **🌟 MEETING PREDICTION:**
+          ${locationPredictions.meetingTiming} - Explain specifically HOW ${userName} might encounter someone from these distant cities (business travel, online platforms, mutual connections, vacation, conferences, or spiritual events).
           
-          **RESIDENCE EXPLANATION: Explain WHY ${userName}'s soulmate ended up living in their current predicted city. What life path brought them there? Career opportunity? Family? Education? Spiritual journey? Adventure? Love? Make it feel like a realistic story of how someone moves and settles in a new city to build their current life.**
+          **EMPHASIS: These predictions focus on where ${userName}'s soulmate has MOVED TO and currently LIVES their daily life - completely separate from ${userName}'s birth location of ${locationPredictions.userBirthCity || 'their hometown'}.**
           
           🔮 SECTION 3: ENHANCED COMPATIBILITY ANALYSIS
           - ${userName}'s ${astrologyData?.element} element romantic magnetism
@@ -1003,9 +1003,16 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
           - Best days/times based on ${userName}'s numerology
           
           **WHERE - Premium Location Intelligence:**
-          ${locationPredictions.primaryLocations.join(' | ')}
-          Sacred timing: ${locationPredictions.meetingTiming}
-          Specific venues for ${userName}'s ${interests} interests
+          
+          **CRITICAL: ${userName}'s soulmate lives OUTSIDE ${userName}'s birth area (${locationPredictions.userBirthCity || 'hometown'}). They currently reside in one of these 3 cities:**
+          
+          **#1: ${locationPredictions.primaryLocations[0] || 'Primary City - 90%'}** - Career/education brought them here
+          **#2: ${locationPredictions.primaryLocations[1] || 'Secondary City - 85%'}** - Family/spiritual calling led them here  
+          **#3: ${locationPredictions.primaryLocations[2] || 'Third City - 80%'}** - Life circumstances/adventure drew them here
+          
+          **Meeting Scenarios:** How ${userName} connects with someone from these distant cities (travel, work, online, events)
+          **Sacred Timing:** ${locationPredictions.meetingTiming}
+          **${userName}'s Interest Venues:** Where to meet in these cities based on ${interests} activities
           
           **HOW - Recognition & Approach:**
           - Physical signs ${userName} will notice (based on their ${seekingGender} preference)
