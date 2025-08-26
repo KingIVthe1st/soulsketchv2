@@ -111,6 +111,17 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
 });
 
+// Order page - serve the payment page
+app.get('/order.html', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  console.log('📄 Serving order.html page');
+  res.sendFile(path.join(process.cwd(), 'public', 'order.html'));
+});
+
 const port = Number(process.env.PORT || 8080);
 app.listen(port, () => {
   logger.info(`Soulmate Sketch backend running on http://localhost:${port}`);
