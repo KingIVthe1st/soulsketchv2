@@ -2216,6 +2216,17 @@
             document.getElementById('stripe-payment-element').style.display = 'block';
             document.getElementById('fallback-payment-form').style.display = 'none';
             
+            // If we're on the checkout page, automatically setup payment for selected package
+            if (document.querySelector('#stripe-payment-element')) {
+              const selectedPackage = window.selectedPackage || 'basic';
+              const packagePrices = { basic: 1999, plus: 2999, premium: 4999 };
+              const amount = packagePrices[selectedPackage];
+              
+              if (amount) {
+                setupStripePayment(amount, selectedPackage);
+              }
+            }
+            
           } catch (error) {
             console.error('Error initializing Stripe:', error);
             // Fall back to demo form
