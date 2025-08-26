@@ -474,20 +474,17 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       length: OPENAI_API_KEY ? OPENAI_API_KEY.length : 0
     });
     
-    // Always use OpenAI DALL-E for production
-    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here') {
-      console.error('OpenAI API key not configured - using temporary fallback');
-      // Temporary fallback only for missing API key
-      const filename = `soulmate-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.png`;
-      const sourcePath = path.join('public', 'images', 'home', 'pencil-generated.jpg');
-      const destPath = path.join('uploads', filename);
-      
-      try {
-        await fs.promises.copyFile(sourcePath, destPath);
-        return { imagePath: `uploads/${filename}`, isPlaceholder: true };
-      } catch (error) {
-        return { imagePath: 'images/home/pencil-generated.jpg', isPlaceholder: true };
-      }
+    // Force OpenAI DALL-E usage - no fallbacks for production
+    console.log('🔑 OpenAI API Key Status for Image Generation:', {
+      exists: !!OPENAI_API_KEY,
+      isValid: OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-'),
+      keyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 15) + '...' : 'undefined'
+    });
+
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !OPENAI_API_KEY.startsWith('sk-')) {
+      const errorMessage = 'CRITICAL: OpenAI API key not properly configured for image generation. Cannot generate AI content without valid API key.';
+      console.error('❌', errorMessage);
+      throw new Error(errorMessage);
     }
     
     try {
@@ -517,20 +514,13 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       
       return { imagePath: `uploads/${filename}`, isPlaceholder: false };
     } catch (error) {
-      console.error('DALL-E generation error:', error);
+      console.error('❌ DALL-E generation failed:', error);
       console.error('Error details:', error.response?.data || error.message);
       
-      // Emergency fallback only if API fails
-      const filename = `soulmate-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.png`;
-      const sourcePath = path.join('public', 'images', 'home', 'pencil-generated.jpg');
-      const destPath = path.join('uploads', filename);
-      
-      try {
-        await fs.promises.copyFile(sourcePath, destPath);
-        return { imagePath: `uploads/${filename}`, isPlaceholder: true };
-      } catch (copyError) {
-        return { imagePath: 'images/home/pencil-generated.jpg', isPlaceholder: true };
-      }
+      // PRODUCTION MODE: No fallbacks allowed - throw error to force resolution
+      const errorMessage = `CRITICAL: OpenAI DALL-E image generation failed: ${error.message || 'Unknown error'}. Production requires valid AI generation.`;
+      console.error('❌', errorMessage);
+      throw new Error(errorMessage);
     }
   }
 
@@ -991,23 +981,13 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       };
       
     } catch (error) {
-      console.error('GPT prediction error:', error);
+      console.error('❌ GPT text generation failed:', error);
       console.error('Error details:', error.response?.data || error.message);
       
-      // Fallback predictions if API fails
-      return {
-        basicPredictions: [
-          `<strong>Life Path ${numerologyData?.lifePath?.number || 1} Connection</strong>: Your soulmate shares complementary numerological vibrations`,
-          `<strong>${astrologyData.sunSign} Magnetic Pull</strong>: The stars align to bring ${astrologyData.compatibleSigns?.[0] || 'compatible'} energy into your life`,
-          `<strong>Destiny Number ${numerologyData?.destiny?.number || 7} Alignment</strong>: Your paths are destined to cross at the perfect moment`,
-          `<strong>${astrologyData.element} Element Harmony</strong>: Your soulmate brings balance through elemental compatibility`,
-          `<strong>Universal Timing</strong>: The cosmos has orchestrated your meeting for maximum spiritual growth`
-        ],
-        premiumInsight: `As a Life Path ${numerologyData?.lifePath?.number || 1} ${astrologyData?.sunSign || 'soul'}, your soulmate journey is uniquely yours. The universe has been aligning circumstances, preparing both you and your destined partner for the moment of recognition. Your ${astrologyData?.element || 'spiritual'} energy will harmonize perfectly with their complementary vibration, creating a connection that transcends the physical realm.`,
-        locationInsight: `Based on your ${astrologyData.element} element, your soulmate likely resides in locations that resonate with ${astrologyData.element.toLowerCase()} energy.`,
-        enhancedAstrology: `Your ${astrologyData.sunSign} nature seeks deep compatibility with ${astrologyData.compatibleSigns?.join(', ') || 'aligned signs'}.`,
-        strategyGuide: `Trust your Life Path ${numerologyData?.lifePath?.number || 1} intuition when recognizing your soulmate.`
-      };
+      // PRODUCTION MODE: No fallbacks allowed - throw error to force resolution
+      const errorMessage = `CRITICAL: OpenAI GPT text generation failed: ${error.message || 'Unknown error'}. Production requires valid AI generation.`;
+      console.error('❌', errorMessage);
+      throw new Error(errorMessage);
     }
   }
 
