@@ -2229,11 +2229,12 @@
             console.log('🔍 [DEBUG] Stripe element exists:', !!stripeElement);
             
             if (stripeElement) {
-              const selectedPackage = window.selectedPackage || 'basic';
+              const selectedPackage = state.selectedPackage?.type || 'basic';
               const packagePrices = { basic: 1999, plus: 2999, premium: 4999 };
               const amount = packagePrices[selectedPackage];
               
               console.log('🔍 [DEBUG] Auto-setup payment - Package:', selectedPackage, 'Amount:', amount);
+              console.log('🔍 [DEBUG] State selected package:', state.selectedPackage);
               
               if (amount) {
                 console.log('🔍 [DEBUG] Calling setupStripePayment...');
@@ -2586,9 +2587,11 @@
           }
           
           // Setup Stripe payment for selected package
-          const selectedPackage = window.selectedPackage || 'plus';
+          const selectedPackage = state.selectedPackage?.type || 'plus';
           const packagePrices = { basic: 1999, plus: 2999, premium: 4999 };
           const amount = packagePrices[selectedPackage];
+          
+          console.log('🔍 [DEBUG] proceedToCheckout - Package:', selectedPackage, 'Amount:', amount);
           
           if (amount) {
             setupStripePayment(amount, selectedPackage);
