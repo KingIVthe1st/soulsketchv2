@@ -430,7 +430,9 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
   }
 
   function generateLocationPredictions(numerologyData, astrologyData, userLocation, interests) {
-    // Enhanced city predictions where soulmate likely resides (not current user location)
+    // CRITICAL: These are predictions for where the soulmate CURRENTLY LIVES/RESIDES
+    // NOT where they were born - people move for career, love, family, dreams
+    // Focus on CURRENT RESIDENCE based on spiritual energy attraction
     const lifePathLocations = {
       1: ["New York City, NY - 94%", "Los Angeles, CA - 91%", "London, UK - 88%", "Singapore - 85%", "Dubai, UAE - 82%"],
       2: ["Portland, OR - 93%", "Amsterdam, Netherlands - 89%", "Kyoto, Japan - 86%", "Copenhagen, Denmark - 83%", "Austin, TX - 80%"],
@@ -603,7 +605,7 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
         prompt: prompt,
         n: 1,
         size: "1024x1024",
-        quality: "standard",
+        quality: "hd",
         response_format: "url"
       });
       
@@ -792,13 +794,16 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       prompt += `subtle resemblance to ${celeb} but unique individual, `;
     }
     
-    // HYPERREALISTIC PHOTOGRAPHY REQUIREMENTS - NO ANIMATION
-    prompt += 'HYPERREALISTIC PHOTOGRAPH ONLY, REAL HUMAN PERSON, NOT anime, NOT cartoon, NOT illustration, NOT digital art, NOT painting, ';
-    prompt += 'professional DSLR portrait photography, visible skin texture, natural skin pores, individual hair strands, realistic facial features, ';
-    prompt += 'shot with Canon EOS R5, 85mm f/1.2 lens, studio lighting, soft bokeh background, ';
-    prompt += 'warm natural skin tones, genuine authentic smile, direct eye contact with camera, natural lighting, ';
-    prompt += 'Annie Leibovitz portrait style, National Geographic quality, Vogue magazine realism, professional headshot, ';
-    prompt += 'extremely detailed photorealism, lifelike human features, 8k resolution, award-winning real portrait photography, looks like actual person';
+    // MAXIMUM PHOTOREALISM REQUIREMENTS - REAL PERSON ONLY
+    prompt += 'PHOTOREALISTIC PROFESSIONAL PORTRAIT, actual real human person, NOT anime, NOT cartoon, NOT illustration, NOT digital art, NOT painting, NOT CG, NOT 3D render, ';
+    prompt += 'shot with high-end DSLR camera, 85mm portrait lens, professional studio lighting with soft key light and fill light, ';
+    prompt += 'visible skin texture and pores, natural skin imperfections, individual eyelashes, realistic hair texture with individual strands, ';
+    prompt += 'authentic human facial structure, natural bone structure, realistic muscle definition, genuine human proportions, ';
+    prompt += 'warm natural skin tones with subtle color variation, authentic human eye reflections, natural lip texture, ';
+    prompt += 'soft professional makeup (if applicable), natural lighting with gentle shadows, shallow depth of field, ';
+    prompt += 'genuine warm smile reaching the eyes, direct confident eye contact with camera, relaxed natural pose, ';
+    prompt += 'photographed like a professional headshot for Vogue, Vanity Fair, or National Geographic portrait, ';
+    prompt += 'hyperrealistic detail level, looks indistinguishable from real photograph of actual person, award-winning portrait photography';
     
     return prompt;
   }
@@ -939,10 +944,10 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
           
           🌍 SECTION 2: PREMIUM LOCATION INTELLIGENCE (Minimum 300 words)
           
-          **IMPORTANT: Make specific predictions about WHERE ${userName}'s soulmate currently LIVES/RESIDES, not where they might meet. Remember that people move from their birth cities, so predict their current residence based on ${userName}'s spiritual energy.**
+          **CRITICAL LOCATION FOCUS: Predict WHERE ${userName}'s soulmate currently LIVES and RESIDES - their actual home city/address NOW, not their birth city. Most people move multiple times in life for career, education, family, dreams, love, or spiritual calling. Focus entirely on their CURRENT RESIDENCE location.**
           
-          **${userName}'s Soulmate's Current City Prediction:**
-          Based on ${userName}'s Life Path ${numerologyData?.lifePath?.number} and ${astrologyData?.sign} energy, predict the SPECIFIC CITY where ${userName}'s soulmate most likely resides NOW. Choose ONE primary city from: ${locationPredictions.primaryLocations.join(', ')} and explain WHY this is where they live (not where they were born).
+          **${userName}'s Soulmate's Current Home City:**
+          Based on ${userName}'s Life Path ${numerologyData?.lifePath?.number} and ${astrologyData?.sign} energy, predict the EXACT CITY where ${userName}'s soulmate calls HOME right now. Choose ONE primary city from: ${locationPredictions.primaryLocations.join(', ')} and explain WHY they moved there or chose to stay there (what drew them to make this their current residence).
           
           **Secondary Residence Possibilities:**
           List 2-3 additional cities where ${userName}'s soulmate might currently live, with specific percentages and reasons related to ${userName}'s numerological and astrological profile.
@@ -955,7 +960,7 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
           
           **Sacred Meeting Timing & Places:** ${locationPredictions.meetingTiming}
           
-          **CRITICAL: Explain WHY ${userName}'s soulmate chose to LIVE in their predicted city - consider career, lifestyle, spiritual calling, family moves, or life circumstances that drew them there. This should feel like a genuine prediction about WHERE they currently reside.**
+          **RESIDENCE EXPLANATION: Explain WHY ${userName}'s soulmate ended up living in their current predicted city. What life path brought them there? Career opportunity? Family? Education? Spiritual journey? Adventure? Love? Make it feel like a realistic story of how someone moves and settles in a new city to build their current life.**
           
           🔮 SECTION 3: ENHANCED COMPATIBILITY ANALYSIS
           - ${userName}'s ${astrologyData?.element} element romantic magnetism
