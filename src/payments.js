@@ -1,6 +1,17 @@
 import Stripe from 'stripe';
-const stripeKey = process.env.STRIPE_SECRET_KEY;
-const stripe = stripeKey ? new Stripe(stripeKey, { apiVersion: '2024-06-20' }) : null;
+
+// Stripe configuration
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+export const stripePublishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+
+console.log('🔑 Stripe Configuration Check:', {
+  secretKeyExists: !!stripeSecretKey,
+  publishableKeyExists: !!stripePublishableKey,
+  secretKeyFormat: stripeSecretKey ? stripeSecretKey.substring(0, 7) + '...' : 'missing',
+  publishableKeyFormat: stripePublishableKey ? stripePublishableKey.substring(0, 7) + '...' : 'missing'
+});
+
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, { apiVersion: '2024-06-20' }) : null;
 
 const TIER_PRICES = {
   basic: 1999,     // $19.99 - Basic soulmate sketch + reading

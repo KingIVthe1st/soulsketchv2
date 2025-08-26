@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import { createPaymentIntent } from './payments.js';
+import { createPaymentIntent, stripePublishableKey } from './payments.js';
 import OpenAI from 'openai';
 
 // OpenAI configuration (add your OpenAI API key to environment variables)
@@ -2046,6 +2046,19 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
     } catch (error) {
       console.error('Error serving image:', error);
       res.status(500).json({ error: 'Failed to serve image' });
+    }
+  });
+
+  // Get Stripe publishable key endpoint
+  router.get('/stripe-config', (req, res) => {
+    try {
+      res.json({
+        publishableKey: stripePublishableKey || null,
+        isConfigured: !!stripePublishableKey
+      });
+    } catch (error) {
+      console.error('Error getting Stripe config:', error);
+      res.status(500).json({ error: 'Failed to get Stripe configuration' });
     }
   });
 
