@@ -811,6 +811,17 @@
                       </div>
                     </div>
 
+                    <!-- Apple Pay / Google Pay Express Checkout -->
+                    <div id="express-checkout-element" style="margin-bottom: 20px;">
+                      <!-- Express checkout methods (Apple Pay, Google Pay, etc.) -->
+                    </div>
+
+                    <!-- Or separator -->
+                    <div id="payment-separator" style="margin: 20px 0; text-align: center; color: var(--text-color); font-size: 14px; display: none;">
+                      <span style="background: var(--bg-color); padding: 0 15px;">or pay with card</span>
+                      <div style="height: 1px; background: var(--divider-color); margin-top: -10px; z-index: -1; position: relative;"></div>
+                    </div>
+
                     <div id="stripe-payment-element">
                       <!-- Stripe Elements will mount here -->
                     </div>
@@ -2123,7 +2134,10 @@
         let stripe = null;
         let elements = null;
         let paymentElement = null;
+        let expressCheckoutElement = null;
         let clientSecret = null;
+        let currentPaymentAmount = 0;
+        let currentPackageType = '';
         
         // Initialize Stripe when page loads
         async function initializeStripe() {
@@ -2161,6 +2175,10 @@
             return;
           }
           
+          // Store current payment details
+          currentPaymentAmount = amount;
+          currentPackageType = packageType;
+          
           try {
             // Create payment intent
             const response = await fetch('/payment-intent', {
@@ -2195,6 +2213,9 @@
               }
             });
             
+            // Setup Express Checkout (Apple Pay, Google Pay, etc.)
+            await setupExpressCheckout(amount);
+            
             // Create and mount Payment Element
             paymentElement = elements.create('payment');
             paymentElement.mount('#stripe-payment-element');
@@ -2204,6 +2225,89 @@
             // Fall back to demo form
             document.getElementById('stripe-payment-element').style.display = 'none';
             document.getElementById('fallback-payment-form').style.display = 'block';
+          }
+        }
+        
+        // Setup Apple Pay and other express checkout methods
+        async function setupExpressCheckout(amount) {
+          try {
+            // Create Express Checkout Element (includes Apple Pay, Google Pay, etc.)
+            expressCheckoutElement = elements.create('expressCheckout', {
+              buttonType: {
+                applePay: 'buy',
+                googlePay: 'buy',
+              },
+              buttonTheme: {
+                applePay: 'black',
+                googlePay: 'black',
+              },
+              buttonHeight: 48,
+              paymentMethods: {
+                applePay: 'always',
+                googlePay: 'always',
+                link: 'always',
+              }
+            });
+            
+            // Check if express checkout methods are available
+            const canMakePayment = await expressCheckoutElement.canMakePayment();
+            
+            if (canMakePayment) {
+              // Mount express checkout element
+              expressCheckoutElement.mount('#express-checkout-element');
+              
+              // Show separator between express checkout and card form
+              document.getElementById('payment-separator').style.display = 'block';
+              
+              // Handle express checkout events
+              expressCheckoutElement.on('click', (event) => {
+                console.log('Express checkout clicked:', event.expressPaymentType);
+              });
+              
+              // Handle successful express checkout
+              expressCheckoutElement.on('confirm', async (event) => {
+                console.log('Express checkout confirm:', event.expressPaymentType);
+                
+                try {
+                  // Confirm payment with shipping/billing info if needed
+                  const {error, paymentIntent} = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                      return_url: window.location.origin + window.location.pathname,
+                    },
+                    redirect: 'if_required'
+                  });
+                  
+                  if (error) {
+                    console.error('Express checkout payment failed:', error);
+                    event.complete('fail');
+                  } else if (paymentIntent.status === 'succeeded') {
+                    console.log('Express checkout payment succeeded:', paymentIntent.id);
+                    event.complete('success');
+                    
+                    // Hide checkout and show completion
+                    document.getElementById('checkoutSection').style.display = 'none';
+                    showComplete();
+                  }
+                } catch (error) {
+                  console.error('Express checkout error:', error);
+                  event.complete('fail');
+                }
+              });
+              
+              console.log('✅ Express checkout (Apple Pay/Google Pay) enabled');
+            } else {
+              // Hide express checkout container if no methods available
+              document.getElementById('express-checkout-element').style.display = 'none';
+              document.getElementById('payment-separator').style.display = 'none';
+              console.log('ℹ️ Express checkout not available on this device/browser');
+            }
+            
+          } catch (error) {
+            console.error('Error setting up express checkout:', error);
+            // Hide express checkout elements on error
+            document.getElementById('express-checkout-element').style.display = 'none';
+            document.getElementById('payment-separator').style.display = 'none';
           }
         }
         

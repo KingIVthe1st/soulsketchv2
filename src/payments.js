@@ -36,11 +36,30 @@ export async function createPaymentIntent({ amount, currency = 'usd', metadata }
       metadata,
     };
   }
+  
   return stripe.paymentIntents.create({
     amount,
     currency,
-    automatic_payment_methods: { enabled: true },
+    automatic_payment_methods: { 
+      enabled: true,
+      // Allow all payment methods including Apple Pay, Google Pay, etc.
+      allow_redirects: 'always'
+    },
     metadata,
+    // Configuration for Apple Pay and other express checkout methods
+    shipping: {
+      name: metadata?.name || 'Customer',
+      address: {
+        line1: '123 Main Street',
+        city: 'Any City',
+        state: 'CA',
+        postal_code: '90210',
+        country: 'US',
+      },
+    },
+    // Enable for digital goods (no physical shipping required)
+    receipt_email: metadata?.email || null,
+    description: `Soulmate Sketch ${metadata?.package || 'Package'} - AI-generated portrait and personalized reading`,
   });
 }
 
