@@ -2076,9 +2076,8 @@
             orderId = localStorage.getItem('currentOrderId');
           }
           
-          // No fallback order - user must complete the flow to see results
-
-          if (orderId) {
+          // Only proceed if we have a valid orderId (not null, undefined, empty string, or 'null' string)
+          if (orderId && orderId !== 'null' && orderId.trim() !== '') {
             try {
               const response = await fetch(`/api/orders/${orderId}`);
               if (response.ok) {
