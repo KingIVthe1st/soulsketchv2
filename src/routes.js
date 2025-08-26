@@ -30,10 +30,45 @@ const openai = isValidOpenAIKey(OPENAI_API_KEY) ? new OpenAI({
   apiKey: OPENAI_API_KEY
 }) : null;
 
-if (!openai) {
-  console.error('❌ CRITICAL: OpenAI client not initialized. Check environment variables.');
-} else {
+// Test OpenAI API connectivity at startup
+async function testOpenAIConnection() {
+  if (!openai) {
+    console.error('❌ CRITICAL: OpenAI client not initialized. Check environment variables.');
+    return false;
+  }
+
+  try {
+    console.log('🧪 Testing OpenAI API connection...');
+    
+    // Test with a simple API call to check key validity
+    const response = await openai.models.list();
+    console.log('✅ OpenAI API connection successful');
+    console.log('📋 Available models:', response.data.slice(0, 3).map(m => m.id).join(', '), '...');
+    return true;
+  } catch (error) {
+    console.error('❌ OpenAI API connection failed:', {
+      status: error.status,
+      message: error.message,
+      type: error.type,
+      code: error.code
+    });
+    
+    if (error.status === 401) {
+      console.error('🔑 API Key Issue: The OpenAI API key is invalid or lacks proper permissions.');
+      console.error('💳 Check: 1) Key is active 2) Billing is set up 3) Key has model permissions');
+      console.error('🌐 Manage keys at: https://platform.openai.com/api-keys');
+    }
+    
+    return false;
+  }
+}
+
+// Run API test on startup (don't block server start)
+if (openai) {
   console.log('✅ OpenAI client initialized successfully');
+  testOpenAIConnection().catch(err => console.error('Startup API test failed:', err));
+} else {
+  console.error('❌ CRITICAL: OpenAI client not initialized. Check environment variables.');
 }
 
 // Enhanced quiz data storage (in production, use a database)
