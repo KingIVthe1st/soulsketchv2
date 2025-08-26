@@ -696,19 +696,17 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
   async function generatePersonalizedPredictions(orderData, numerologyData, astrologyData, packageLevel) {
     console.log('Generating AI-powered personalized predictions with GPT-4...');
     
-    // Always use OpenAI GPT for production
-    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here') {
-      console.error('OpenAI API key not configured - using basic predictions');
-      return {
-        basicPredictions: [
-          `<strong>A complementary life path</strong> that enhances your spiritual journey`,
-          `<strong>Magnetic attraction</strong> based on your astrological compatibility`,
-          `<strong>Shared values</strong> that align with your numerological destiny`,
-          `<strong>Perfect timing</strong> orchestrated by the universe`,
-          `<strong>Deep understanding</strong> of your authentic self`
-        ],
-        premiumInsight: `Your soulmate connection transcends the physical realm. The universe has been preparing this meeting through multiple lifetimes.`
-      };
+    // Force OpenAI GPT usage - no fallbacks for production
+    console.log('🔑 OpenAI API Key Status for Text Generation:', {
+      exists: !!OPENAI_API_KEY,
+      isValid: OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-'),
+      keyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 15) + '...' : 'undefined'
+    });
+
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !OPENAI_API_KEY.startsWith('sk-')) {
+      const errorMessage = 'CRITICAL: OpenAI API key not properly configured for text generation. Cannot generate AI content without valid API key.';
+      console.error('❌', errorMessage);
+      throw new Error(errorMessage);
     }
     
     try {
