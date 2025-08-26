@@ -514,11 +514,25 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       
       return { imagePath: `uploads/${filename}`, isPlaceholder: false };
     } catch (error) {
-      console.error('❌ DALL-E generation failed:', error);
-      console.error('Error details:', error.response?.data || error.message);
+      console.error('❌ DALL-E generation failed - FULL ERROR DETAILS:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        status: error.status || error.response?.status,
+        statusText: error.statusText || error.response?.statusText,
+        responseData: error.response?.data,
+        responseHeaders: error.response?.headers,
+        config: error.config ? {
+          url: error.config.url,
+          method: error.config.method,
+          timeout: error.config.timeout,
+          headers: error.config.headers ? 'Present' : 'Missing'
+        } : 'No config',
+        timestamp: new Date().toISOString()
+      });
       
       // PRODUCTION MODE: No fallbacks allowed - throw error to force resolution
-      const errorMessage = `CRITICAL: OpenAI DALL-E image generation failed: ${error.message || 'Unknown error'}. Production requires valid AI generation.`;
+      const errorMessage = `CRITICAL: OpenAI DALL-E image generation failed: ${error.message || 'Unknown error'}. Status: ${error.status || 'Unknown'}. Production requires valid AI generation.`;
       console.error('❌', errorMessage);
       throw new Error(errorMessage);
     }
@@ -981,11 +995,25 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       };
       
     } catch (error) {
-      console.error('❌ GPT text generation failed:', error);
-      console.error('Error details:', error.response?.data || error.message);
+      console.error('❌ GPT text generation failed - FULL ERROR DETAILS:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        status: error.status || error.response?.status,
+        statusText: error.statusText || error.response?.statusText,
+        responseData: error.response?.data,
+        responseHeaders: error.response?.headers,
+        config: error.config ? {
+          url: error.config.url,
+          method: error.config.method,
+          timeout: error.config.timeout,
+          headers: error.config.headers ? 'Present' : 'Missing'
+        } : 'No config',
+        timestamp: new Date().toISOString()
+      });
       
       // PRODUCTION MODE: No fallbacks allowed - throw error to force resolution
-      const errorMessage = `CRITICAL: OpenAI GPT text generation failed: ${error.message || 'Unknown error'}. Production requires valid AI generation.`;
+      const errorMessage = `CRITICAL: OpenAI GPT text generation failed: ${error.message || 'Unknown error'}. Status: ${error.status || 'Unknown'}. Production requires valid AI generation.`;
       console.error('❌', errorMessage);
       throw new Error(errorMessage);
     }
@@ -1776,10 +1804,25 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
       });
 
     } catch (error) {
-      console.error('Error generating soulmate:', error);
+      console.error('❌ FULL ERROR DETAILS - Generation failed:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        cause: error.cause,
+        orderId: orderId,
+        timestamp: new Date().toISOString(),
+        apiKeyStatus: {
+          exists: !!OPENAI_API_KEY,
+          isValid: OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-'),
+          length: OPENAI_API_KEY ? OPENAI_API_KEY.length : 0,
+          clientInitialized: !!openai
+        }
+      });
+      
       res.status(500).json({ 
         error: 'Failed to generate soulmate sketch',
-        details: error.message 
+        details: error.message,
+        timestamp: new Date().toISOString()
       });
     }
   });
