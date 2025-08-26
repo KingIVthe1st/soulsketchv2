@@ -2067,14 +2067,12 @@
           
           // Continue regardless of visibility - we'll show it if needed
 
-          // Look for any recent order ID in localStorage or check the most recent order
+          // Only check URL parameters - ignore localStorage to prevent stale data issues
           const urlParams = new URLSearchParams(window.location.search);
           let orderId = urlParams.get('orderId');
           
-          if (!orderId) {
-            // Try to get the most recent order from localStorage
-            orderId = localStorage.getItem('currentOrderId');
-          }
+          // Clear any stale localStorage data immediately
+          localStorage.removeItem('currentOrderId');
           
           // Only proceed if we have a valid orderId (not null, undefined, empty string, or 'null' string)
           if (orderId && orderId !== 'null' && orderId.trim() !== '') {
