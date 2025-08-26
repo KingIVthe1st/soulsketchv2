@@ -69,7 +69,48 @@ app.use(morgan('dev'));
 // Apply general rate limiting to all requests
 app.use(limiter);
 
-// Serve static from public (for starfield.js and assets)
+// API routes with rate limiting (before static files)
+console.log('🔧 Loading API routes...');
+const apiRouter = createRouter();
+console.log('🔧 API router created:', !!apiRouter);
+app.use('/api', apiLimiter, apiRouter);
+
+// Apply stricter rate limiting to payment endpoints
+app.use('/api/payment-intent', paymentLimiter);
+app.use('/api/orders', paymentLimiter);
+
+// Specific routes BEFORE static file serving
+// Landing page - serve the Sketch My Soulmate design
+app.get('/', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  // Disable caching for the root HTML to ensure latest UI ships
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
+});
+
+// Order page - serve the payment page (BEFORE static middleware)
+app.get('/order.html', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  console.log('📄 Serving order.html page via explicit route');
+  res.sendFile(path.join(process.cwd(), 'public', 'order.html'));
+});
+
+// Apple logo - ensure image is served properly (BEFORE static middleware)
+app.get('/images/apple-logo.png', (req, res) => {
+  res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+  console.log('🍎 Serving Apple logo image via explicit route');
+  res.sendFile(path.join(process.cwd(), 'public', 'images', 'apple-logo.png'));
+});
+
+// Serve static from public (for starfield.js and assets) - AFTER specific routes
 const publicPath = path.join(process.cwd(), 'public');
 console.log('🗂️ Serving static files from:', publicPath);
 console.log('🗂️ Current working directory:', process.cwd());
@@ -89,46 +130,6 @@ app.use(express.static(publicPath, {
 const uploadsDir = path.join(process.cwd(), 'uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
 app.use('/uploads', express.static(uploadsDir));
-
-// API routes with rate limiting
-console.log('🔧 Loading API routes...');
-const apiRouter = createRouter();
-console.log('🔧 API router created:', !!apiRouter);
-app.use('/api', apiLimiter, apiRouter);
-
-// Apply stricter rate limiting to payment endpoints
-app.use('/api/payment-intent', paymentLimiter);
-app.use('/api/orders', paymentLimiter);
-
-// Landing page - serve the Sketch My Soulmate design
-app.get('/', (req, res) => {
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  // Disable caching for the root HTML to ensure latest UI ships
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('Surrogate-Control', 'no-store');
-  res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
-});
-
-// Order page - serve the payment page
-app.get('/order.html', (req, res) => {
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('Surrogate-Control', 'no-store');
-  console.log('📄 Serving order.html page');
-  res.sendFile(path.join(process.cwd(), 'public', 'order.html'));
-});
-
-// Apple logo - ensure image is served properly
-app.get('/images/apple-logo.png', (req, res) => {
-  res.setHeader('Content-Type', 'image/png');
-  res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-  console.log('🍎 Serving Apple logo image');
-  res.sendFile(path.join(process.cwd(), 'public', 'images', 'apple-logo.png'));
-});
 
 const port = Number(process.env.PORT || 8080);
 app.listen(port, () => {
