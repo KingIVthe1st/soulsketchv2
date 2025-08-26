@@ -10,16 +10,23 @@ import OpenAI from 'openai';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Startup validation
+// Updated validation for new OpenAI API key formats
+const isValidOpenAIKey = (key) => {
+  if (!key) return false;
+  return key.startsWith('sk-') || key.startsWith('sk-proj-');
+};
+
 console.log('🚀 STARTUP - OpenAI Configuration Check:', {
   apiKeyExists: !!OPENAI_API_KEY,
-  apiKeyValid: OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-'),
+  apiKeyValid: isValidOpenAIKey(OPENAI_API_KEY),
   apiKeyLength: OPENAI_API_KEY ? OPENAI_API_KEY.length : 0,
   apiKeyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 20) + '...' : 'undefined',
+  keyFormat: OPENAI_API_KEY ? (OPENAI_API_KEY.startsWith('sk-proj-') ? 'new-project-key' : 'legacy-key') : 'none',
   nodeEnv: process.env.NODE_ENV,
   timestamp: new Date().toISOString()
 });
 
-const openai = OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-') ? new OpenAI({
+const openai = isValidOpenAIKey(OPENAI_API_KEY) ? new OpenAI({
   apiKey: OPENAI_API_KEY
 }) : null;
 
@@ -494,11 +501,12 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
     // Force OpenAI DALL-E usage - no fallbacks for production
     console.log('🔑 OpenAI API Key Status for Image Generation:', {
       exists: !!OPENAI_API_KEY,
-      isValid: OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-'),
-      keyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 15) + '...' : 'undefined'
+      isValid: isValidOpenAIKey(OPENAI_API_KEY),
+      keyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 20) + '...' : 'undefined',
+      keyFormat: OPENAI_API_KEY ? (OPENAI_API_KEY.startsWith('sk-proj-') ? 'new-project-key' : 'legacy-key') : 'none'
     });
 
-    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !OPENAI_API_KEY.startsWith('sk-') || !openai) {
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !isValidOpenAIKey(OPENAI_API_KEY) || !openai) {
       const errorMessage = 'CRITICAL: OpenAI API key not properly configured for image generation. Cannot generate AI content without valid API key.';
       console.error('❌', errorMessage);
       throw new Error(errorMessage);
@@ -720,11 +728,12 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
     // Force OpenAI GPT usage - no fallbacks for production
     console.log('🔑 OpenAI API Key Status for Text Generation:', {
       exists: !!OPENAI_API_KEY,
-      isValid: OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-'),
-      keyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 15) + '...' : 'undefined'
+      isValid: isValidOpenAIKey(OPENAI_API_KEY),
+      keyPrefix: OPENAI_API_KEY ? OPENAI_API_KEY.substring(0, 20) + '...' : 'undefined',
+      keyFormat: OPENAI_API_KEY ? (OPENAI_API_KEY.startsWith('sk-proj-') ? 'new-project-key' : 'legacy-key') : 'none'
     });
 
-    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !OPENAI_API_KEY.startsWith('sk-') || !openai) {
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === 'your-api-key-here' || !isValidOpenAIKey(OPENAI_API_KEY) || !openai) {
       const errorMessage = 'CRITICAL: OpenAI API key not properly configured for text generation. Cannot generate AI content without valid API key.';
       console.error('❌', errorMessage);
       throw new Error(errorMessage);
