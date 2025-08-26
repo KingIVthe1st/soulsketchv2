@@ -2197,38 +2197,58 @@
         
         // Initialize Stripe when page loads
         window.initializeStripe = async function() {
+          console.log('🔍 [DEBUG] initializeStripe() called');
           try {
+            console.log('🔍 [DEBUG] Fetching Stripe config from /api/stripe-config');
             // Get Stripe publishable key from server
             const configResponse = await fetch('/api/stripe-config');
+            console.log('🔍 [DEBUG] Config response status:', configResponse.status);
+            
             const config = await configResponse.json();
+            console.log('🔍 [DEBUG] Stripe config received:', config);
             
             if (!config.isConfigured) {
-              console.log('Stripe not configured - using fallback payment form');
+              console.log('❌ [DEBUG] Stripe not configured - using fallback payment form');
               document.getElementById('stripe-payment-element').style.display = 'none';
               document.getElementById('fallback-payment-form').style.display = 'block';
               return;
             }
             
+            console.log('🔍 [DEBUG] Creating Stripe instance with key:', config.publishableKey.substring(0, 10) + '...');
             // Initialize Stripe with publishable key
             stripe = Stripe(config.publishableKey);
+            console.log('✅ [DEBUG] Stripe instance created successfully:', !!stripe);
             
             // Show Stripe elements, hide fallback
+            console.log('🔍 [DEBUG] Setting element visibility - Stripe: block, Fallback: none');
             document.getElementById('stripe-payment-element').style.display = 'block';
             document.getElementById('fallback-payment-form').style.display = 'none';
             
             // If we're on the checkout page, automatically setup payment for selected package
-            if (document.querySelector('#stripe-payment-element')) {
+            const stripeElement = document.querySelector('#stripe-payment-element');
+            console.log('🔍 [DEBUG] Stripe element exists:', !!stripeElement);
+            
+            if (stripeElement) {
               const selectedPackage = window.selectedPackage || 'basic';
               const packagePrices = { basic: 1999, plus: 2999, premium: 4999 };
               const amount = packagePrices[selectedPackage];
               
+              console.log('🔍 [DEBUG] Auto-setup payment - Package:', selectedPackage, 'Amount:', amount);
+              
               if (amount) {
-                setupStripePayment(amount, selectedPackage);
+                console.log('🔍 [DEBUG] Calling setupStripePayment...');
+                await window.setupStripePayment(amount, selectedPackage);
+                console.log('✅ [DEBUG] setupStripePayment completed');
+              } else {
+                console.log('❌ [DEBUG] No amount found for package:', selectedPackage);
               }
             }
             
+            console.log('✅ [DEBUG] initializeStripe completed successfully');
+            
           } catch (error) {
-            console.error('Error initializing Stripe:', error);
+            console.error('❌ [DEBUG] Error in initializeStripe:', error);
+            console.error('❌ [DEBUG] Error stack:', error.stack);
             // Fall back to demo form
             document.getElementById('stripe-payment-element').style.display = 'none';
             document.getElementById('fallback-payment-form').style.display = 'block';
@@ -2237,37 +2257,58 @@
         
         // Create payment intent and setup Stripe Elements
         window.setupStripePayment = async function(amount, packageType) {
+          console.log('🔍 [DEBUG] setupStripePayment() called with:', { amount, packageType });
+          
           if (!stripe) {
-            console.log('Stripe not initialized - using demo mode');
+            console.log('❌ [DEBUG] Stripe not initialized - using demo mode');
             return;
           }
+          console.log('✅ [DEBUG] Stripe instance exists:', !!stripe);
           
           // Store current payment details
+          console.log('🔍 [DEBUG] Storing payment details...');
           currentPaymentAmount = amount;
           currentPackageType = packageType;
+          console.log('🔍 [DEBUG] Payment details stored:', { currentPaymentAmount, currentPackageType });
           
           try {
             // Create payment intent
+            console.log('🔍 [DEBUG] Creating payment intent...');
+            const paymentData = {
+              amount: amount,
+              currency: 'usd',
+              metadata: {
+                package: packageType,
+                order_id: window.currentFormData?.id || 'unknown'
+              }
+            };
+            console.log('🔍 [DEBUG] Payment data:', paymentData);
+            
             const response = await fetch('/api/payment-intent', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({
-                amount: amount,
-                currency: 'usd',
-                metadata: {
-                  package: packageType,
-                  order_id: window.currentFormData?.id || 'unknown'
-                }
-              }),
+              body: JSON.stringify(paymentData),
             });
             
-            const { client_secret } = await response.json();
+            console.log('🔍 [DEBUG] Payment intent response status:', response.status);
+            console.log('🔍 [DEBUG] Payment intent response ok:', response.ok);
+            
+            if (!response.ok) {
+              throw new Error(`Payment intent request failed: ${response.status} ${response.statusText}`);
+            }
+            
+            const responseData = await response.json();
+            console.log('🔍 [DEBUG] Payment intent response data:', responseData);
+            
+            const { client_secret } = responseData;
+            console.log('🔍 [DEBUG] Client secret received:', client_secret ? 'YES' : 'NO');
             clientSecret = client_secret;
             
             // Create Elements instance
-            elements = stripe.elements({
+            console.log('🔍 [DEBUG] Creating Stripe Elements instance...');
+            const elementsConfig = {
               clientSecret: client_secret,
               appearance: {
                 theme: 'night',
@@ -2278,28 +2319,62 @@
                   borderRadius: '8px'
                 }
               }
-            });
+            };
+            console.log('🔍 [DEBUG] Elements config:', elementsConfig);
+            
+            elements = stripe.elements(elementsConfig);
+            console.log('✅ [DEBUG] Elements instance created:', !!elements);
             
             // Setup Express Checkout (Apple Pay, Google Pay, etc.)
+            console.log('🔍 [DEBUG] Setting up Express Checkout...');
             await setupExpressCheckout(amount);
+            console.log('✅ [DEBUG] Express Checkout setup complete');
             
             // Create and mount Payment Element
+            console.log('🔍 [DEBUG] Creating payment element...');
             paymentElement = elements.create('payment');
-            paymentElement.mount('#stripe-payment-element');
+            console.log('✅ [DEBUG] Payment element created:', !!paymentElement);
+            
+            console.log('🔍 [DEBUG] Mounting payment element to #stripe-payment-element');
+            const paymentContainer = document.getElementById('stripe-payment-element');
+            console.log('🔍 [DEBUG] Payment container found:', !!paymentContainer);
+            
+            if (paymentContainer) {
+              paymentElement.mount('#stripe-payment-element');
+              console.log('✅ [DEBUG] Payment element mounted successfully');
+            } else {
+              throw new Error('Payment container #stripe-payment-element not found');
+            }
+            
+            console.log('✅ [DEBUG] setupStripePayment completed successfully');
             
           } catch (error) {
-            console.error('Error setting up Stripe payment:', error);
+            console.error('❌ [DEBUG] Error in setupStripePayment:', error);
+            console.error('❌ [DEBUG] Error stack:', error.stack);
+            console.log('🔍 [DEBUG] Falling back to demo form...');
+            
             // Fall back to demo form
-            document.getElementById('stripe-payment-element').style.display = 'none';
-            document.getElementById('fallback-payment-form').style.display = 'block';
+            const stripeElement = document.getElementById('stripe-payment-element');
+            const fallbackElement = document.getElementById('fallback-payment-form');
+            
+            if (stripeElement) {
+              stripeElement.style.display = 'none';
+              console.log('🔍 [DEBUG] Stripe element hidden');
+            }
+            if (fallbackElement) {
+              fallbackElement.style.display = 'block';
+              console.log('🔍 [DEBUG] Fallback form shown');
+            }
           }
         }
         
         // Setup Apple Pay and other express checkout methods
         async function setupExpressCheckout(amount) {
+          console.log('🔍 [DEBUG] setupExpressCheckout() called with amount:', amount);
+          
           try {
-            // Create Express Checkout Element (includes Apple Pay, Google Pay, etc.)
-            expressCheckoutElement = elements.create('expressCheckout', {
+            console.log('🔍 [DEBUG] Creating Express Checkout Element...');
+            const expressConfig = {
               buttonType: {
                 applePay: 'buy',
                 googlePay: 'buy',
@@ -2314,28 +2389,46 @@
                 googlePay: 'always',
                 link: 'always',
               }
-            });
+            };
+            console.log('🔍 [DEBUG] Express config:', expressConfig);
+            
+            expressCheckoutElement = elements.create('expressCheckout', expressConfig);
+            console.log('✅ [DEBUG] Express checkout element created:', !!expressCheckoutElement);
             
             // Check if express checkout methods are available
+            console.log('🔍 [DEBUG] Checking if express checkout methods are available...');
             const canMakePayment = await expressCheckoutElement.canMakePayment();
+            console.log('🔍 [DEBUG] Express checkout availability:', canMakePayment);
             
             if (canMakePayment) {
+              console.log('🔍 [DEBUG] Mounting express checkout element to #express-checkout-element');
+              const expressContainer = document.getElementById('express-checkout-element');
+              console.log('🔍 [DEBUG] Express container found:', !!expressContainer);
+              
               // Mount express checkout element
               expressCheckoutElement.mount('#express-checkout-element');
+              console.log('✅ [DEBUG] Express checkout element mounted');
               
               // Show separator between express checkout and card form
-              document.getElementById('payment-separator').style.display = 'block';
+              const separator = document.getElementById('payment-separator');
+              if (separator) {
+                separator.style.display = 'block';
+                console.log('✅ [DEBUG] Payment separator shown');
+              } else {
+                console.log('⚠️ [DEBUG] Payment separator element not found');
+              }
               
               // Handle express checkout events
               expressCheckoutElement.on('click', (event) => {
-                console.log('Express checkout clicked:', event.expressPaymentType);
+                console.log('🔍 [DEBUG] Express checkout clicked:', event.expressPaymentType);
               });
               
               // Handle successful express checkout
               expressCheckoutElement.on('confirm', async (event) => {
-                console.log('Express checkout confirm:', event.expressPaymentType);
+                console.log('🔍 [DEBUG] Express checkout confirm:', event.expressPaymentType);
                 
                 try {
+                  console.log('🔍 [DEBUG] Confirming payment via Stripe...');
                   // Confirm payment with shipping/billing info if needed
                   const {error, paymentIntent} = await stripe.confirmPayment({
                     elements,
@@ -2345,36 +2438,72 @@
                     redirect: 'if_required'
                   });
                   
+                  console.log('🔍 [DEBUG] Payment confirmation result:', { error, paymentIntentStatus: paymentIntent?.status });
+                  
                   if (error) {
-                    console.error('Express checkout payment failed:', error);
+                    console.error('❌ [DEBUG] Express checkout payment failed:', error);
                     event.complete('fail');
                   } else if (paymentIntent.status === 'succeeded') {
-                    console.log('Express checkout payment succeeded:', paymentIntent.id);
+                    console.log('✅ [DEBUG] Express checkout payment succeeded:', paymentIntent.id);
                     event.complete('success');
                     
                     // Hide checkout and show completion
-                    document.getElementById('checkoutSection').style.display = 'none';
-                    showComplete();
+                    const checkoutSection = document.getElementById('checkoutSection');
+                    if (checkoutSection) {
+                      checkoutSection.style.display = 'none';
+                      console.log('🔍 [DEBUG] Checkout section hidden');
+                    }
+                    
+                    if (typeof showComplete === 'function') {
+                      showComplete();
+                      console.log('✅ [DEBUG] showComplete() called');
+                    } else {
+                      console.log('⚠️ [DEBUG] showComplete function not found');
+                    }
                   }
                 } catch (error) {
-                  console.error('Express checkout error:', error);
+                  console.error('❌ [DEBUG] Express checkout error:', error);
                   event.complete('fail');
                 }
               });
               
-              console.log('✅ Express checkout (Apple Pay/Google Pay) enabled');
+              console.log('✅ [DEBUG] Express checkout (Apple Pay/Google Pay) enabled and event handlers attached');
             } else {
+              console.log('🔍 [DEBUG] Express checkout not available - hiding elements');
               // Hide express checkout container if no methods available
-              document.getElementById('express-checkout-element').style.display = 'none';
-              document.getElementById('payment-separator').style.display = 'none';
-              console.log('ℹ️ Express checkout not available on this device/browser');
+              const expressElement = document.getElementById('express-checkout-element');
+              const separatorElement = document.getElementById('payment-separator');
+              
+              if (expressElement) {
+                expressElement.style.display = 'none';
+                console.log('🔍 [DEBUG] Express checkout element hidden');
+              }
+              if (separatorElement) {
+                separatorElement.style.display = 'none';
+                console.log('🔍 [DEBUG] Payment separator hidden');
+              }
+              
+              console.log('ℹ️ [DEBUG] Express checkout not available on this device/browser');
             }
             
+            console.log('✅ [DEBUG] setupExpressCheckout completed');
+            
           } catch (error) {
-            console.error('Error setting up express checkout:', error);
+            console.error('❌ [DEBUG] Error setting up express checkout:', error);
+            console.error('❌ [DEBUG] Express checkout error stack:', error.stack);
+            
             // Hide express checkout elements on error
-            document.getElementById('express-checkout-element').style.display = 'none';
-            document.getElementById('payment-separator').style.display = 'none';
+            const expressElement = document.getElementById('express-checkout-element');
+            const separatorElement = document.getElementById('payment-separator');
+            
+            if (expressElement) {
+              expressElement.style.display = 'none';
+              console.log('🔍 [DEBUG] Express checkout element hidden due to error');
+            }
+            if (separatorElement) {
+              separatorElement.style.display = 'none';
+              console.log('🔍 [DEBUG] Payment separator hidden due to error');
+            }
           }
         }
         
