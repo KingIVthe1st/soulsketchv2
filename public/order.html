@@ -43,6 +43,57 @@
     <link href="css/custom.css" rel="stylesheet" media="screen" />
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- Custom Apple Pay Button Styles -->
+    <style>
+      .apple-pay-button {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .apple-pay-button:active {
+        transform: translateY(1px);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+      
+      .apple-pay-button:hover {
+        background-color: #333 !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+      
+      .apple-pay-button img {
+        transition: transform 0.2s ease;
+      }
+      
+      .apple-pay-button:hover img {
+        transform: scale(1.05);
+      }
+      
+      /* Ripple effect for Apple Pay button */
+      .apple-pay-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+      }
+      
+      .apple-pay-button:active::before {
+        width: 300px;
+        height: 300px;
+      }
+      
+      .apple-pay-button * {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
   </head>
   <body>
     <!-- Preloader Start -->
@@ -867,24 +918,29 @@
                       <div id="applePayContainer" style="margin: 20px 0;">
                         <button id="applePayButton" class="apple-pay-button" style="
                           width: 100%;
-                          height: 44px;
-                          background: linear-gradient(135deg, #000 0%, #333 100%);
-                          border: 1px solid #333;
-                          border-radius: 8px;
+                          height: 48px;
+                          background: #000;
+                          border: none;
+                          border-radius: 6px;
                           color: white;
                           font-size: 16px;
                           font-weight: 500;
+                          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                           cursor: pointer;
                           display: none;
                           align-items: center;
                           justify-content: center;
                           gap: 8px;
-                          transition: all 0.3s ease;
-                        ">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12.12 2c1.01 0 1.85.84 1.85 1.85v.43c0 .86-.54 1.6-1.29 1.89-.75.29-1.56-.14-1.56-.98v-.43c0-.36.29-.65.65-.65s.65.29.65.65v.43c0 .36.29.65.65.65s.65-.29.65-.65v-.43c0-1.01-.84-1.85-1.85-1.85s-1.85.84-1.85 1.85v.43c0 .86.54 1.6 1.29 1.89.75.29 1.56-.14 1.56-.98v-.43c0-.36-.29-.65-.65-.65s-.65.29-.65.65v.43c0 .36-.29.65-.65.65s-.65-.29-.65-.65v-.43C10.27 2.84 11.11 2 12.12 2z"/>
-                          </svg>
-                          Pay with Apple Pay
+                          transition: all 0.2s ease;
+                          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        " onmouseover="this.style.backgroundColor='#333'" onmouseout="this.style.backgroundColor='#000'">
+                          <img src="/images/apple-logo.png" alt="Apple" style="
+                            width: 20px;
+                            height: 20px;
+                            filter: invert(1);
+                            margin-right: 4px;
+                          ">
+                          Pay
                         </button>
                       </div>
 
