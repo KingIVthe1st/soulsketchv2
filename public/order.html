@@ -2199,7 +2199,7 @@
         async function initializeStripe() {
           try {
             // Get Stripe publishable key from server
-            const configResponse = await fetch('/stripe-config');
+            const configResponse = await fetch('/api/stripe-config');
             const config = await configResponse.json();
             
             if (!config.isConfigured) {
