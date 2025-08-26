@@ -85,7 +85,10 @@ fs.mkdirSync(uploadsDir, { recursive: true });
 app.use('/uploads', express.static(uploadsDir));
 
 // API routes with rate limiting
-app.use('/api', apiLimiter, createRouter());
+console.log('🔧 Loading API routes...');
+const apiRouter = createRouter();
+console.log('🔧 API router created:', !!apiRouter);
+app.use('/api', apiLimiter, apiRouter);
 
 // Apply stricter rate limiting to payment endpoints
 app.use('/api/payment-intent', paymentLimiter);
