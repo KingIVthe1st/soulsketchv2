@@ -2280,7 +2280,9 @@
               currency: 'usd',
               metadata: {
                 package: packageType,
-                order_id: window.currentFormData?.id || 'unknown'
+                order_id: window.currentFormData?.id || 'unknown',
+                email: state.user?.email || null,
+                name: state.user?.name || 'Customer'
               }
             };
             console.log('🔍 [DEBUG] Payment data:', paymentData);
