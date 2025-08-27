@@ -4,13 +4,25 @@ import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import sharp from 'sharp';
 
+// Check if demo mode is enabled
+const isDemoMode = process.env.DEMO_MODE === 'true';
+
 const hasOpenAIKey = Boolean(
   process.env.OPENAI_API_KEY && 
   process.env.OPENAI_API_KEY !== 'sk-replace-me' && 
   process.env.OPENAI_API_KEY !== 'sk-your-openai-api-key-here' &&
   process.env.OPENAI_API_KEY.startsWith('sk-')
 );
-const openai = hasOpenAIKey ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+
+// Only initialize OpenAI if not in demo mode and has valid key
+const openai = (!isDemoMode && hasOpenAIKey) ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+
+// Log demo mode status
+if (isDemoMode) {
+  console.log('🎭 DEMO MODE ENABLED - Using mock data instead of OpenAI API');
+} else if (!hasOpenAIKey) {
+  console.log('⚠️ No valid OpenAI API key found - Using fallback demo content');
+}
 
 // Helper function to calculate numerology from birth date
 function calculateNumerology(birthDate) {
@@ -481,6 +493,21 @@ export async function generateProfileText({ quiz, tier, addons }) {
   
   // Love language priorities
   const loveLangPriorities = analyzeLoveLanguages(personality.loveLanguages || {});
+  
+  // Check if demo mode is enabled
+  if (isDemoMode) {
+    console.log('🎭 Demo Mode: Returning mock soulmate reading');
+    return getMockSoulmateReading({ 
+      numerologyInfo, 
+      astroInsights, 
+      personalityProfile, 
+      loveLangPriorities,
+      personality,
+      relationship,
+      birth,
+      tier 
+    });
+  }
 
 	const prompt = `You are an advanced AI combining the wisdom of master astrologers, numerologists, and relationship experts. Create a deeply personalized soulmate profile that feels like divine guidance tailored specifically for this person.
 
@@ -684,8 +711,15 @@ export async function generateImage({ style, quiz, addons = [] }) {
     fs.mkdirSync(outDir, { recursive: true });
     const filePath = path.join(outDir, `result_${Date.now()}.png`);
     
+    // Check if demo mode is enabled
+    if (isDemoMode) {
+      console.log('🎭 Demo Mode: Using mock soulmate image');
+      return getMockSoulmateImage(filePath, attractedTo);
+    }
+    
     // Debug OpenAI availability
     console.log('🔍 OpenAI Debug Info:');
+    console.log(`  - Demo Mode: ${isDemoMode}`);
     console.log(`  - hasOpenAIKey: ${hasOpenAIKey}`);
     console.log(`  - openai instance: ${openai ? 'initialized' : 'null'}`);
     console.log(`  - API Key prefix: ${process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'not set'}`);
@@ -1322,4 +1356,77 @@ export async function generatePdf({ text, imagePath, outPath, addons = [], quiz 
 
   doc.end();
   await new Promise((resolve) => stream.on('finish', resolve));
+}
+
+// Demo mode mock functions
+function getMockSoulmateReading({ numerologyInfo, astroInsights, personalityProfile, loveLangPriorities, personality, relationship, birth, tier }) {
+  const baseReading = `**🎭 DEMO MODE - Mock Soulmate Reading**
+
+**Overview**
+Your soulmate carries an energy that perfectly complements your unique personality profile. Based on your responses, they embody the balance between ${personality.introvertExtrovert < 50 ? 'quiet depth and social warmth' : 'vibrant energy and thoughtful moments'}.
+
+**Personality & Vibe**  
+They naturally ${personality.groundedAdventurous < 50 ? 'bring stability and security while encouraging your adventurous spirit' : 'match your love for exploration while providing a grounding presence'}. Their ${personality.analyticalCreative < 50 ? 'creative soul will inspire your artistic side' : 'logical mind will appreciate your analytical nature'}, creating perfect intellectual harmony.
+
+**Attachment Style & Love Languages**
+Primary love languages: ${loveLangPriorities}. They express love through consistent actions and ${personality.introvertExtrovert < 50 ? 'intimate conversations that make you feel truly understood' : 'enthusiastic support for your goals and dreams'}.
+
+**First Meeting Scenario**
+You'll likely meet in ${personality.introvertExtrovert < 50 ? 'an intimate setting - perhaps a quiet bookstore, cozy cafe, or through mutual friends at a small gathering' : 'a social environment where your energies naturally align - maybe at a community event, networking function, or group activity'}. The connection will feel immediate and comfortable.
+
+**What They're Looking For Now**
+Currently seeking: ${relationship.lookingFor || 'a deep, meaningful connection'}. They value ${(personality.values || ['authenticity', 'growth', 'connection']).slice(0, 2).join(' and ')}, making them perfectly aligned with your relationship vision.
+
+${numerologyInfo ? `
+**Numerology Insights**
+Life Path ${numerologyInfo.lifePath}: ${numerologyInfo.compatibility}
+Soul Urge ${numerologyInfo.soulUrge}: Deep inner motivations align perfectly
+Expression ${numerologyInfo.expression}: Natural communication harmony` : ''}
+
+${astroInsights ? `
+**Astrological Compatibility**
+${birth.zodiac} Energy: ${astroInsights}` : ''}
+
+${tier === 'premium' ? `
+**Premium Spiritual Assessment**
+Your soul connection operates at the highest vibrational frequency. Past life indicators suggest you've been together before. Trust the déjà vu moments.` : ''}
+
+---
+*Note: This is a demo mode reading for testing purposes. Set DEMO_MODE=false in .env for production AI-generated content.*`;
+
+  return baseReading;
+}
+
+async function getMockSoulmateImage(filePath, attractedTo) {
+  console.log('🎭 Creating mock soulmate image for demo mode');
+  
+  // Create a simple gradient image as placeholder
+  const width = 1024;
+  const height = 1024;
+  
+  // Create gradient buffer based on gender preference
+  const color1 = attractedTo === 'men' ? { r: 70, g: 130, b: 180 } : { r: 255, g: 182, b: 193 };
+  const color2 = attractedTo === 'men' ? { r: 30, g: 60, b: 100 } : { r: 255, g: 105, b: 180 };
+  
+  // Create a gradient image using sharp
+  const svgGradient = `
+    <svg width="${width}" height="${height}">
+      <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:rgb(${color1.r},${color1.g},${color1.b});stop-opacity:1" />
+          <stop offset="100%" style="stop-color:rgb(${color2.r},${color2.g},${color2.b});stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="${width}" height="${height}" fill="url(#gradient)" />
+      <text x="50%" y="50%" font-family="Arial" font-size="48" fill="white" text-anchor="middle" opacity="0.3">DEMO MODE</text>
+      <text x="50%" y="60%" font-family="Arial" font-size="24" fill="white" text-anchor="middle" opacity="0.3">Mock Soulmate Portrait</text>
+    </svg>
+  `;
+  
+  await sharp(Buffer.from(svgGradient))
+    .png()
+    .toFile(filePath);
+  
+  console.log('✅ Mock image created at:', filePath);
+  return filePath;
 }
