@@ -2453,70 +2453,15 @@
               
               // Handle express checkout events with more detailed logging
               expressCheckoutElement.on('click', (event) => {
-                console.log('🍎 [CLICK] Apple Pay button clicked!', event.expressPaymentType);
-                console.log('🔍 [DEBUG] Click event details:', event);
+                console.log('🍎 [CLICK] Express checkout button clicked!', event.expressPaymentType);
                 console.log('🔍 [DEBUG] Current client secret:', clientSecret);
                 console.log('🔍 [DEBUG] Payment amount:', currentPaymentAmount);
-                console.log('🔍 [DEBUG] Event resolve function:', typeof event.resolve);
                 
-                // Validate Apple Pay capabilities before proceeding
-                if (event.expressPaymentType === 'apple_pay') {
-                  const canMakePayments = window.ApplePaySession && ApplePaySession.canMakePayments();
-                  console.log('🔍 [DEBUG] Apple Pay canMakePayments:', canMakePayments);
-                  
-                  if (!canMakePayments) {
-                    console.error('❌ [DEBUG] Apple Pay not available on this device');
-                    if (event.resolve) event.resolve({ status: 'fail' });
-                    return;
-                  }
-                  
-                  // Check if user has cards set up - try multiple merchant ID formats
-                  if (ApplePaySession.canMakePaymentsWithActiveCard) {
-                    const merchantIds = [
-                      'merchant.soulmatesketch.com',
-                      'merchant.com.soulmatesketch', 
-                      'merchant.sketchmysoulmate.ai',
-                      'merchant.com.sketchmysoulmate'
-                    ];
-                    
-                    // Try to check with the first merchant ID
-                    console.log('🔍 [DEBUG] Trying merchant ID:', merchantIds[0]);
-                    ApplePaySession.canMakePaymentsWithActiveCard(merchantIds[0])
-                      .then((canMakePaymentsWithActiveCard) => {
-                        console.log('🔍 [DEBUG] Apple Pay canMakePaymentsWithActiveCard (', merchantIds[0], '):', canMakePaymentsWithActiveCard);
-                        
-                        if (!canMakePaymentsWithActiveCard) {
-                          console.warn('⚠️ [DEBUG] Merchant ID may be incorrect. Since you have cards set up, proceeding anyway...');
-                          console.log('🔍 [DEBUG] Expected merchant IDs to check in Stripe dashboard:', merchantIds);
-                        }
-                        
-                        // Proceed regardless since user confirmed they have cards set up
-                        console.log('🔍 [DEBUG] Proceeding with Apple Pay click resolution...');
-                        if (event.resolve) {
-                          event.resolve({ status: 'success' });
-                        }
-                      })
-                      .catch((error) => {
-                        console.error('❌ [DEBUG] Error checking Apple Pay cards with merchant ID:', merchantIds[0], error);
-                        console.log('🔍 [DEBUG] Proceeding anyway since user has cards...');
-                        
-                        // Proceed anyway
-                        if (event.resolve) {
-                          event.resolve({ status: 'success' });
-                        }
-                      });
-                  } else {
-                    // If we can't check for active cards, proceed
-                    console.log('🔍 [DEBUG] Cannot check for active cards - proceeding...');
-                    if (event.resolve) {
-                      event.resolve({ status: 'success' });
-                    }
-                  }
-                } else {
-                  // For non-Apple Pay methods, just resolve
-                  if (event.resolve) {
-                    event.resolve({ status: 'success' });
-                  }
+                // Simply resolve the click event to proceed with payment
+                // Stripe will handle the actual Apple Pay authentication
+                if (event.resolve) {
+                  console.log('✅ [DEBUG] Resolving click event for:', event.expressPaymentType);
+                  event.resolve({ status: 'success' });
                 }
               });
               

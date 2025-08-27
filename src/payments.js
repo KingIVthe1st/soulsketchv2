@@ -40,11 +40,9 @@ export async function createPaymentIntent({ amount, currency = 'usd', metadata }
   return stripe.paymentIntents.create({
     amount,
     currency,
-    // Explicitly specify payment methods to exclude Link completely
-    payment_method_types: ['card'],
-    // Disable automatic payment methods to prevent Link from appearing
+    // Enable automatic payment methods to allow Apple Pay
     automatic_payment_methods: {
-      enabled: false
+      enabled: true
     },
     metadata,
     // Configuration for Apple Pay and other express checkout methods
