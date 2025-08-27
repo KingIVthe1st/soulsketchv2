@@ -2330,7 +2330,9 @@
                   colorText: '#ffffff',
                   borderRadius: '8px'
                 }
-              }
+              },
+              // Force disable Link at Elements level
+              paymentMethodCreation: 'manual'
             };
             console.log('🔍 [DEBUG] Elements config:', elementsConfig);
             
@@ -2347,7 +2349,11 @@
             paymentElement = elements.create('payment', {
               fields: {
                 billingDetails: 'auto'
-              }
+              },
+              // Explicitly disable Link in payment element
+              paymentMethodTypes: ['card'],
+              // Hide Link specifically
+              hideIcon: ['link']
             });
             console.log('✅ [DEBUG] Payment element created with Apple Pay config:', !!paymentElement);
             
@@ -2400,13 +2406,17 @@
                 googlePay: 'black',
               },
               buttonHeight: 48,
+              // Use layout to force only Apple Pay
+              layout: {
+                overflow: 'never',
+                maxRows: 1
+              },
               // Explicitly control which payment methods appear
               wallets: {
                 applePay: 'always',
                 googlePay: 'auto',
                 link: 'never'
               },
-              // Remove conflicting paymentMethods configuration
             };
             console.log('🔍 [DEBUG] Express config:', expressConfig);
             
