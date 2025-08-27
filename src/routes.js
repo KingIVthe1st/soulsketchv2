@@ -2073,15 +2073,30 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
     try {
       const { amount, currency = 'usd', metadata } = req.body;
       
+      console.log('🔍 [SERVER DEBUG] Payment intent request received:', {
+        amount,
+        currency,
+        metadata: {
+          package: metadata?.package,
+          order_id: metadata?.order_id,
+          email: metadata?.email,
+          name: metadata?.name,
+          emailType: typeof metadata?.email,
+          emailValue: JSON.stringify(metadata?.email)
+        }
+      });
+      
       const paymentIntent = await createPaymentIntent({
         amount,
         currency,
         metadata
       });
       
+      console.log('✅ [SERVER DEBUG] Payment intent created successfully');
       res.json(paymentIntent);
     } catch (error) {
-      console.error('Error creating payment intent:', error);
+      console.error('❌ [SERVER DEBUG] Error creating payment intent:', error);
+      console.error('❌ [SERVER DEBUG] Request data was:', { amount, currency, metadata });
       res.status(500).json({ error: 'Failed to create payment intent' });
     }
   });
