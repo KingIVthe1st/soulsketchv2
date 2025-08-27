@@ -2402,6 +2402,11 @@
                 link: 'never',
                 amazonPay: 'never',
                 klarna: 'never',
+              },
+              // Ensure proper wallet configuration
+              wallets: {
+                applePay: 'always',
+                googlePay: 'always'
               }
             };
             console.log('🔍 [DEBUG] Express config:', expressConfig);
@@ -2409,19 +2414,23 @@
             expressCheckoutElement = elements.create('expressCheckout', expressConfig);
             console.log('✅ [DEBUG] Express checkout element created:', !!expressCheckoutElement);
             
-            // Mount express checkout element - Stripe will handle availability detection
-            console.log('🔍 [DEBUG] Mounting express checkout element...');
-            let canMakePayment = true; // Assume available and let Stripe handle it
-            console.log('🔍 [DEBUG] Express checkout availability:', canMakePayment);
+            // Check device capabilities for better debugging
+            const applePayAvailable = window.ApplePaySession && ApplePaySession.canMakePayments();
+            const userAgent = navigator.userAgent;
+            console.log('🔍 [DEBUG] Device info:', { applePayAvailable, userAgent, isSafari: /Safari/.test(userAgent) });
             
-            if (canMakePayment) {
-              console.log('🔍 [DEBUG] Mounting express checkout element to #express-checkout-element');
-              const expressContainer = document.getElementById('express-checkout-element');
-              console.log('🔍 [DEBUG] Express container found:', !!expressContainer);
-              
-              // Mount express checkout element
-              expressCheckoutElement.mount('#express-checkout-element');
-              console.log('✅ [DEBUG] Express checkout element mounted');
+            console.log('🔍 [DEBUG] Mounting express checkout element to #express-checkout-element');
+            const expressContainer = document.getElementById('express-checkout-element');
+            console.log('🔍 [DEBUG] Express container found:', !!expressContainer);
+            
+            if (expressContainer) {
+              // Mount express checkout element - Stripe will show available methods
+              try {
+                expressCheckoutElement.mount('#express-checkout-element');
+                console.log('✅ [DEBUG] Express checkout element mounted successfully');
+              } catch (mountError) {
+                console.error('❌ [DEBUG] Error mounting express checkout:', mountError);
+              }
               
               // Show separator between express checkout and card form
               const separator = document.getElementById('payment-separator');
@@ -2432,9 +2441,19 @@
                 console.log('⚠️ [DEBUG] Payment separator element not found');
               }
               
-              // Handle express checkout events
+              // Handle express checkout events with more detailed logging
               expressCheckoutElement.on('click', (event) => {
                 console.log('🔍 [DEBUG] Express checkout clicked:', event.expressPaymentType);
+              });
+              
+              // Listen for when express checkout buttons are ready
+              expressCheckoutElement.on('ready', (event) => {
+                console.log('✅ [DEBUG] Express checkout ready - available methods:', event.availablePaymentMethods);
+              });
+              
+              // Listen for any errors
+              expressCheckoutElement.on('loaderror', (event) => {
+                console.error('❌ [DEBUG] Express checkout load error:', event.error);
               });
               
               // Handle successful express checkout
