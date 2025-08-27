@@ -2406,9 +2406,9 @@
             expressCheckoutElement = elements.create('expressCheckout', expressConfig);
             console.log('✅ [DEBUG] Express checkout element created:', !!expressCheckoutElement);
             
-            // Check if express checkout methods are available
-            console.log('🔍 [DEBUG] Checking if express checkout methods are available...');
-            const canMakePayment = await expressCheckoutElement.canMakePayment();
+            // Mount express checkout element - Stripe will handle availability detection
+            console.log('🔍 [DEBUG] Mounting express checkout element...');
+            let canMakePayment = true; // Assume available and let Stripe handle it
             console.log('🔍 [DEBUG] Express checkout availability:', canMakePayment);
             
             if (canMakePayment) {
