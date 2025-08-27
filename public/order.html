@@ -2281,8 +2281,8 @@
               metadata: {
                 package: packageType,
                 order_id: window.currentFormData?.id || 'unknown',
-                email: state.user?.email || null,
-                name: state.user?.name || 'Customer'
+                email: (state.user?.email && state.user.email.trim() !== '') ? state.user.email.trim() : null,
+                name: (state.user?.firstName && state.user.firstName.trim() !== '') ? state.user.firstName.trim() : 'Customer'
               }
             };
             console.log('🔍 [DEBUG] Payment data:', paymentData);

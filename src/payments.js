@@ -58,7 +58,7 @@ export async function createPaymentIntent({ amount, currency = 'usd', metadata }
       },
     },
     // Enable for digital goods (no physical shipping required) 
-    receipt_email: (metadata?.email && metadata.email.trim()) ? metadata.email.trim() : null,
+    receipt_email: (metadata?.email && typeof metadata.email === 'string' && metadata.email.trim() !== '') ? metadata.email.trim() : null,
     description: `Soulmate Sketch ${metadata?.package || 'Package'} - AI-generated portrait and personalized reading`,
   });
 }
