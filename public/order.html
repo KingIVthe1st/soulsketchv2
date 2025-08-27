@@ -2437,7 +2437,10 @@
               
               // Handle express checkout events with more detailed logging
               expressCheckoutElement.on('click', (event) => {
-                console.log('🔍 [DEBUG] Express checkout clicked:', event.expressPaymentType);
+                console.log('🍎 [CLICK] Apple Pay button clicked!', event.expressPaymentType);
+                console.log('🔍 [DEBUG] Click event details:', event);
+                console.log('🔍 [DEBUG] Current client secret:', clientSecret);
+                console.log('🔍 [DEBUG] Payment amount:', currentPaymentAmount);
               });
               
               // Listen for when express checkout buttons are ready
@@ -2456,12 +2459,29 @@
                 console.error('❌ [DEBUG] Express checkout load error:', event.error);
               });
               
+              // Listen for cancel events (when user cancels Apple Pay)
+              expressCheckoutElement.on('cancel', (event) => {
+                console.log('❌ [CANCEL] Apple Pay cancelled by user');
+              });
+              
+              // Listen for any other errors during payment flow
+              expressCheckoutElement.on('error', (event) => {
+                console.error('❌ [ERROR] Express checkout error:', event.error);
+              });
+              
               // Handle successful express checkout
               expressCheckoutElement.on('confirm', async (event) => {
-                console.log('🔍 [DEBUG] Express checkout confirm:', event.expressPaymentType);
+                console.log('🍎 [CONFIRM] Apple Pay confirm event triggered!', event.expressPaymentType);
+                console.log('🔍 [DEBUG] Confirm event details:', event);
                 
                 try {
-                  console.log('🔍 [DEBUG] Confirming payment via Stripe...');
+                  console.log('🔍 [DEBUG] Starting payment confirmation via Stripe...');
+                  console.log('🔍 [DEBUG] Elements object:', elements);
+                  console.log('🔍 [DEBUG] Return URL will be:', window.location.origin + window.location.pathname);
+                  
+                  // First complete the Apple Pay sheet
+                  event.complete('success');
+                  
                   // Confirm payment with shipping/billing info if needed
                   const {error, paymentIntent} = await stripe.confirmPayment({
                     elements,
