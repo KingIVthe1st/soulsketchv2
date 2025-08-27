@@ -787,14 +787,15 @@ Please provide ONLY the Life Path Number as a single number (like 33 or 7), no e
     
     // MAXIMUM PHOTOREALISM REQUIREMENTS - REAL PERSON ONLY
     prompt += 'PHOTOREALISTIC PROFESSIONAL PORTRAIT, actual real human person, NOT anime, NOT cartoon, NOT illustration, NOT digital art, NOT painting, NOT CG, NOT 3D render, ';
-    prompt += 'shot with high-end DSLR camera, 85mm portrait lens, professional studio lighting with soft key light and fill light, ';
-    prompt += 'visible skin texture and pores, natural skin imperfections, individual eyelashes, realistic hair texture with individual strands, ';
-    prompt += 'authentic human facial structure, natural bone structure, realistic muscle definition, genuine human proportions, ';
-    prompt += 'warm natural skin tones with subtle color variation, authentic human eye reflections, natural lip texture, ';
-    prompt += 'soft professional makeup (if applicable), natural lighting with gentle shadows, shallow depth of field, ';
-    prompt += 'genuine warm smile reaching the eyes, direct confident eye contact with camera, relaxed natural pose, ';
-    prompt += 'photographed like a professional headshot for Vogue, Vanity Fair, or National Geographic portrait, ';
-    prompt += 'hyperrealistic detail level, looks indistinguishable from real photograph of actual person, award-winning portrait photography';
+    prompt += 'shot with high-end DSLR camera, Canon EOS R5 or Sony A7R IV, 85mm portrait lens f/1.4, professional studio lighting with soft key light and fill light, ';
+    prompt += 'visible skin texture with natural pores, subtle skin imperfections like freckles or light blemishes, individual eyelashes, micro-expressions in facial muscles, ';
+    prompt += 'realistic hair texture with individual strands and natural movement, authentic human facial structure, natural bone structure, realistic muscle definition, ';
+    prompt += 'genuine human proportions, warm natural skin tones with subtle color variation, authentic human eye reflections with natural catchlight, natural lip texture, ';
+    prompt += 'soft professional makeup (if applicable), natural lighting with gentle shadows, shallow depth of field with beautiful bokeh, ';
+    prompt += 'genuine warm smile reaching the eyes, direct confident eye contact with camera, relaxed natural pose, natural breathing expression, ';
+    prompt += 'photographed like a professional headshot for Vogue, Vanity Fair, or National Geographic portrait, editorial quality lighting setup, ';
+    prompt += 'hyperrealistic detail level, looks completely indistinguishable from real photograph of actual living person, photojournalistic authenticity, ';
+    prompt += 'natural human presence, could be mistaken for actual human photography, award-winning portrait photography with life-like quality';
     
     return prompt;
   }

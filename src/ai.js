@@ -510,7 +510,7 @@ ${personalityProfile}
 
 🎯 PERSONAL PREFERENCES:
 • Age Range: ${user.ageRange || 'Open'}
-• Location: ${user.country || 'Global'} ${user.timezone ? `(Birth Place: ${user.timezone})` : ''}
+• Location: ${user.country || 'Global'} ${user.timezone ? `(Current Location: ${user.timezone})` : ''}
 • Cultural Resonance: ${appearance.culturalResonance || 'Universal connection'}
 • Attracted To: ${user.attractedTo || 'Deep souls'}
 
