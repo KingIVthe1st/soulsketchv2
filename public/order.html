@@ -2342,10 +2342,20 @@
             await setupExpressCheckout(amount);
             console.log('✅ [DEBUG] Express Checkout setup complete');
             
-            // Create and mount Payment Element
-            console.log('🔍 [DEBUG] Creating payment element...');
-            paymentElement = elements.create('payment');
-            console.log('✅ [DEBUG] Payment element created:', !!paymentElement);
+            // Create and mount Payment Element with Apple Pay merchant config
+            console.log('🔍 [DEBUG] Creating payment element with Apple Pay merchant config...');
+            paymentElement = elements.create('payment', {
+              applePay: {
+                buttonStyle: 'black',
+                merchantName: 'Sketch My Soulmate',
+                country: 'US',
+                merchantIdentifier: 'merchant.soulmatesketch.com'
+              },
+              fields: {
+                billingDetails: 'auto'
+              }
+            });
+            console.log('✅ [DEBUG] Payment element created with Apple Pay config:', !!paymentElement);
             
             console.log('🔍 [DEBUG] Mounting payment element to #stripe-payment-element');
             const paymentContainer = document.getElementById('stripe-payment-element');
@@ -2400,6 +2410,18 @@
                 applePay: 'always',
                 googlePay: 'always',
                 link: 'never'
+              },
+              // Add Apple Pay specific merchant information
+              wallets: {
+                applePay: 'always',
+                googlePay: 'always'
+              },
+              // Apple Pay specific configuration
+              applePay: {
+                merchantName: 'Sketch My Soulmate',
+                merchantIdentifier: 'merchant.soulmatesketch.com',
+                countryCode: 'US',
+                currencyCode: 'USD'
               }
             };
             console.log('🔍 [DEBUG] Express config:', expressConfig);
@@ -2441,6 +2463,54 @@
                 console.log('🔍 [DEBUG] Click event details:', event);
                 console.log('🔍 [DEBUG] Current client secret:', clientSecret);
                 console.log('🔍 [DEBUG] Payment amount:', currentPaymentAmount);
+                console.log('🔍 [DEBUG] Event resolve function:', typeof event.resolve);
+                
+                // Validate Apple Pay capabilities before proceeding
+                if (event.expressPaymentType === 'apple_pay') {
+                  const canMakePayments = window.ApplePaySession && ApplePaySession.canMakePayments();
+                  console.log('🔍 [DEBUG] Apple Pay canMakePayments:', canMakePayments);
+                  
+                  if (!canMakePayments) {
+                    console.error('❌ [DEBUG] Apple Pay not available on this device');
+                    if (event.resolve) event.resolve({ status: 'fail' });
+                    return;
+                  }
+                  
+                  // Check if user has cards set up
+                  if (ApplePaySession.canMakePaymentsWithActiveCard) {
+                    ApplePaySession.canMakePaymentsWithActiveCard('merchant.soulmatesketch.com')
+                      .then((canMakePaymentsWithActiveCard) => {
+                        console.log('🔍 [DEBUG] Apple Pay canMakePaymentsWithActiveCard:', canMakePaymentsWithActiveCard);
+                        if (!canMakePaymentsWithActiveCard) {
+                          console.warn('⚠️ [DEBUG] No active Apple Pay cards available - but proceeding anyway');
+                        }
+                        
+                        // Always resolve to proceed with the payment sheet
+                        console.log('🔍 [DEBUG] Resolving Apple Pay click event to proceed...');
+                        if (event.resolve) {
+                          event.resolve({ status: 'success' });
+                        }
+                      })
+                      .catch((error) => {
+                        console.error('❌ [DEBUG] Error checking Apple Pay cards:', error);
+                        // Still proceed even if card check fails
+                        if (event.resolve) {
+                          event.resolve({ status: 'success' });
+                        }
+                      });
+                  } else {
+                    // Proceed without card check if API not available
+                    console.log('🔍 [DEBUG] Proceeding without card check...');
+                    if (event.resolve) {
+                      event.resolve({ status: 'success' });
+                    }
+                  }
+                } else {
+                  // For non-Apple Pay methods, just resolve
+                  if (event.resolve) {
+                    event.resolve({ status: 'success' });
+                  }
+                }
               });
               
               // Listen for when express checkout buttons are ready
@@ -2479,14 +2549,17 @@
                   console.log('🔍 [DEBUG] Elements object:', elements);
                   console.log('🔍 [DEBUG] Return URL will be:', window.location.origin + window.location.pathname);
                   
-                  // First complete the Apple Pay sheet
-                  event.complete('success');
-                  
-                  // Confirm payment with shipping/billing info if needed
+                  // Confirm payment with shipping/billing info if needed (don't complete Apple Pay sheet until after confirmation)
                   const {error, paymentIntent} = await stripe.confirmPayment({
                     elements,
                     confirmParams: {
                       return_url: window.location.origin + window.location.pathname,
+                      payment_method_data: {
+                        billing_details: {
+                          name: state.user?.firstName || 'Customer',
+                          email: state.user?.email || undefined
+                        }
+                      }
                     },
                     redirect: 'if_required'
                   });
@@ -2513,6 +2586,12 @@
                     } else {
                       console.log('⚠️ [DEBUG] showComplete function not found');
                     }
+                  } else if (paymentIntent.status === 'requires_action') {
+                    console.log('⚠️ [DEBUG] Payment requires additional action');
+                    event.complete('fail');
+                  } else {
+                    console.log('⚠️ [DEBUG] Unexpected payment status:', paymentIntent.status);
+                    event.complete('fail');
                   }
                 } catch (error) {
                   console.error('❌ [DEBUG] Express checkout error:', error);

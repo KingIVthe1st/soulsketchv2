@@ -46,6 +46,8 @@ export async function createPaymentIntent({ amount, currency = 'usd', metadata }
       allow_redirects: 'never'
     },
     metadata,
+    // Apple Pay merchant configuration for proper processing
+    payment_method_types: ['card', 'apple_pay'],
     // Configuration for Apple Pay and other express checkout methods
     shipping: {
       name: metadata?.name || 'Customer',
