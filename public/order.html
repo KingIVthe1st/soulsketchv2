@@ -2400,17 +2400,13 @@
                 googlePay: 'black',
               },
               buttonHeight: 48,
-              paymentMethods: {
-                applePay: 'always',
-                googlePay: 'always',
-                link: 'never'
-              },
-              // Add Apple Pay specific merchant information
+              // Explicitly control which payment methods appear
               wallets: {
                 applePay: 'always',
-                googlePay: 'always'
+                googlePay: 'auto',
+                link: 'never'
               },
-              // Let Stripe automatically handle Apple Pay merchant configuration from dashboard settings
+              // Remove conflicting paymentMethods configuration
             };
             console.log('🔍 [DEBUG] Express config:', expressConfig);
             
