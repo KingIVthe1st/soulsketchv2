@@ -929,35 +929,7 @@
                         </div>
                       </div>
 
-                      <!-- Apple Pay Button -->
-                      <div id="applePayContainer" style="margin: 20px 0;">
-                        <button id="applePayButton" class="apple-pay-button" style="
-                          width: 100%;
-                          height: 48px;
-                          background: #000;
-                          border: none;
-                          border-radius: 6px;
-                          color: white;
-                          font-size: 16px;
-                          font-weight: 500;
-                          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                          cursor: pointer;
-                          display: none;
-                          align-items: center;
-                          justify-content: center;
-                          gap: 8px;
-                          transition: all 0.2s ease;
-                          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                        " onmouseover="this.style.backgroundColor='#333'" onmouseout="this.style.backgroundColor='#000'">
-                          <img src="/images/apple-logo.png" alt="Apple" style="
-                            width: 20px;
-                            height: 20px;
-                            filter: invert(1);
-                            margin-right: 4px;
-                          ">
-                          Pay
-                        </button>
-                      </div>
+                      <!-- Apple Pay handled by Stripe Express Checkout above -->
 
                       <div style="margin: 20px 0; text-align: center; color: var(--text-color); font-size: 14px;">
                         <span style="background: var(--bg-color); padding: 0 15px;">or pay with card</span>
@@ -1965,64 +1937,15 @@
             if (completeOrderBtn) completeOrderBtn.textContent = `Complete Order - ${state.selectedPackage.price}`;
           }
           
-          // Initialize Apple Pay if available
-          initializeApplePay();
+          // Apple Pay is automatically initialized via Stripe Express Checkout
           
           // Hide form and show checkout
           orderForm.style.display = "none";
           document.getElementById('checkoutSection').style.display = "block";
         }
 
-        // Apple Pay functionality
-        function initializeApplePay() {
-          if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
-            const applePayButton = document.getElementById('applePayButton');
-            if (applePayButton) {
-              applePayButton.style.display = 'flex';
-              applePayButton.addEventListener('click', startApplePaySession);
-            }
-          }
-        }
-
-        function startApplePaySession() {
-          if (!state.selectedPackage) return;
-          
-          const request = {
-            countryCode: 'US',
-            currencyCode: 'USD',
-            supportedNetworks: ['visa', 'masterCard', 'amex'],
-            merchantCapabilities: ['supports3DS'],
-            total: {
-              label: state.selectedPackage.name,
-              amount: state.selectedPackage.price.replace('$', '')
-            }
-          };
-
-          const session = new ApplePaySession(3, request);
-          
-          session.onvalidatemerchant = (event) => {
-            // In production, you would validate with your payment processor
-            console.log('Apple Pay merchant validation:', event);
-            // For demo purposes, we'll just show a completion message
-            setTimeout(() => {
-              session.completePayment(ApplePaySession.STATUS_SUCCESS);
-              showComplete();
-            }, 1000);
-          };
-
-          session.onpaymentauthorized = (event) => {
-            console.log('Apple Pay authorized:', event.payment);
-            // Process the payment with your payment processor
-            session.completePayment(ApplePaySession.STATUS_SUCCESS);
-            showComplete();
-          };
-
-          session.oncancel = () => {
-            console.log('Apple Pay cancelled');
-          };
-
-          session.begin();
-        }
+        // Legacy Apple Pay functionality removed - now using Stripe Express Checkout
+        // This ensures Apple Pay works through Stripe's proper payment processing
 
         // Generating Screen Functions
         function showGeneratingScreen() {
