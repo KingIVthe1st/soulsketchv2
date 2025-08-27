@@ -114,6 +114,20 @@
           <div class="orb-ring ring-2"></div>
           <div class="orb-ring ring-3"></div>
         </div>
+        
+        <!-- Animated rotating text graphic -->
+        <div class="rotating-text-container" style="margin: 20px 0;">
+          <svg width="201" height="201" viewBox="0 0 201 201" xmlns="http://www.w3.org/2000/svg" class="rotating-text-svg">
+            <circle cx="100.5" cy="100.5" r="98" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            <defs>
+              <path id="textcircle-generating" d="M100.5,100.5 m -80,0 a 80,80 0 1,1 160,0 a 80,80 0 1,1 -160,0"/>
+            </defs>
+            <text fill="white" font-family="Manrope, Arial, sans-serif" font-size="16" letter-spacing="2">
+              <textPath href="#textcircle-generating" startOffset="0%">GENERATING YOUR SOULMATE • CHANNELING COSMIC ENERGY • </textPath>
+            </text>
+          </svg>
+        </div>
+        
         <div class="generating-text">
           <h2>Channeling Your Soulmate's Energy</h2>
           <p id="generatingStatus">Connecting with the cosmic forces...</p>
@@ -1798,6 +1812,12 @@
           progressBar.style.width = pct + "%";
           progressBar.parentElement.setAttribute("aria-valuenow", String(n));
           stepLabel.textContent = `Step ${n} of 5 — ${getStepLabel(n)}`;
+          
+          // Smooth scroll to top of page when changing steps
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
         }
 
         function getStepLabel(n) {
@@ -1926,6 +1946,12 @@
         }
 
         function showCheckout() {
+          // Scroll to top smoothly
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+          
           // Update order summary with selected package
           if (state.selectedPackage) {
             const packageSummaryName = document.getElementById('packageSummaryName');
@@ -2010,6 +2036,12 @@
             'Manifesting your perfect match...',
             'Finalizing your cosmic connection...'
           ];
+          
+          // Scroll to top smoothly
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
           
           let messageIndex = 0;
           screen.style.display = 'flex';

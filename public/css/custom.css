@@ -318,6 +318,19 @@ body{
 	}
 }
 
+/* Rotating text SVG animation */
+.rotating-text-svg {
+	animation: rotate-loading 8s linear infinite;
+	transform-origin: center;
+	filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.rotating-text-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .bg-section{
 	width: 100%;
     max-width: 1800px;
