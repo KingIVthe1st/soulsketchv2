@@ -2281,7 +2281,7 @@
               metadata: {
                 package: packageType,
                 order_id: window.currentFormData?.id || 'unknown',
-                email: (state.user?.email && state.user.email.trim() !== '') ? state.user.email.trim() : null,
+                email: (state.user?.email && typeof state.user.email === 'string' && state.user.email.trim() !== '') ? state.user.email.trim() : undefined,
                 name: (state.user?.firstName && state.user.firstName.trim() !== '') ? state.user.firstName.trim() : 'Customer'
               }
             };
