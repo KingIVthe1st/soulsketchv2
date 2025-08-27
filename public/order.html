@@ -2481,26 +2481,34 @@
                     ApplePaySession.canMakePaymentsWithActiveCard('merchant.soulmatesketch.com')
                       .then((canMakePaymentsWithActiveCard) => {
                         console.log('🔍 [DEBUG] Apple Pay canMakePaymentsWithActiveCard:', canMakePaymentsWithActiveCard);
+                        
                         if (!canMakePaymentsWithActiveCard) {
-                          console.warn('⚠️ [DEBUG] No active Apple Pay cards available - but proceeding anyway');
+                          console.error('❌ [DEBUG] No active Apple Pay cards available - cannot proceed with Apple Pay');
+                          alert('Apple Pay requires at least one card to be set up in your Apple Wallet. Please add a card to Apple Wallet or use the card payment option below.');
+                          if (event.resolve) {
+                            event.resolve({ status: 'fail' });
+                          }
+                          return;
                         }
                         
-                        // Always resolve to proceed with the payment sheet
-                        console.log('🔍 [DEBUG] Resolving Apple Pay click event to proceed...');
+                        // Only proceed if user has active cards
+                        console.log('🔍 [DEBUG] Active Apple Pay cards found - resolving click event to proceed...');
                         if (event.resolve) {
                           event.resolve({ status: 'success' });
                         }
                       })
                       .catch((error) => {
                         console.error('❌ [DEBUG] Error checking Apple Pay cards:', error);
-                        // Still proceed even if card check fails
+                        console.warn('⚠️ [DEBUG] Cannot verify Apple Pay cards - proceeding with caution...');
+                        
+                        // Show warning but allow attempt
                         if (event.resolve) {
                           event.resolve({ status: 'success' });
                         }
                       });
                   } else {
-                    // Proceed without card check if API not available
-                    console.log('🔍 [DEBUG] Proceeding without card check...');
+                    // If we can't check for active cards, proceed with caution
+                    console.log('🔍 [DEBUG] Cannot check for active cards - proceeding anyway...');
                     if (event.resolve) {
                       event.resolve({ status: 'success' });
                     }
