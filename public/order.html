@@ -2408,7 +2408,7 @@
               buttonHeight: 48,
               // Use layout to force only Apple Pay
               layout: {
-                overflow: 'never',
+                overflow: 'auto',  // Changed from 'never' to 'auto' to fix compatibility with maxRows: 1
                 maxRows: 1
               },
               // Explicitly control which payment methods appear
