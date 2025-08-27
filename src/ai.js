@@ -875,16 +875,20 @@ function buildComprehensiveSoulmatePrompt({ attractedTo, user, personality, rela
   ];
   const attractiveness = attractivenessTerms[Math.floor(Math.random() * attractivenessTerms.length)];
   
-  // COMPREHENSIVE PROMPT CONSTRUCTION
-  const prompt = `A photo-realistic, high-definition portrait of an ${attractiveness} ${ageDescriptor} ${baseGender} (age ${soulmateAge}). ${physicalTraits.appearance} Professional photography quality with natural lighting and perfect clarity. 
+  // COMPREHENSIVE PROMPT CONSTRUCTION - ENHANCED FOR PHOTOREALISM
+  const prompt = `Photorealistic portrait photograph of an ${attractiveness} ${ageDescriptor} ${baseGender}, exactly ${soulmateAge} years old. ${physicalTraits.appearance}
+
+PHOTOGRAPHY STYLE: Professional portrait photography, shot with 85mm lens at f/2.8, natural window lighting, shallow depth of field with beautifully blurred background bokeh. Raw, unfiltered beauty captured like a National Geographic portrait or Annie Leibovitz photograph.
 
 SETTING: ${background.description} ${background.details}
 
-STYLE: Ultra-realistic human photography, magazine quality, perfect focus, natural skin texture, authentic lighting. Shot with professional camera equipment, shallow depth of field, ${background.lighting}
+TECHNICAL DETAILS: Hyperrealistic human face with visible skin texture, pores, natural skin imperfections that add authenticity. Real human eyes with detailed iris patterns, natural catchlights. Genuine human hair with individual strands visible. Shot in golden hour lighting with ${background.lighting}
 
-EXPRESSION: ${physicalTraits.expression} Eyes that convey ${physicalTraits.personality}, suggesting someone who values ${(personality.values || ['authenticity', 'connection']).slice(0, 2).join(' and ')}.
+EXPRESSION: ${physicalTraits.expression} Authentic, candid expression as if caught in a genuine moment. Eyes that convey ${physicalTraits.personality}, radiating warmth and approachability. Natural, relaxed facial muscles suggesting someone who values ${(personality.values || ['authenticity', 'connection']).slice(0, 2).join(' and ')}.
 
-QUALITY: 8K resolution, photojournalistic style, completely realistic human features, no artificial or cartoon elements, natural proportions, authentic human skin and hair texture.`;
+QUALITY MARKERS: Photographic realism, NOT digital art. Like a professional headshot or dating profile photo taken by a high-end photographer. Cinematic color grading, film photography aesthetic. Must look like a real photograph of a real person, indistinguishable from an actual photo. Natural skin tones, realistic hair texture, authentic human proportions.
+
+IMPORTANT: This must look like a real photograph, not AI-generated art. Photorealistic, lifelike, could be someone's actual photo.`;
 
   console.log(`🎨 Generated comprehensive prompt (${prompt.length} chars)`);
   return prompt;
@@ -898,38 +902,38 @@ function buildPhysicalTraits(personality, birth) {
     personality: ''
   };
   
-  // PERSONALITY-DRIVEN APPEARANCE
+  // PERSONALITY-DRIVEN APPEARANCE - ENHANCED FOR PHOTOREALISM
   if (personality.introvertExtrovert) {
     if (personality.introvertExtrovert < 40) {
-      traits.appearance += 'Gentle, thoughtful features with expressive, intelligent eyes. ';
-      traits.expression = 'A soft, genuine smile with kind, contemplative eyes.';
+      traits.appearance += 'Natural beauty with gentle bone structure, clear skin with a healthy glow, well-groomed hair catching the light naturally. Wearing casual yet put-together clothing. ';
+      traits.expression = 'A subtle, genuine smile that reaches the eyes, creating authentic crow\'s feet. Natural, unposed expression.';
       traits.personality = 'depth, authenticity, and quiet wisdom';
     } else if (personality.introvertExtrovert > 60) {
-      traits.appearance += 'Bright, engaging features with warm, inviting eyes. ';
-      traits.expression = 'A confident, radiant smile with energetic, friendly eyes.';
+      traits.appearance += 'Vibrant natural features, glowing healthy skin, styled hair that looks touchable and real. Wearing fashionable yet approachable attire. ';
+      traits.expression = 'A warm, engaging smile showing natural teeth, eyes crinkled with genuine joy. Candid, caught-in-the-moment expression.';
       traits.personality = 'warmth, enthusiasm, and social connection';
     } else {
-      traits.appearance += 'Balanced, approachable features with versatile, understanding eyes. ';
-      traits.expression = 'A natural, authentic smile with adaptable, empathetic eyes.';
+      traits.appearance += 'Naturally attractive with balanced features, realistic skin texture with subtle freckles or beauty marks. Well-maintained appearance without looking overly styled. ';
+      traits.expression = 'A relaxed, authentic half-smile, eyes focused with natural intensity. Unguarded, genuine expression.';
       traits.personality = 'balance, understanding, and emotional intelligence';
     }
   }
   
-  // ADVENTURE VS GROUNDED TRAITS
+  // ADVENTURE VS GROUNDED TRAITS - PHOTOREALISTIC
   if (personality.groundedAdventurous) {
     if (personality.groundedAdventurous < 40) {
-      traits.appearance += 'Strong, reliable bone structure suggesting stability and dependability. ';
+      traits.appearance += 'Classic, timeless appearance with natural makeup (if applicable), neat hairstyle, wearing quality fabrics in earth tones. ';
     } else if (personality.groundedAdventurous > 60) {
-      traits.appearance += 'Dynamic, lively features with a hint of wanderlust in their expression. ';
+      traits.appearance += 'Sun-kissed skin with natural tan lines, tousled hair as if windblown, wearing practical yet stylish outdoor clothing. ';
     }
   }
   
-  // CREATIVE VS ANALYTICAL TRAITS
+  // CREATIVE VS ANALYTICAL TRAITS - PHOTOREALISTIC
   if (personality.analyticalCreative) {
     if (personality.analyticalCreative < 40) {
-      traits.appearance += 'Artistic, expressive features with creative spark in their eyes. ';
+      traits.appearance += 'Unique personal style visible in subtle details - interesting jewelry, creative hair styling, artistic clothing choices. ';
     } else if (personality.analyticalCreative > 60) {
-      traits.appearance += 'Sharp, intelligent features with analytical depth and clarity. ';
+      traits.appearance += 'Polished professional appearance, well-fitted clothing, modern minimalist style, wearing a watch or glasses that suggest intelligence. ';
     }
   }
   
