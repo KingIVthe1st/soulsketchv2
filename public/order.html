@@ -230,15 +230,16 @@
                       <input type="text" class="form-control" id="country" />
                     </div>
                     <div class="form-group col-md-6 mb-4">
-                      <label class="form-label" for="timezone">Timezone</label>
+                      <label class="form-label" for="timezone">Birth Place</label>
                       <input
                         type="text"
                         class="form-control"
                         id="timezone"
+                        placeholder="City, State/Country"
                         aria-describedby="tz_help"
                       />
                       <small id="tz_help" class="text-muted"
-                        >Auto-detected; you can edit.</small
+                        >Your birth location (e.g., New York, NY or London, UK)</small
                       >
                     </div>
                     <div class="form-group col-md-6 mb-4">
@@ -1336,11 +1337,10 @@
         const orderComplete = document.getElementById("orderComplete");
         const mailtoDraft = document.getElementById("mailtoDraft");
 
-        // Init timezone if empty
+        // Init birth place (formerly timezone) - leave empty for user to fill
         try {
           if (!state.user.timezone) {
-            state.user.timezone =
-              Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+            state.user.timezone = ""; // Birth place should be manually entered
           }
         } catch (e) {}
 
@@ -1355,23 +1355,10 @@
         // Nav buttons
         orderForm.addEventListener("click", function (e) {
           const t = e.target;
-          console.log('🔍 [DEBUG] Quiz button clicked:', t.className, t.classList.toString());
-          
           if (t.classList.contains("next")) {
-            console.log('🔍 [DEBUG] Next button clicked, current step:', currentStep);
             e.preventDefault();
-            
-            const isValid = validateCurrentStep();
-            console.log('🔍 [DEBUG] Step validation result:', isValid);
-            
-            if (!isValid) {
-              console.log('🔍 [DEBUG] Validation failed, not advancing step');
-              return;
-            }
-            
-            const nextStep = Math.min(5, currentStep + 1);
-            console.log('🔍 [DEBUG] Advancing to step:', nextStep);
-            goToStep(nextStep);
+            if (!validateCurrentStep()) return;
+            goToStep(Math.min(5, currentStep + 1));
           }
           if (t.classList.contains("back")) {
             e.preventDefault();
@@ -1826,16 +1813,10 @@
         }
 
         function validateCurrentStep(isSubmit) {
-          console.log('🔍 [DEBUG] Validating step:', currentStep, 'Current state:', state.user);
-          
           if (currentStep === 1) {
             const email = (state.user.email || "").trim();
-            console.log('🔍 [DEBUG] Step 1 - Email validation:', email);
             const ok = /.+@.+\..+/.test(email);
-            console.log('🔍 [DEBUG] Step 1 - Email valid:', ok);
-            
             if (!ok) {
-              console.log('🔍 [DEBUG] Step 1 - Email validation failed, showing alert');
               alert("Please enter a valid email.");
               return false;
             }

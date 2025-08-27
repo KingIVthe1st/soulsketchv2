@@ -6597,6 +6597,102 @@ header.main-header .header-sticky.active{
   .desktop-only-image {
     display: none !important;
   }
+  
+  /* Mobile Quiz Optimization */
+  #orderForm {
+    padding: 15px !important;
+    margin: 0 !important;
+  }
+  
+  .order-step {
+    padding: 20px 15px !important;
+  }
+  
+  .order-step h3 {
+    font-size: 1.5em !important;
+    margin-bottom: 15px !important;
+  }
+  
+  .form-group {
+    margin-bottom: 20px !important;
+  }
+  
+  .form-group .form-control {
+    min-height: 44px !important; /* Touch-friendly height */
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 12px 15px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+  }
+  
+  .form-group select.form-control {
+    min-height: 44px !important;
+    background-size: 16px !important;
+    padding-right: 35px !important;
+  }
+  
+  .form-group label.form-label {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+  }
+  
+  /* Mobile-optimized button styling */
+  .order-nav .btn-default {
+    min-height: 44px !important;
+    padding: 12px 24px !important;
+    font-size: 16px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    margin: 8px 0 !important;
+  }
+  
+  .order-nav {
+    padding: 20px 0 !important;
+    margin: 20px 0 !important;
+  }
+  
+  /* Stack form elements vertically on mobile */
+  .row .col-md-6 {
+    width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 15px !important;
+  }
+  
+  /* Progress bar mobile optimization */
+  .progress-container {
+    margin: 15px 0 !important;
+    padding: 0 15px !important;
+  }
+  
+  .step-label {
+    font-size: 14px !important;
+    text-align: center !important;
+    margin: 10px 0 !important;
+  }
+  
+  /* Mobile-friendly package selection */
+  .package-card {
+    margin-bottom: 15px !important;
+    padding: 15px !important;
+    border-radius: 8px !important;
+  }
+  
+  .package-card h4 {
+    font-size: 1.2em !important;
+  }
+  
+  .package-card .price {
+    font-size: 1.4em !important;
+  }
+  
+  /* Small text readability improvements */
+  .text-muted, small {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    margin: 8px 0 !important;
+  }
 }
 
 /* Show desktop-only images on desktop */
