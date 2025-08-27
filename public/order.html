@@ -1497,7 +1497,7 @@
         });
 
         // Checkout button event listeners
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', async function(e) {
           if (e.target.id === 'backToStep5') {
             // Go back to step 5
             document.getElementById('checkoutSection').style.display = 'none';
