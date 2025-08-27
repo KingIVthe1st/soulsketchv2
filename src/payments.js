@@ -40,12 +40,8 @@ export async function createPaymentIntent({ amount, currency = 'usd', metadata }
   return stripe.paymentIntents.create({
     amount,
     currency,
-    // Enable specific payment methods for Apple Pay and Google Pay to work
-    automatic_payment_methods: { 
-      enabled: true,
-      // Only allow these specific payment methods
-      allow_redirects: 'never'
-    },
+    // Explicitly specify payment method types to support Apple Pay, Google Pay, and cards
+    payment_method_types: ['card', 'apple_pay', 'google_pay'],
     metadata,
     // Configuration for Apple Pay and other express checkout methods
     shipping: {
