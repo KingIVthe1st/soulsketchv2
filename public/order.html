@@ -1354,30 +1354,32 @@
             e.preventDefault();
             goToStep(Math.min(5, currentStep + 1));
           }
-          if (t.classList.contains("package-select")) {
+          if (t.classList.contains("package-select") || t.classList.contains("package-card") || t.closest('.package-card')) {
             e.preventDefault();
-            // Handle package selection
-            const packageCard = t.closest('.package-card');
-            const packageType = packageCard.getAttribute('data-package');
-            const packageName = packageCard.querySelector('h4').textContent;
-            const packagePrice = packageCard.querySelector('.price').textContent;
-            
-            // Update state
-            state.selectedPackage = {
-              type: packageType,
-              name: packageName,
-              price: packagePrice
-            };
-            
-            // Visual feedback
-            document.querySelectorAll('.package-card').forEach(card => card.classList.remove('selected'));
-            packageCard.classList.add('selected');
-            
-            // Show selected package info
-            const selectedPackageDiv = document.getElementById('selectedPackage');
-            document.getElementById('packageName').textContent = packageName;
-            document.getElementById('packagePrice').textContent = packagePrice;
-            selectedPackageDiv.style.display = 'block';
+            // Handle package selection - get the package card whether clicked directly or via button
+            const packageCard = t.classList.contains('package-card') ? t : t.closest('.package-card');
+            if (packageCard) {
+              const packageType = packageCard.getAttribute('data-package');
+              const packageName = packageCard.querySelector('h4').textContent;
+              const packagePrice = packageCard.querySelector('.price').textContent;
+              
+              // Update state
+              state.selectedPackage = {
+                type: packageType,
+                name: packageName,
+                price: packagePrice
+              };
+              
+              // Visual feedback
+              document.querySelectorAll('.package-card').forEach(card => card.classList.remove('selected'));
+              packageCard.classList.add('selected');
+              
+              // Show selected package info
+              const selectedPackageDiv = document.getElementById('selectedPackage');
+              document.getElementById('packageName').textContent = packageName;
+              document.getElementById('packagePrice').textContent = packagePrice;
+              selectedPackageDiv.style.display = 'block';
+            }
           }
         });
 
