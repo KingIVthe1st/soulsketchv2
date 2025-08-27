@@ -1355,10 +1355,23 @@
         // Nav buttons
         orderForm.addEventListener("click", function (e) {
           const t = e.target;
+          console.log('🔍 [DEBUG] Quiz button clicked:', t.className, t.classList.toString());
+          
           if (t.classList.contains("next")) {
+            console.log('🔍 [DEBUG] Next button clicked, current step:', currentStep);
             e.preventDefault();
-            if (!validateCurrentStep()) return;
-            goToStep(Math.min(5, currentStep + 1));
+            
+            const isValid = validateCurrentStep();
+            console.log('🔍 [DEBUG] Step validation result:', isValid);
+            
+            if (!isValid) {
+              console.log('🔍 [DEBUG] Validation failed, not advancing step');
+              return;
+            }
+            
+            const nextStep = Math.min(5, currentStep + 1);
+            console.log('🔍 [DEBUG] Advancing to step:', nextStep);
+            goToStep(nextStep);
           }
           if (t.classList.contains("back")) {
             e.preventDefault();
@@ -1813,10 +1826,16 @@
         }
 
         function validateCurrentStep(isSubmit) {
+          console.log('🔍 [DEBUG] Validating step:', currentStep, 'Current state:', state.user);
+          
           if (currentStep === 1) {
             const email = (state.user.email || "").trim();
+            console.log('🔍 [DEBUG] Step 1 - Email validation:', email);
             const ok = /.+@.+\..+/.test(email);
+            console.log('🔍 [DEBUG] Step 1 - Email valid:', ok);
+            
             if (!ok) {
+              console.log('🔍 [DEBUG] Step 1 - Email validation failed, showing alert');
               alert("Please enter a valid email.");
               return false;
             }
@@ -2060,6 +2079,26 @@
               "&body=" +
               body;
           } catch (e) {}
+          
+          // Set up deliverable access after successful payment
+          const currentOrderId = localStorage.getItem('currentOrderId');
+          if (currentOrderId && currentOrderId !== 'null') {
+            console.log('🔍 [DEBUG] Setting up deliverable access for order:', currentOrderId);
+            
+            // Update URL to include orderId parameter for deliverable access
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('orderId', currentOrderId);
+            window.history.replaceState({}, '', newUrl);
+            
+            // Initialize deliverable viewer to check for completed orders
+            setTimeout(() => {
+              initDeliverableViewer();
+              checkForCompletedOrder();
+            }, 1000);
+          } else {
+            console.warn('⚠️ [DEBUG] No order ID found in localStorage for deliverable access');
+          }
+          
           orderForm.style.display = "none";
           orderComplete.style.display = "block";
         }
@@ -2085,12 +2124,15 @@
           
           // Continue regardless of visibility - we'll show it if needed
 
-          // Only check URL parameters - ignore localStorage to prevent stale data issues
+          // Check URL parameters first, then fall back to localStorage if needed
           const urlParams = new URLSearchParams(window.location.search);
           let orderId = urlParams.get('orderId');
           
-          // Clear any stale localStorage data immediately
-          localStorage.removeItem('currentOrderId');
+          // If no URL parameter, check localStorage as fallback
+          if (!orderId || orderId === 'null' || orderId.trim() === '') {
+            orderId = localStorage.getItem('currentOrderId');
+            console.log('🔍 [DEBUG] No URL orderId, checking localStorage:', orderId);
+          }
           
           // Only proceed if we have a valid orderId (not null, undefined, empty string, or 'null' string)
           if (orderId && orderId !== 'null' && orderId.trim() !== '') {
@@ -2114,6 +2156,9 @@
                       parentSection.style.display = 'block';
                     }
                   }
+                  
+                  // Clear localStorage after successful order retrieval to prevent stale data
+                  localStorage.removeItem('currentOrderId');
                 }
               } else if (response.status === 404) {
                 // Order not found - clean up invalid localStorage data
