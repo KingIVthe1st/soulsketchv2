@@ -1500,10 +1500,28 @@
           
           if (e.target.id === 'completeOrder') {
             // Complete Order button - process payment then show completion
-            // For now, simulate successful payment
-            alert('Payment processed successfully! (Demo mode)');
-            document.getElementById('checkoutSection').style.display = 'none';
-            showComplete();
+            console.log('🔍 [DEBUG] Legacy Complete Order button clicked - processing via Stripe...');
+            
+            // Disable button to prevent double-clicks
+            e.target.disabled = true;
+            e.target.textContent = 'Processing...';
+            
+            // Process payment via Stripe Elements
+            try {
+              const paymentSuccess = await processStripePayment();
+              if (paymentSuccess) {
+                document.getElementById('checkoutSection').style.display = 'none';
+                showComplete();
+              } else {
+                e.target.disabled = false;
+                e.target.textContent = 'Complete Order - $29.99';
+              }
+            } catch (error) {
+              console.error('❌ [DEBUG] Payment processing error:', error);
+              alert('Payment failed. Please try again.');
+              e.target.disabled = false;
+              e.target.textContent = 'Complete Order - $29.99';
+            }
           }
         });
 
@@ -2521,9 +2539,9 @@
         // Process Stripe payment
         async function processStripePayment() {
           if (!stripe || !elements) {
-            // Demo mode - simulate success
-            alert('Payment processed successfully! (Demo mode)');
-            return true;
+            console.error('❌ [DEBUG] Stripe or Elements not initialized');
+            alert('Payment system not ready. Please refresh the page and try again.');
+            return false;
           }
           
           try {
