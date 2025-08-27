@@ -2286,6 +2286,14 @@
               }
             };
             console.log('🔍 [DEBUG] Payment data:', paymentData);
+            console.log('🔍 [DEBUG] State object:', state);
+            console.log('🔍 [DEBUG] State.user:', state.user);
+            console.log('🔍 [DEBUG] Metadata details:', {
+              package: paymentData.metadata.package,
+              order_id: paymentData.metadata.order_id,
+              email: paymentData.metadata.email,
+              name: paymentData.metadata.name
+            });
             
             const response = await fetch('/api/payment-intent', {
               method: 'POST',
